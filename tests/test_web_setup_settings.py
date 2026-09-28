@@ -2,6 +2,9 @@
 own configuration: reading what the file holds, changing one value
 without the four-step wizard, and declaring when the environment is why a
 value shown is not the one in force (the environment takes precedence).
+Each form's own scoped context_limit is
+tests/test_web_setup_settings_context_limits.py, split out to stay under
+the project's 150-line file cap.
 """
 
 from __future__ import annotations

@@ -19,6 +19,16 @@
   generative model is a GET first (the same `?model=` reload step 3 already
   uses: only a request can re-read /api/show), then a POST to
   save it.
+
+  `context_limit` names the model being *previewed* (`selected_model`,
+  possibly different from `config.ollama_model` while `?model=` is being
+  looked at), so only the "Change generative model" form, the one that
+  also submits `selected_model` as `ollama_model`, carries it forward.
+  The other two forms submit `config.ollama_model` unchanged and omit
+  `context_limit` entirely: api.routes.setup_settings.save_settings then
+  keeps whatever ceiling was already measured for that model, rather than
+  overwriting it with the ceiling of whichever model this page happens to
+  be showing.
 #}
 {% extends "base.html" %}
 {% from "components/icons.html" import icon_alert %}
@@ -101,7 +111,6 @@
       <input type="hidden" name="cores_per_chunk" value="{{ config.cores_per_chunk }}" />
       <input type="hidden" name="parallel_chunks" value="{{ config.parallel_chunks }}" />
       {% if config.ollama_model %}<input type="hidden" name="ollama_model" value="{{ config.ollama_model }}" />{% endif %}
-      {% if context_limit %}<input type="hidden" name="context_limit" value="{{ context_limit }}" />{% endif %}
       <div class="vx-field">
         <label for="vx-hardware-profile">{% trans %}Profile{% endtrans %}</label>
         <select id="vx-hardware-profile" name="hardware_profile">
@@ -121,7 +130,6 @@
     <form method="post" action="{{ origin }}" class="vx-cluster">
       <input type="hidden" name="hardware_profile" value="{{ config.hardware_profile }}" />
       {% if config.ollama_model %}<input type="hidden" name="ollama_model" value="{{ config.ollama_model }}" />{% endif %}
-      {% if context_limit %}<input type="hidden" name="context_limit" value="{{ context_limit }}" />{% endif %}
       <div class="vx-field">
         <label for="vx-cores-per-chunk">{% trans %}Cores per chunk{% endtrans %}</label>
         <input type="number" min="1" id="vx-cores-per-chunk" name="cores_per_chunk" value="{{ config.cores_per_chunk }}" />

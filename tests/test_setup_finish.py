@@ -1,5 +1,8 @@
 """setup.finish.installation_config_from_choices: what POST /setup/private-storage
 writes, without going through the HTTP route or a real Ollama.
+model_context_limits's own merge-not-replace behaviour is
+tests/test_setup_finish_context_limits.py, split out to stay under the
+project's 150-line file cap.
 """
 
 from __future__ import annotations
