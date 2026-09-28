@@ -43,14 +43,19 @@ def _fake_model(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_transcribe_passes_settings_cores_and_workers_to_whisper_model(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """cpu_threads is the full budget (3 * 2), never just cores_per_chunk:
+    with no chunking, that product is the only number left claiming the
+    cores a run declared for itself. num_workers stays 1: a second worker
+    only runs if something calls transcribe() from another thread.
+    """
     monkeypatch.setenv("VOXTRAMA_CORES_PER_CHUNK", "3")
     monkeypatch.setenv("VOXTRAMA_PARALLEL_CHUNKS", "2")
     get_settings.cache_clear()
 
     transcribe(_recording(), "low")
 
-    assert FakeWhisperModel.last_kwargs["cpu_threads"] == 3
-    assert FakeWhisperModel.last_kwargs["num_workers"] == 2
+    assert FakeWhisperModel.last_kwargs["cpu_threads"] == 6
+    assert FakeWhisperModel.last_kwargs["num_workers"] == 1
 
 
 def test_transcribe_records_the_effective_values_on_the_transcript(
@@ -67,8 +72,8 @@ def test_transcribe_records_the_effective_values_on_the_transcript(
 
     transcript = transcribe(_recording(), "low")
 
-    assert transcript.cpu_threads == 3
-    assert transcript.num_workers == 2
+    assert transcript.cpu_threads == 6
+    assert transcript.num_workers == 1
 
 
 def test_transcribe_falls_back_to_the_machine_s_tuning_proposal_when_unset(

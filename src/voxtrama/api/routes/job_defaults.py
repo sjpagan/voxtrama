@@ -9,9 +9,13 @@ page and POST /jobs both read defaults from here, so the value a form
 calls default is the value the server compares against.
 
 Cores and parallel chunks fall back to this machine's own tuning proposal
-when Settings names none, as transcribe() does
-(transcription.resources), so the form never shows a number the run would
-not have used.
+when Settings names none, through the same core budget the guided setup
+reads (tuning.core_budget.plan_for), so the form never shows a number the
+setup page would not have shown. It deliberately does not ask
+transcription.resources: that module answers a different question, how
+many threads one WhisperModel call may use, and folds the two numbers into
+one. The form has to show the two separately, because they are the two the
+person set and the two a job may change.
 """
 
 from __future__ import annotations
@@ -23,7 +27,8 @@ from voxtrama.diagnostics.machine import read_machine
 from voxtrama.providers.registry import configured_providers, provider_named
 from voxtrama.setup.installation import read_installation_config
 from voxtrama.transcription.profiles import PROFILES
-from voxtrama.transcription.resources import resolve_engine_resources
+from voxtrama.tuning.core_budget import plan_for
+from voxtrama.tuning.selector import select_tuning
 
 
 @dataclass(frozen=True)
@@ -51,17 +56,18 @@ class JobDefaults:
 
 def job_defaults(settings: Settings) -> JobDefaults:
     """The defaults the form shows and POST /jobs compares a submission against."""
-    cores, parallel = resolve_engine_resources(
-        settings.data_dir, settings.cores_per_chunk, settings.parallel_chunks
+    machine = read_machine(settings.data_dir)
+    plan = plan_for(
+        machine, select_tuning(machine), settings.cores_per_chunk, settings.parallel_chunks
     )
     return JobDefaults(
         hardware_profile=settings.hardware_profile,
-        parallel_chunks=parallel,
-        cores_per_chunk=cores,
+        parallel_chunks=plan.parallel_chunks,
+        cores_per_chunk=plan.cores_per_chunk,
         generative_model=settings.ollama_model,
         summary_detail=settings.summary_detail,
         pause_merge_seconds=settings.pause_merge_seconds,
-        machine_cores=read_machine(settings.data_dir).cpu_count,
+        machine_cores=machine.cpu_count,
         installation_retention_days=settings.retention_days,
         providers=tuple((p.name, p.locality) for p in configured_providers(settings).values()),
         provider=getattr(provider_named(settings, None), "name", ""),

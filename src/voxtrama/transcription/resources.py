@@ -32,23 +32,37 @@ from __future__ import annotations
 from pathlib import Path
 
 from voxtrama.diagnostics import machine as machine_module
-from voxtrama.tuning.core_budget import plan_for
+from voxtrama.tuning.core_budget import available_cores, plan_for
 from voxtrama.tuning.selector import select_tuning
 
 
 def resolve_engine_resources(
     data_dir: Path, cores_per_chunk: int | None, parallel_chunks: int | None
 ) -> tuple[int, int]:
-    """(cpu_threads, num_workers) for WhisperModel: `cores_per_chunk` and
-    `parallel_chunks` as given, or this machine's own tuning proposal for
-    whichever of the two is None.
+    """(cpu_threads, num_workers) for WhisperModel: the full core budget
+    `cores_per_chunk` and `parallel_chunks` describe, or this machine's own
+    tuning proposal for whichever of the two is None.
 
-    cores_per_chunk becomes cpu_threads: how many cores one WhisperModel
-    instance may use. parallel_chunks becomes num_workers: how many such
-    instances faster-whisper may run at once. ChunkTuning already
-    keeps the two knobs apart for this reason.
+    Nothing splits a recording into chunks, so there is only ever one
+    WhisperModel instance transcribing at a time. faster-whisper only starts
+    a second worker thread when transcribe() itself is called from more than
+    one Python thread, which this codebase never does. Handing it
+    parallel_chunks as num_workers would allocate a worker that never runs,
+    while the cores that number was meant to claim sit idle. cpu_threads is
+    instead the whole budget, cores_per_chunk * parallel_chunks, since that
+    product is the only number describing how many cores a run declared for
+    itself. num_workers stays 1 until something actually calls transcribe()
+    from more than one thread.
+
+    A product can overrun what the machine has even when each factor was
+    already capped on its own (plan_for caps cores_per_chunk and
+    parallel_chunks separately against the same ceiling), so the product is
+    capped again here, against tuning.core_budget.available_cores.
     """
     machine = machine_module.read_machine(data_dir)
     tuning = select_tuning(machine)
     plan = plan_for(machine, tuning, cores_per_chunk, parallel_chunks)
-    return plan.cores_per_chunk, plan.parallel_chunks
+    budget = plan.cores_per_chunk * plan.parallel_chunks
+    available = available_cores(machine)
+    cpu_threads = budget if available is None else min(budget, available)
+    return max(1, cpu_threads), 1

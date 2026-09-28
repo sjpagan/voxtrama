@@ -12,11 +12,11 @@ import pytest
 from voxtrama.diagnostics.machine import MachineReport
 
 
-def eight_cores(data_dir: object = None) -> MachineReport:
+def machine_with_cores(cpu_count: int) -> MachineReport:
     return MachineReport(
         platform="test",
         architecture="x86_64",
-        cpu_count=8,
+        cpu_count=cpu_count,
         performance_cores=None,
         efficiency_cores=None,
         cpu_brand=None,
@@ -29,6 +29,18 @@ def eight_cores(data_dir: object = None) -> MachineReport:
     )
 
 
+def eight_cores(data_dir: object = None) -> MachineReport:
+    return machine_with_cores(8)
+
+
 def use_eight_cores(monkeypatch: pytest.MonkeyPatch) -> None:
     """Patched where it is defined: callers resolve it through the module at call time."""
     monkeypatch.setattr("voxtrama.diagnostics.machine.read_machine", eight_cores)
+
+
+def use_machine_with_cores(monkeypatch: pytest.MonkeyPatch, cpu_count: int) -> None:
+    """Same as use_eight_cores, for tests that need a specific core count."""
+    monkeypatch.setattr(
+        "voxtrama.diagnostics.machine.read_machine",
+        lambda data_dir=None: machine_with_cores(cpu_count),
+    )
