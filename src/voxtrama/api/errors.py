@@ -7,9 +7,12 @@ translated here, once, instead of every route formatting its own body.
 
 from __future__ import annotations
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+
+from voxtrama.api.error_accept import wants_html
+from voxtrama.api.error_page import render_error_page
 
 
 class ProblemException(Exception):
@@ -75,13 +78,26 @@ def _as_problem(exc: RequestValidationError) -> ProblemException:
     )
 
 
+def _respond(request: Request, exc: ProblemException) -> Response:
+    """The RFC 9457 body every request failure shares, or the page a browser
+    asked for instead (api.error_accept.wants_html): same status code,
+    same title and detail, either way.
+    """
+    if wants_html(request):
+        return render_error_page(
+            request, status_code=exc.status_code, title=exc.title, detail=exc.detail
+        )
+    return _problem_response(request, exc)
+
+
 def register_problem_handler(app: FastAPI) -> None:
-    """Register the handlers that turn a request failure into RFC 9457 JSON."""
+    """Register the handlers that turn a request failure into RFC 9457 JSON,
+    or the HTML page a browser's own Accept header asked for instead."""
 
     @app.exception_handler(ProblemException)
-    def _handle_problem(request: Request, exc: ProblemException) -> JSONResponse:
-        return _problem_response(request, exc)
+    def _handle_problem(request: Request, exc: ProblemException) -> Response:
+        return _respond(request, exc)
 
     @app.exception_handler(RequestValidationError)
-    def _handle_validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
-        return _problem_response(request, _as_problem(exc))
+    def _handle_validation_error(request: Request, exc: RequestValidationError) -> Response:
+        return _respond(request, _as_problem(exc))

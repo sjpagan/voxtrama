@@ -1,0 +1,26 @@
+{#
+  Rendered by api.error_page.render_error_page: the HTML branch of every
+  request failure that reaches api.errors, for a request whose Accept
+  header prefers text/html over application/problem+json (a plain <form>
+  POST is the main source of these: nothing on the page it came from
+  intercepts what comes back, so the browser navigates here instead).
+  `title` and `detail` are the same two fields the JSON body carries,
+  unchanged: this page adds no wording of its own about what went wrong.
+#}
+{% extends "base.html" %}
+{% from "components/icons.html" import icon_alert %}
+
+{% block title %}{{ title }} | Voxtrama{% endblock %}
+
+{% block content %}
+<section class="vx-section">
+  <header class="vx-pagehead">
+    <h1>{{ title }}</h1>
+  </header>
+  <p class="vx-notice vx-notice--danger" role="alert">{{ icon_alert() }} {{ detail }}</p>
+  <p>
+    <a class="vx-button" href="/jobs">{% trans %}Go to Jobs{% endtrans %}</a>
+    <a class="vx-link" href="/">{% trans %}Go to the home page{% endtrans %}</a>
+  </p>
+</section>
+{% endblock %}
