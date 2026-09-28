@@ -12,6 +12,7 @@ their recordings, their step counts), never from its own query.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import UTC
 
 from voxtrama.db.models.recording import Recording
 from voxtrama.db.models.run import Run, RunState
@@ -36,6 +37,12 @@ class JobRow:
     workflow: str
     audio_length: str | None
     date: str
+    # `run.created_at` is naive but holds UTC (Run.created_at's own
+    # default, `datetime.now(UTC)`, loses its tzinfo on the way back out
+    # of the database). This is that same instant marked with its offset,
+    # so the browser reads it as the UTC it is instead of its own local
+    # time (web.static.js.local_time.js turns it into the reader's own).
+    date_instant: str
     state: str
     tone: str | None
     progress: tuple[int, int] | None  # (steps done, steps in all), while running
@@ -63,6 +70,7 @@ def job_rows(
                 workflow=titles.get(run.workflow_name, run.workflow_name),
                 audio_length=human_clock(recording.duration_seconds) if recording else None,
                 date=format_date(translator, run.created_at),
+                date_instant=run.created_at.replace(tzinfo=UTC).isoformat(),
                 state=state.value,
                 tone=_TONE.get(state),
                 progress=(done, total) if state is RunState.RUNNING and total else None,

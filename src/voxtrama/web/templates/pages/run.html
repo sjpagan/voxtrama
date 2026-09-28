@@ -145,10 +145,13 @@
   {% endif %}
   {{ label_catalog(run.step_states, run.run_states) }}
 </section>
-{# run_activity.js, run_vitality.js and run_terminal.js first: all three
-   `defer`, executed in document order, and run_page.js calls
-   window.VxRunActivity, window.VxRunVitality and window.VxRunTerminal
-   from its own event handlers. #}
+{# local_time.js first: run_terminal.js calls window.VxLocalTime.refresh()
+   on every line it appends, and with `defer` execution follows
+   declaration order. run_activity.js, run_vitality.js and run_terminal.js
+   next: all `defer` too, and run_page.js calls window.VxRunActivity,
+   window.VxRunVitality and window.VxRunTerminal from its own event
+   handlers. #}
+<script src="{{ static_url('js/local_time.js') }}" defer></script>
 <script src="{{ static_url('js/run_activity.js') }}" defer></script>
 <script src="{{ static_url('js/run_vitality.js') }}" defer></script>
 <script src="{{ static_url('js/run_terminal.js') }}" defer></script>

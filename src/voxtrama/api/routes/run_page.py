@@ -42,6 +42,7 @@ from voxtrama.config.settings import Settings
 from voxtrama.db.models.recording import Recording
 from voxtrama.db.models.step import RunStep
 from voxtrama.i18n.dependency import TranslatorDep
+from voxtrama.logs.panel_line import PanelLine
 from voxtrama.logs.run_file import RUN_LOG_FILENAME
 from voxtrama.logs.tail import tail_lines_with_offset
 from voxtrama.rendering import (
@@ -78,7 +79,7 @@ def _filename(session: Session, recording_id: str | None) -> str | None:
     return recording.original_filename if recording is not None else None
 
 
-def _log_lines(settings: Settings, run_id: str) -> tuple[list[str], int]:
+def _log_lines(settings: Settings, run_id: str) -> tuple[list[PanelLine], int]:
     """This page's own tail, plus how far into run.log it read.
 
     The offset is what static/js/run_page.js hands the SSE connection back

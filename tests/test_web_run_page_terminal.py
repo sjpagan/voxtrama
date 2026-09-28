@@ -80,7 +80,8 @@ def test_a_running_run_shows_the_terminal_panel_with_its_log_lines(
     body = client.get("/runs/run-5/view").text
 
     assert 'id="vx-run-terminal" data-run-id="run-5">' in body  # no `hidden`: this run is live
-    assert "23:31:49  step started" in body
+    assert '<time datetime="2026-09-25T23:31:49.000Z" data-local="clock">23:31:49</time>' in body
+    assert "23:31:49</time>  step started" in body
     assert 'id="vx-run-failure"' not in body
 
 
@@ -120,7 +121,7 @@ def test_a_final_runs_log_stays_closed_without_a_stop_button(
 
     assert 'id="vx-run-terminal"' not in body and 'id="vx-run-stop"' not in body
     assert '<details class="vx-card vx-terminal" id="vx-run-log">' in body
-    assert "23:31:49  Job started" in body
+    assert "23:31:49</time>  Job started" in body
 
 
 def test_the_activity_log_names_the_step_that_starts(tmp_path: Path, client: TestClient) -> None:
@@ -137,4 +138,4 @@ def test_the_activity_log_names_the_step_that_starts(tmp_path: Path, client: Tes
     body = client.get("/runs/run-13/view").text
 
     assert ">Activity</h2>" in body
-    assert "23:31:49  Identifying speakers..." in body
+    assert "23:31:49</time>  Identifying speakers..." in body

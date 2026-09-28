@@ -24,19 +24,29 @@ from fastapi import Request
 from voxtrama.api.sse import format_event
 from voxtrama.engine.progress_file import read_progress
 from voxtrama.engine.progress_state import ProgressState
+from voxtrama.logs.panel_line import PanelLine
 from voxtrama.logs.run_file import RUN_LOG_FILENAME
 from voxtrama.logs.tail import RunLogTail
 
 
-def log_event(lines: list[str], offset: int) -> str:
+def log_event(lines: list[PanelLine], offset: int) -> str:
     """A `log` SSE message carrying the lines RunLogTail picked up this poll.
+
+    Each line crosses the wire as its three fields (`instant`, `clock`,
+    `message`), not a string already joined: static/js/run_terminal.js
+    builds the same `<time>` element the first paint's own template does,
+    and only the browser knows which timezone to read `instant` in
+    (web.static.js.local_time.js).
 
     `offset` (RunLogTail.offset, after the read that produced `lines`)
     becomes this message's own `id:` line: what a reconnecting
     EventSource echoes back as `Last-Event-ID`, and what log_tail_for below
     reads to resume a fresh connection from the same point instead of 0.
     """
-    return format_event("log", json.dumps({"lines": lines}), str(offset))
+    payload = [
+        {"instant": line.instant, "clock": line.clock, "message": line.message} for line in lines
+    ]
+    return format_event("log", json.dumps({"lines": payload}), str(offset))
 
 
 def log_tail_for(runs_dir: Path, run_id: str, request: Request) -> RunLogTail:
@@ -61,7 +71,7 @@ def log_tail_for(runs_dir: Path, run_id: str, request: Request) -> RunLogTail:
 
 async def poll_once(
     runs_dir: Path, run_id: str, log_tail: RunLogTail
-) -> tuple[ProgressState | None, list[str]]:
+) -> tuple[ProgressState | None, list[PanelLine]]:
     """One read of progress.json and one of run.log, both off the event loop's own thread.
 
     Bundled in one awaited call, not two, so run_events._generate reads as

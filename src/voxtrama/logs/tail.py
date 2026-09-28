@@ -13,6 +13,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from voxtrama.logs.panel_line import PanelLine
 from voxtrama.logs.panel_words import readable
 
 
@@ -37,7 +38,7 @@ class RunLogTail:
         `id:` line on every `log` event, for a reconnect's `Last-Event-ID`."""
         return self._offset
 
-    def read_new_lines(self) -> list[str]:
+    def read_new_lines(self) -> list[PanelLine]:
         """Every complete log line appended since the last call, already formatted.
 
         Reads in binary and stops at the last newline in the chunk: the
@@ -64,7 +65,7 @@ class RunLogTail:
         return lines
 
 
-def tail_lines_with_offset(path: Path, limit: int) -> tuple[list[str], int]:
+def tail_lines_with_offset(path: Path, limit: int) -> tuple[list[PanelLine], int]:
     """The last `limit` formatted lines of `path`, and how many bytes the read consumed.
 
     That byte count is where a fresh page's own render leaves off:
@@ -79,7 +80,7 @@ def tail_lines_with_offset(path: Path, limit: int) -> tuple[list[str], int]:
         return [], 0
     with path.open("rb") as handle:
         data = handle.read()
-    lines: list[str] = []
+    lines: list[PanelLine] = []
     for raw in data.decode("utf-8", errors="replace").splitlines():
         formatted = _format_line(raw)
         if formatted is None:
@@ -105,8 +106,8 @@ def tail_lines_with_offset(path: Path, limit: int) -> tuple[list[str], int]:
 _PANEL_LOGGER_PREFIX = "voxtrama"
 
 
-def _format_line(raw: str) -> str | None:
-    """`raw` (one JSONL event) as the terminal panel shows it: "HH:MM:SS  msg".
+def _format_line(raw: str) -> PanelLine | None:
+    """`raw` (one JSONL event) as the terminal panel needs it.
 
     None for a line that is not a JSON object with both fields: the shape
     a half-written last line takes when read mid-write. Also None for a
@@ -127,7 +128,7 @@ def _format_line(raw: str) -> str | None:
     )
     if not is_own_logger:
         return None
-    return f"{_clock(ts)}  {readable(msg, event.get('step'))}"
+    return PanelLine(instant=ts, clock=_clock(ts), message=readable(msg, event.get("step")))
 
 
 def _clock(ts: str) -> str:

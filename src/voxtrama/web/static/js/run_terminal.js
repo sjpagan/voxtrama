@@ -30,10 +30,16 @@
     for (const line of lines) {
       const span = document.createElement("span");
       span.className = "vx-terminal__line";
-      span.textContent = line;
+      const time = document.createElement("time");
+      time.setAttribute("datetime", line.instant);
+      time.dataset.local = "clock";
+      time.textContent = line.clock;
+      span.appendChild(time);
+      span.appendChild(document.createTextNode(`  ${line.message}`));
       log.appendChild(span);
       log.appendChild(document.createTextNode("\n"));
     }
+    if (window.VxLocalTime) window.VxLocalTime.refresh(log);
     const spans = log.querySelectorAll(".vx-terminal__line");
     for (let i = 0; i < spans.length - MAX_VISIBLE_LINES; i++) {
       const trailingNewline = spans[i].nextSibling;

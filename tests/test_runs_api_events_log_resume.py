@@ -62,7 +62,9 @@ def test_a_fresh_connection_with_no_offset_gets_everything_already_in_run_log(
     response = get_events_with_writer(app, "run-1", actions, delay=0.05)
 
     lines = [line for event in _log_events(response.text) for line in event["lines"]]
-    assert lines == ["05:20:00  Job started"]
+    assert lines == [
+        {"instant": "2026-09-26T05:20:00.000Z", "clock": "05:20:00", "message": "Job started"}
+    ]
 
 
 def test_a_connection_with_last_event_id_does_not_repeat_what_it_already_has(
@@ -110,7 +112,9 @@ def test_a_line_written_after_the_offset_still_arrives(
     )
 
     lines = [line for event in _log_events(response.text) for line in event["lines"]]
-    assert lines == ["05:20:00  step started"]
+    assert lines == [
+        {"instant": "2026-09-26T05:20:00.000Z", "clock": "05:20:00", "message": "step started"}
+    ]
 
 
 def test_the_log_events_own_id_is_the_byte_offset_a_reconnect_would_resume_from(

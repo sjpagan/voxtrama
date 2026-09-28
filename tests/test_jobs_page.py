@@ -58,6 +58,19 @@ def test_every_job_is_listed_newest_first_with_its_columns(client, engine, tmp_p
     assert 'href="/"' in body and "New job" in body
 
 
+def test_each_row_carries_its_created_at_as_a_utc_instant_for_the_browser(
+    client, engine, tmp_path
+) -> None:
+    """The Date column's `<time>`: rendering.jobs.job_rows must mark
+    `run.created_at` (naive, but UTC) with its offset, or a browser reading
+    it as local time would shift the day instead of fixing it."""
+    _job(engine, tmp_path, "Sync", day=2)
+
+    body = client.get("/jobs").text
+
+    assert '<time datetime="2026-09-02T00:00:00+00:00" data-local="date">' in body
+
+
 def test_delete_opens_the_three_boxes_for_a_finished_job(client, engine, tmp_path) -> None:
     run = _job(engine, tmp_path, "Sync")
 

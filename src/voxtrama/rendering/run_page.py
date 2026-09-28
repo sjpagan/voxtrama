@@ -24,6 +24,7 @@ from voxtrama.db.models.run import Run, RunState, is_final
 from voxtrama.db.models.step import RunStep, StepState
 from voxtrama.i18n.formatting import format_datetime, format_time
 from voxtrama.i18n.translator import Translator
+from voxtrama.logs.panel_line import PanelLine
 from voxtrama.rendering.job_settings_line import JobHead
 from voxtrama.rendering.run_failure import FailureBanner
 from voxtrama.rendering.run_produced import ProducedView
@@ -75,7 +76,7 @@ class RunPageView:
     # The terminal panel's first paint (empty while a run has no
     # run.log yet), and the failed-state banner/preview. Both None/empty
     # for a run that neither failed nor was interrupted.
-    log_lines: list[str]
+    log_lines: list[PanelLine]
     # How many bytes of run.log `log_lines` already covers. It is the
     # `?last_event_id=` static/js/run_page.js puts on the SSE URL, so the
     # live connection resumes there instead of at 0.
@@ -95,7 +96,7 @@ def run_page_view(
     steps: list[RunStep],
     translator: Translator,
     filename: str | None = None,
-    log_lines: list[str] | None = None,
+    log_lines: list[PanelLine] | None = None,
     log_offset: int = 0,
     failure: FailureBanner | None = None,
     produced: ProducedView | None = None,

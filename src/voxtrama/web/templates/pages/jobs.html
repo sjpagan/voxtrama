@@ -63,7 +63,7 @@
         <a class="vx-run-row__name" role="cell" href="/runs/{{ job.id }}/view">{{ job.name }}</a>
         <span class="vx-run-row__workflow" role="cell">{{ job.workflow }}</span>
         <span role="cell">{{ job.audio_length or "-" }}</span>
-        <span role="cell">{{ job.date }}</span>
+        <span role="cell"><time datetime="{{ job.date_instant }}" data-local="date">{{ job.date }}</time></span>
         <span role="cell">
           <span class="vx-badge{% if job.tone %} vx-badge--{{ job.tone }}{% endif %}">
             <span class="vx-dot" aria-hidden="true"></span>
@@ -110,4 +110,8 @@
   </dialog>
   {% endif %}
 </section>
+{# Each row's Date column is server-rendered in the container's own UTC
+   (rendering.jobs.job_rows); this turns it into the reader's own
+   timezone. #}
+<script src="{{ static_url('js/local_time.js') }}" defer></script>
 {% endblock %}
