@@ -1,0 +1,12 @@
+// Layout constants shared across components. Today it is one value, kept out
+// of abstracts/_tokens.scss because that file's own docstring says only hex
+// colours belong there.
+
+// The content-width ceiling _home.scss introduced and
+// components/_run_page.scss now reuses. It is a rem ceiling plus a
+// percentage, so a narrow window still keeps some room from the edges instead
+// of a fixed width that stops shrinking. 46rem was too narrow: the home
+// page's hero title wrapped and its status labels ("Local processing",
+// "Models ready") broke onto two lines. The run page's card needed a value
+// wider than a text column for the same reason.
+$vx-content-width: min(64rem, 90%);

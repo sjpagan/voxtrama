@@ -1,0 +1,12 @@
+Voxtrama
+Copyright 2026 Giorgio Alfredo Pagano
+
+This product is licensed under the Apache License, Version 2.0 (see
+LICENSE). This NOTICE file must be kept in every copy and every derivative
+work, as section 4(d) of the licence requires.
+
+The name "Voxtrama" is not licensed: section 6 of the licence grants no
+permission to use it, except to describe where a work comes from.
+
+Voxtrama depends on third-party libraries and downloads third-party models
+at run time. They keep their own licences, listed in THIRD_PARTY_LICENSES.md.

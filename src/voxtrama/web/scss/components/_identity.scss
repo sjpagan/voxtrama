@@ -1,0 +1,109 @@
+// The identity menu, split out of _shell.scss (the 150-line cap): a
+// <details> whose <summary> is the trigger (the circle when there is a name,
+// components/icons.html's plain user icon when there is not, the empty
+// state) and the panel it opens, matching components/header.html's
+// identity_menu() macro one for one.
+.vx-identity {
+  position: relative;
+  // Pico gives every <details> a bottom margin for prose rhythm. Harmless in
+  // a document, but here it is the same defect as .vx-icon-button's
+  // [type=button] margin-bottom (components/_shell.scss), on the wrapping
+  // element: it grows this row past the badge's height and reopens the
+  // misalignment fixed here.
+  margin: 0;
+}
+
+// A second, separate Pico default: opening the <details> (with no margin on
+// the container) makes Pico give the <summary> a margin-bottom, so the row
+// only grows once the menu is open. This rule removes that one. It is not a
+// duplicate of the rule above.
+.vx-identity[open] > summary {
+  margin-bottom: 0;
+}
+
+.vx-identity__trigger {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+}
+
+.vx-identity__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.vx-identity__menu {
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.35rem;
+  padding: 0.5rem;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+  min-width: 15rem;
+}
+
+.vx-identity__name {
+  margin: 0;
+  padding: 0.3rem 0.6rem;
+  font-weight: 700;
+}
+
+.vx-identity__link {
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.4rem;
+  color: var(--vx-text);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--vx-surface);
+  }
+}
+
+.vx-identity__divider {
+  margin: 0.4rem 0;
+  border: 0;
+  border-top: 1px solid var(--vx-border);
+}
+
+// A section label, not a button: "Theme" here (components/theme_control.html)
+// names the group of options under it, as a <label> would for a native
+// fieldset, without Pico's fieldset chrome for one row.
+.vx-menu__label {
+  padding: 0 0.6rem;
+  color: var(--vx-text-muted);
+  font-size: 0.8rem;
+}
+
+// Settings is not built yet, so the entry stays disabled rather than
+// missing. Styled like the other
+// .vx-identity__link rows, but [disabled] gets no hover and a muted,
+// not-allowed cursor, so the difference is felt as well as seen.
+.vx-identity__settings {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.35rem 0.6rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: none;
+  color: var(--vx-text);
+  text-align: left;
+  font-size: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--vx-surface);
+  }
+
+  &[disabled] {
+    color: var(--vx-text-muted);
+    cursor: not-allowed;
+    background: none;
+  }
+}

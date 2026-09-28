@@ -1,0 +1,250 @@
+{#
+  Step 2 of the guided setup ("Local processing"), and the downloading
+  panel for the state between pressing "Download
+  selected model" and the model being ready. `offers` is a list
+  of rendering.ProfileOfferView, `chunk_plan` a rendering.ChunkPlanView,
+  `download` a rendering.DownloadView or None (nothing has ever run yet).
+
+  Selecting a different card is a real navigation (a link carrying the
+  new hardware_profile in the query string), not a script: the numbers
+  under Fine-tune depend on which profile is chosen (setup.chunk_tuning's
+  per-model estimate), so a fresh render is what keeps them honest
+  without JavaScript. While `downloading` is true this page
+  polls itself with a plain `<meta http-equiv="refresh">` (HTML from
+  1993, not JavaScript) instead of the
+  form the page otherwise shows: api.routes.setup_processing's
+  docstring has the 2026-09-24 correction this replaces.
+#}
+{% extends "base.html" %}
+{% from "components/setup_steps.html" import setup_steps with context %}
+{% from "components/step_actions.html" import step_actions %}
+{% from "components/icons.html" import icon_check, icon_cube, icon_laptop, icon_alert, icon_download, icon_bolt, icon_x, icon_trash %}
+
+{% block title %}
+  {% if downloading %}{% trans %}Preparing local processing{% endtrans %}{% else %}{% trans %}Tune local processing{% endtrans %}{% endif %}
+   | Voxtrama
+{% endblock %}
+
+{% block head_extra %}
+{%- if downloading %}<meta http-equiv="refresh" content="2" />{% endif -%}
+{% endblock %}
+
+{% block content %}
+<section class="vx-section vx-setup">
+  {{ setup_steps(wizard_steps) }}
+  <header class="vx-pagehead">
+    {% if downloading %}
+    <h1>{% trans %}Preparing local processing{% endtrans %}</h1>
+    <p class="vx-pagehead__note">
+      {% trans %}Downloading the selected transcription model to this machine.{% endtrans %}
+    </p>
+    {% else %}
+    <h1>{% trans %}Tune local processing{% endtrans %}</h1>
+    <p class="vx-pagehead__note">
+      {% trans %}Voxtrama measured this machine and prepared three private, on-device profiles.{% endtrans %}
+    </p>
+    {% endif %}
+  </header>
+
+  <p class="vx-setup__machine">{{ icon_laptop() }} {{ machine_line }}</p>
+
+  {% if download_error %}
+  <p class="vx-notice vx-notice--danger" role="alert">
+    {% trans %}That profile no longer fits. Pick another.{% endtrans %}
+  </p>
+  {% endif %}
+  {% if download and download.failed and not downloading %}
+  <p class="vx-notice vx-notice--danger" role="alert">
+    {% trans %}The download failed:{% endtrans %} {{ download.message }}
+  </p>
+  {% endif %}
+
+  <div class="vx-grid vx-setup-cards">
+    {% for offer in offers %}
+    {# The whole card is the choice: a link when it can be
+       picked, a plain div when it cannot (disabled, or a download already
+       under way for it). Everything below sits inside one or the other,
+       not just the title. #}
+    {% set pickable = offer.available and not downloading %}
+    <div class="vx-card vx-col-4 vx-profile-card {% if offer.key == chosen_profile %}vx-profile-card--selected{% endif %} {% if not offer.available %}vx-profile-card--disabled{% endif %}">
+      {% if pickable %}
+      <a class="vx-profile-card__pick"
+         href="?hardware_profile={{ offer.key }}&cores_per_chunk={{ chunk_plan.cores_per_chunk }}&parallel_chunks={{ chunk_plan.parallel_chunks }}"
+         aria-current="{{ 'true' if offer.key == chosen_profile else 'false' }}">
+      {% else %}
+      <div class="vx-profile-card__pick">
+      {% endif %}
+        <div class="vx-profile-card__head">
+          <h3>{{ offer.display_name }}</h3>
+          <span class="vx-radio {% if offer.key == chosen_profile %}vx-radio--selected{% endif %}" aria-hidden="true">
+            {% if offer.key == chosen_profile %}{{ icon_check() }}{% endif %}
+          </span>
+        </div>
+        <p class="vx-help">{{ offer.subtitle }}</p>
+        {% if downloading and offer.key == chosen_profile %}
+        <p>{% trans %}Downloading{% endtrans %} {{ download.model_label }}</p>
+        <div class="vx-setup-storagebar">
+          <div class="vx-setup-storagebar__fill" style="width: {{ download.percent }}%"></div>
+        </div>
+        <p class="vx-help">{% if download.queued %}{% trans %}Waiting for the worker to start the download...{% endtrans %}{% else %}{{ download.done_label }} / {{ download.total_label }}{% endif %}</p>
+        {% else %}
+        <div class="vx-profile-card__model">
+          <span class="vx-profile-card__model-icon">{{ icon_cube() }}</span>
+          <div>
+            <strong>{{ offer.model_label }}</strong>
+            {% if offer.cached %}
+            <span class="vx-badge vx-badge--success">{% trans %}Installed{% endtrans %}</span>
+            {% endif %}
+            <p class="vx-help">{{ offer.kind_label }}</p>
+          </div>
+        </div>
+        <div class="vx-profile-card__stats">
+          {# The same number, two different facts: bytes to download
+             when the model is missing, space already used when it is
+             there. The icon changes with the caption, otherwise a download
+             arrow would sit next to «On disk» saying the opposite. #}
+          <div class="vx-profile-card__stat">
+            {{ icon_check() if offer.cached else icon_download() }}
+            <div>
+              <strong>{{ offer.download_label }}</strong>
+              {% if offer.cached %}
+              <p class="vx-help">{% trans %}On disk{% endtrans %}</p>
+              {% else %}
+              <p class="vx-help">{% trans %}Download size{% endtrans %}</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="vx-profile-card__stat">
+            {{ icon_bolt() }}
+            <div>
+              <strong>{{ offer.per_hour_label }}</strong>
+              <p class="vx-help">{% trans %}per hour of audio{% endtrans %}</p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% if not offer.available %}
+        <p class="vx-notice vx-notice--danger">{{ icon_alert() }} {{ offer.unavailable_reason }}</p>
+        {% endif %}
+      {% if pickable %}
+      </a>
+      {% else %}
+      </div>
+      {% endif %}
+      {# The library command sits outside the pick link/div: a <form>
+         or a second <a> nested inside .vx-profile-card__pick would be
+         invalid HTML, and downloading/cancelling a model is a choice about
+         the library, independent of which profile is selected. The radio
+         above never moves when one of these fires. #}
+      {% if not downloading and offer.available %}
+      <div class="vx-profile-card__foot">
+        <a class="vx-profile-card__licence" href="{{ offer.page_url }}" target="_blank" rel="noopener noreferrer">
+          {{ offer.licence }} {% trans %}licence{% endtrans %}
+        </a>
+        <form method="post" action="{{ remove_path if offer.cached else origin }}">
+          <input type="hidden" name="hardware_profile" value="{{ offer.key }}" />
+          <input type="hidden" name="cores_per_chunk" value="{{ chunk_plan.cores_per_chunk }}" />
+          <input type="hidden" name="parallel_chunks" value="{{ chunk_plan.parallel_chunks }}" />
+          {% if offer.cached %}
+          <button type="submit" class="vx-button vx-button--danger vx-button--small">
+            {{ icon_trash() }} {% trans %}Remove{% endtrans %}
+          </button>
+          {% else %}
+          <button type="submit" class="vx-button vx-button--small">
+            {{ icon_download() }} {% trans %}Download{% endtrans %}
+          </button>
+          {% endif %}
+        </form>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if downloading %}
+  <div class="vx-card vx-setup-downloadlog">
+    <pre class="vx-setup-log">{% for line in download.log_lines %}{{ line }}
+{% endfor %}</pre>
+    {# Stop and Continue on the same row as the other steps' commands,
+       Stop on the left, Continue on the right with its note beside it. #}
+    {% set stop %}
+    <form method="post" action="{{ cancel_path }}">
+      <input type="hidden" name="hardware_profile" value="{{ chosen_profile }}" />
+      <input type="hidden" name="cores_per_chunk" value="{{ chunk_plan.cores_per_chunk }}" />
+      <input type="hidden" name="parallel_chunks" value="{{ chunk_plan.parallel_chunks }}" />
+      <button type="submit" class="vx-button vx-button--danger">
+        {{ icon_x() }}
+        {% trans %}Stop{% endtrans %}
+      </button>
+    </form>
+    {% endset %}
+    {% set wait %}
+    <span class="vx-help">{% trans %}Available when the model is ready.{% endtrans %}</span>
+    <button type="button" class="vx-button" disabled>{% trans %}Continue{% endtrans %}</button>
+    {% endset %}
+    {{ step_actions(start=stop, primary=wait) }}
+  </div>
+  {% else %}
+  {#
+    "Download selected model" / "Continue" is the step's primary
+    action. It is always visible, never inside the
+    Fine-tune disclosure a person has no reason to open. Both the visible
+    number fields and this button stay in the one form below, so a value
+    changed under Fine-tune (still closed by default) is carried along
+    even if that panel was never opened.
+  #}
+  <form method="post" action="{{ origin }}" class="vx-stack">
+    <input type="hidden" name="hardware_profile" value="{{ chosen_profile }}" />
+    {# Opens on its own the moment it has something to say (a
+       warning to show). Closed otherwise, the default
+       for every ordinary case. #}
+    <details class="vx-card vx-setup-finetune" {% if chunk_plan.exceeds_recommended %}open{% endif %}>
+      <summary>{% trans %}Fine-tune{% endtrans %}</summary>
+      <p class="vx-help">
+        {% trans %}Adjust how many CPU cores and parallel chunks to use for transcription.{% endtrans %}
+      </p>
+      <div class="vx-cluster">
+        <div class="vx-field">
+          <label for="vx-cores-per-chunk">{% trans %}Cores per chunk{% endtrans %}</label>
+          <input type="number" min="1"
+                 {% if chunk_plan.available_cores %}max="{{ chunk_plan.available_cores }}"{% endif %}
+                 id="vx-cores-per-chunk" name="cores_per_chunk" value="{{ chunk_plan.cores_per_chunk }}" />
+        </div>
+        <div class="vx-field">
+          <label for="vx-parallel-chunks">{% trans %}Parallel chunks{% endtrans %}</label>
+          <input type="number" min="1"
+                 {% if chunk_plan.available_cores %}max="{{ chunk_plan.available_cores }}"{% endif %}
+                 id="vx-parallel-chunks" name="parallel_chunks" value="{{ chunk_plan.parallel_chunks }}" />
+        </div>
+      </div>
+      <p class="vx-help">{{ chunk_plan.total_cores_label }} · {{ chunk_plan.memory_label }}</p>
+      {% if chunk_plan.warning %}
+      <p class="vx-setup-warning" role="status">{{ icon_alert() }} {{ chunk_plan.warning }}</p>
+      {% endif %}
+    </details>
+    {# No note on the left on this step, and the primary goes bottom
+       right. #}
+    {% set primary %}
+    {% if model_ready %}
+    <a href="{{ model_ready_path }}" class="vx-button">{% trans %}Continue{% endtrans %}</a>
+    {% else %}
+    <button type="submit" class="vx-button">{{ icon_download() }} {% trans %}Download selected model{% endtrans %}</button>
+    {% endif %}
+    {% endset %}
+    {% set skip %}
+    {% if setup_pending %}
+    <button type="submit" class="vx-button vx-button--secondary" formaction="/setup/skip">
+      {% trans %}Skip setup, use the proposal{% endtrans %}
+    </button>
+    {% endif %}
+    {% endset %}
+    {{ step_actions(start=skip, primary=primary) }}
+    {% if not model_ready %}
+    <p class="vx-help">
+      {% trans %}Downloads in the background; this page updates itself until it is ready.{% endtrans %}
+    </p>
+    {% endif %}
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

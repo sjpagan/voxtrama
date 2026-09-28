@@ -1,0 +1,144 @@
+{#
+  Step 3 of the guided setup ("Model ready").
+  `provider` is setup.generative_step.GenerativeProviderState; `models` is
+  a list of rendering.ModelRowView, each already carrying its licence;
+  `context_cap` is the num_ctx ceiling for
+  `selected_model`, or None when nothing is selected or it could not be
+  read. Picking a model is a real link (query string `model=`), not a
+  script: a fresh /api/show read is needed per pick, and only a request
+  can make one. Same reason the licence text opens in a
+  `<details>` rather than behind a script.
+#}
+{% extends "base.html" %}
+{% from "components/setup_steps.html" import setup_steps with context %}
+{% from "components/step_actions.html" import step_actions %}
+{% from "components/icons.html" import icon_check, icon_alert %}
+{% from "components/model_licence.html" import licence_asterisk, licence_disclosure, licence_note with context %}
+
+{% block title %}{% trans %}Add a local generative model{% endtrans %} | Voxtrama{% endblock %}
+
+{% set carry_qs = "hardware_profile=%s&cores_per_chunk=%s&parallel_chunks=%s"|format(hardware_profile, cores_per_chunk, parallel_chunks) %}
+
+{% block content %}
+<section class="vx-section vx-setup">
+  {{ setup_steps(wizard_steps) }}
+  <header class="vx-pagehead">
+    <h1>{% trans %}Add a local generative model{% endtrans %}</h1>
+    <p class="vx-pagehead__note">
+      {% trans %}Transcription works without one. Summaries, decisions and extraction need it.{% endtrans %}
+    </p>
+  </header>
+
+  <div class="vx-card vx-setup-provider vx-row-stack">
+    {% if not provider.configured %}
+    <p>{% trans %}Ollama is not configured: no generative model will be offered.{% endtrans %}</p>
+    {% elif not provider.reachable %}
+    <p>{{ icon_alert() }} {% trans %}Ollama is not reachable at{% endtrans %} {{ provider.host }}.
+       <a href="?{{ carry_qs }}">{% trans %}Recheck{% endtrans %}</a></p>
+    {% else %}
+    {# The provider's name and state on
+       the left, "Recheck" pushed to the far right and small. It used to be
+       a plain .vx-cluster, so a full-size button sat glued to the state
+       text (45px tall against a 24px line, nearly as tall as a model row
+       below it), and the heading read as three things of equal weight
+       instead of a state plus an action. #}
+    <div class="vx-setup-provider__head">
+      <span class="vx-cluster">
+        <strong>Ollama</strong>
+        <span>{{ icon_check() }} {% trans %}Connected{% endtrans %} · {{ provider.host }}</span>
+      </span>
+      <a href="?{{ carry_qs }}" class="vx-button vx-button--secondary vx-button--small">{% trans %}Recheck{% endtrans %}</a>
+    </div>
+    {% for row in models %}
+    {# A radio on every row, not only a checkmark on the
+       chosen one: without it the only visible action before a pick is
+       "Skip", and nothing here says a row can be clicked at all.
+
+       The licence disclosure sits outside this <a>: a <details>
+       nested inside a link would be invalid HTML, the same
+       reason .vx-profile-card__foot's form sits outside .vx-profile-
+       card__pick. The asterisk itself still shows next to the name
+       as a plain, inert mark. Only the disclosure
+       below opens. #}
+    <div class="vx-model-row-wrap">
+      <a class="vx-model-row {% if row.name == selected_model %}vx-model-row--selected{% endif %}"
+         href="?{{ carry_qs }}&model={{ row.name }}"
+         aria-current="{{ 'true' if row.name == selected_model else 'false' }}">
+        <span class="vx-cluster">
+          <span class="vx-radio vx-radio--dot {% if row.name == selected_model %}vx-radio--selected{% endif %}" aria-hidden="true"></span>
+          <span>{{ row.name }}</span>
+          {{ licence_asterisk(row) }}
+        </span>
+        <span>{{ row.size_label }}</span>
+        <span class="vx-badge vx-badge--success">{% trans %}Installed{% endtrans %}</span>
+      </a>
+      {{ licence_disclosure(row) }}
+    </div>
+    {% else %}
+    <p class="vx-help">{% trans %}Ollama has no models installed yet.{% endtrans %}</p>
+    {% endfor %}
+    {% if models %}
+    {# The mark means nothing on its own. This is where
+       it explains itself, right below the rows it appears on. #}
+    {{ licence_note() }}
+    {% endif %}
+    {% if memory_notice %}
+    <p class="vx-setup-warning" role="status">{{ icon_alert() }} {{ memory_notice }}</p>
+    {% endif %}
+    {% endif %}
+  </div>
+
+  {% if selected_model %}
+  <details class="vx-card vx-setup-finetune" open>
+    <summary>{% trans %}Context window{% endtrans %}</summary>
+    <form method="get" action="{{ storage_path }}" class="vx-stack">
+      <input type="hidden" name="hardware_profile" value="{{ hardware_profile }}" />
+      <input type="hidden" name="cores_per_chunk" value="{{ cores_per_chunk }}" />
+      <input type="hidden" name="parallel_chunks" value="{{ parallel_chunks }}" />
+      <input type="hidden" name="ollama_model" value="{{ selected_model }}" />
+      {% if context_cap %}
+      <p class="vx-help">
+        {% trans %}Maximum for this model:{% endtrans %} {{ context_cap }} {% trans %}tokens{% endtrans %}
+      </p>
+      <div class="vx-field">
+        <label for="vx-context-limit">{% trans %}Use at most:{% endtrans %}</label>
+        <input type="number" id="vx-context-limit" name="context_limit" min="1" max="{{ context_cap }}" value="{{ context_cap }}" />
+      </div>
+      {# Says first what a reader wants to know (lowering
+         this does not shorten the result), then the ceiling itself
+         (a transcript longer than this is processed in more passes,
+         never cut short). #}
+      <p class="vx-help">
+        {% trans %}Lowering this costs time, not completeness: a transcript longer than this is processed in more passes, never cut short. Raising it past the model's own maximum gains nothing.{% endtrans %}
+      </p>
+      {% else %}
+      <p class="vx-help">
+        {% trans %}This model's own maximum could not be read; no ceiling will be stored.{% endtrans %}
+      </p>
+      {% endif %}
+      {# «Skip» on the left, the primary on the right, no longer a
+         left-aligned .vx-cluster. #}
+      {% set start %}
+      <a href="{{ storage_path }}?{{ carry_qs }}" class="vx-button vx-button--secondary">
+        {% trans %}Skip (no generative model){% endtrans %}
+      </a>
+      {% endset %}
+      {% set primary %}
+      <button type="submit" class="vx-button">{% trans %}Continue{% endtrans %}</button>
+      {% endset %}
+      {{ step_actions(start, primary) }}
+    </form>
+  </details>
+  {% else %}
+  {# No model chosen: «Skip» is the step's only action, so it is the
+     primary. It stays on the right, not on the left as when «Continue»
+     sits beside it (it was already vx-button, not --secondary). #}
+  {% set primary %}
+  <a href="{{ storage_path }}?{{ carry_qs }}" class="vx-button">
+    {% trans %}Skip (no generative model){% endtrans %}
+  </a>
+  {% endset %}
+  {{ step_actions(primary=primary) }}
+  {% endif %}
+</section>
+{% endblock %}

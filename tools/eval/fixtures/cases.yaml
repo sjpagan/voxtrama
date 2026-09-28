@@ -1,0 +1,241 @@
+# Declarative eval fixtures for diarization and VAD/ASR.
+#
+# generate.py turns each case below into a .wav, an exact .rttm ground truth
+# and a .json of metadata. `overlap_ms` on a turn is how many milliseconds
+# that turn starts before the previous one ends (0 or omitted: no overlap).
+# `voice` names come from voices.yaml.
+cases:
+  - id: clean-2-it
+    language: it
+    speakers: 2
+    turns:
+      - voice: it_female_1
+        text: >-
+          Allora, iniziamo dal budget del terzo trimestre. Abbiamo speso più
+          del previsto sulla logistica.
+      - voice: it_male_1
+        text: >-
+          Sì, l'ho notato anche io. Credo dipenda dall'aumento dei costi di
+          trasporto.
+      - voice: it_female_1
+        text: Possiamo rivedere i fornitori entro la fine del mese?
+      - voice: it_male_1
+        text: >-
+          Direi di sì, preparo un confronto con due alternative per la
+          prossima riunione.
+
+  - id: clean-2-en
+    language: en
+    speakers: 2
+    turns:
+      - voice: en_female_1
+        text: >-
+          Let's start with the roadmap for next quarter. The new onboarding
+          flow is our top priority.
+      - voice: en_male_1
+        text: Agreed. I think we should also revisit the pricing page while we're at it.
+      - voice: en_female_1
+        text: Good point. Can you put together a draft by Friday?
+      - voice: en_male_1
+        text: Sure, I'll share it in the next sync.
+
+  - id: short-turns
+    language: it
+    speakers: 2
+    turns:
+      - voice: it_female_1
+        text: Tutto bene?
+      - voice: it_male_1
+        text: Sì, perfetto.
+      - voice: it_female_1
+        text: Possiamo iniziare?
+      - voice: it_male_1
+        text: Certo, andiamo.
+      - voice: it_female_1
+        text: Hai il documento?
+      - voice: it_male_1
+        text: Sì, eccolo qui.
+
+  - id: overlap-15
+    language: en
+    speakers: 2
+    turns:
+      - voice: en_female_1
+        text: >-
+          So the main issue with the current release is the login flow
+          timing out for some users.
+      - voice: en_male_1
+        text: Right, I saw that too, but I think it's only happening on the mobile app.
+        overlap_ms: 1100
+      - voice: en_female_1
+        text: >-
+          That matches what support flagged yesterday, so let's prioritize a
+          fix this sprint.
+      - voice: en_male_1
+        text: Agreed, I'll pair with someone on it this afternoon.
+        overlap_ms: 900
+
+  - id: unbalanced-90-10
+    language: it
+    speakers: 2
+    turns:
+      - voice: it_female_1
+        text: >-
+          Allora, ripartiamo dal punto in sospeso della scorsa riunione: la
+          migrazione del database di produzione. Abbiamo verificato che il
+          piano di rollback funziona correttamente nell'ambiente di staging,
+          e ieri abbiamo anche testato il tempo di inattività previsto, che
+          resta sotto i cinque minuti.
+      - voice: it_male_1
+        text: Giusto.
+      - voice: it_female_1
+        text: >-
+          Quindi propongo di procedere venerdì sera, quando il traffico è più
+          basso, avvisando comunque tutti i clienti con una comunicazione
+          ufficiale almeno tre giorni prima, così da ridurre al minimo il
+          rischio di segnalazioni impreviste durante la finestra di
+          manutenzione.
+      - voice: it_male_1
+        text: Va bene, direi di procedere pure venerdì sera.
+
+  - id: three-voices
+    language: en
+    speakers: 3
+    turns:
+      - voice: en_female_1
+        text: "Let's do a quick round: what's blocking each of you this week?"
+      - voice: en_male_1
+        text: I'm waiting on the API contract before I can finish the integration.
+      - voice: en_female_2
+        text: I'm blocked on design review, but I can pair with you both after lunch.
+      - voice: en_female_1
+        text: Great, let's sync again tomorrow morning then.
+
+  - id: four-voices
+    language: it
+    speakers: 4
+    turns:
+      - voice: it_female_1
+        text: Bene, siamo tutti collegati, possiamo iniziare il punto sulla release.
+      - voice: it_male_1
+        text: Da parte mia il backend è pronto, manca solo il test di carico.
+      - voice: it_female_2
+        text: Il frontend è quasi finito, oggi pomeriggio faccio l'ultimo giro di QA.
+      - voice: it_male_2
+        text: E io ho preparato le note di rilascio, le condivido appena finiamo qui.
+
+  - id: noisy-snr10
+    language: it
+    speakers: 2
+    effects:
+      noise_snr_db: 10
+    turns:
+      - voice: it_female_1
+        text: Mi senti bene? C'è un po' di rumore di fondo qui in ufficio.
+      - voice: it_male_1
+        text: Sì, ti sento, andiamo avanti così.
+      - voice: it_female_1
+        text: Perfetto, allora ricapitoliamo i punti aperti dello sprint.
+      - voice: it_male_1
+        text: Va bene, il primo è il fix sul login che avevamo rimandato.
+
+  - id: telephone-8k
+    language: en
+    speakers: 2
+    effects:
+      telephone: true
+    turns:
+      - voice: en_female_1
+        text: Hi, I'm calling to follow up on the ticket you opened yesterday.
+      - voice: en_male_1
+        text: Oh yes, thanks for calling back, the issue is still happening.
+      - voice: en_female_1
+        text: Understood, can you tell me exactly when it last occurred?
+      - voice: en_male_1
+        text: It happened again about an hour ago, right after I logged in.
+
+  - id: mixed-languages
+    language: mixed
+    speakers: 2
+    turns:
+      - voice: it_female_1
+        text: Buongiorno, grazie per essere disponibile a fare due chiacchiere con noi.
+      - voice: en_male_1
+        text: Of course, happy to help, feel free to ask anything you'd like.
+      - voice: it_female_1
+        text: Perfetto, iniziamo dal tuo ruolo attuale in azienda.
+      - voice: en_male_1
+        text: Sure, I currently lead the platform team, we're about ten people.
+
+  - id: public-20s
+    language: mixed
+    speakers: 2
+    turns:
+      - voice: it_female_1
+        text: >-
+          Grazie per il tempo che ci dedichi oggi, vorremmo farti qualche
+          domanda sul tuo percorso professionale.
+      - voice: en_male_1
+        text: >-
+          Happy to be here, thanks for having me. I've been working in this
+          field for about eight years now.
+      - voice: it_female_1
+        text: Perfetto, iniziamo dal tuo primo progetto importante.
+      - voice: en_male_1
+        text: Sure, it was a small team, but we learned a lot about shipping fast.
+
+  # Calibration cases. One voice, one known text: these stand
+  # in for the people who will read the calibration script on their own machine,
+  # so the ASR side can be measured before a single user exists. The text
+  # itself lives in calibration/, not here: `calibration_script` names the
+  # language and `voice` says who reads it, so every case of a language stays
+  # on the same script without duplicating it.
+  - id: calibration-it-clean
+    language: it
+    speakers: 1
+    calibration_script: it
+    voice: it_female_1
+
+  - id: calibration-it-noisy
+    language: it
+    speakers: 1
+    effects:
+      noise_snr_db: 10
+    calibration_script: it
+    voice: it_female_1
+
+  - id: calibration-en-clean
+    language: en
+    speakers: 1
+    calibration_script: en
+    voice: en_male_1
+
+  - id: calibration-en-phone
+    language: en
+    speakers: 1
+    effects:
+      telephone: true
+    calibration_script: en
+    voice: en_male_1
+
+  # The one clip that ships inside the repository: synthesized with Piper
+  # (MIT) from LibriTTS-R voices (CC BY 4.0), so anyone who clones the repo may
+  # redistribute it. See tests/fixtures/README.md for the regeneration command.
+  - id: public-fixture
+    language: en
+    speakers: 2
+    turns:
+      - voice: piper_en_1
+        text: >-
+          Good morning. Let's start with the quarterly budget, because we spent
+          more on logistics than we planned.
+      - voice: piper_en_2
+        text: >-
+          I noticed that too. I think it comes from the rise in transport costs
+          since January.
+      - voice: piper_en_1
+        text: Can we review the suppliers before the end of the month?
+      - voice: piper_en_2
+        text: >-
+          Yes. I will prepare a comparison with two alternatives for the next
+          meeting.

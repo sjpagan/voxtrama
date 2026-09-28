@@ -1,0 +1,80 @@
+{#
+  The head of a concluded job, the same on
+  every tab: the title, «Regenerate job», and one slim line with what the
+  job ran with (rendering.job_settings_line). The step spheres follow it
+  in pages/run.html, with their durations.
+
+  «Regenerate job» is a native <details>: the new-job form's
+  own fields (components/job_fields.html), filled in with this job's
+  values (rendering.job_regenerate), posting to POST /runs/{id}/regenerate.
+  Steps whose inputs and choices do not change are adopted from this job,
+  not run again (api.routes.run_regenerate).
+#}
+{% from "components/icons.html" import icon_check %}
+{% from "components/job_fields.html" import advanced with context %}
+{% from "components/job_view_icons.html" import icon_refresh %}
+
+{% macro settings_line(line, head=none) %}
+<div class="vx-job-settings">
+  <span>{{ line.workflow }}</span>
+  {% if line.transcription_model %}<span>Whisper {{ line.transcription_model }}</span>{% endif %}
+  {% if line.summary_model %}<span>{{ line.summary_model }}</span>{% endif %}
+  {% if line.summary_detail %}<span>{% trans %}Detail{% endtrans %} {{ line.summary_detail }}/5</span>{% endif %}
+  {% if line.cores %}<span>{{ line.cores }} {% trans %}cores{% endtrans %}</span>{% endif %}
+  {% if line.has_context %}<span>{% trans %}Context{% endtrans %} <span class="vx-job-settings__ok">{{ icon_check() }}</span></span>
+  {% elif line.deduced_context %}<details class="vx-job-settings__deduced"><summary>{% trans %}Context deduced{% endtrans %}</summary><div class="vx-job-settings__panel"><p class="vx-job-settings__deduced-text">{{ line.deduced_context }}</p><p class="vx-help">{% trans %}Nobody wrote a context for this job: the engine deduced this from the transcript, and the transcript wins where they differ.{% endtrans %}</p></div></details>{% endif %}
+  {% if line.windows %}<span title="{% trans %}The transcript was long, so it was read in parts and the results joined{% endtrans %}">{{ line.windows }} {% trans %}windows of ~12k characters{% endtrans %}</span>{% endif %}
+  {# How long this job's audio, transcript and recap stay. #}
+  {% if head and head.retention_days %}<span class="vx-job-settings__retention" title="{% trans %}Retention: the audio, transcript and recap are deleted then; a record of the deletion stays{% endtrans %}">{% if head.deletes_on %}{% trans %}Deleted on{% endtrans %} {{ head.deletes_on }}{% else %}{% trans %}Kept{% endtrans %} {{ head.retention_days }} {% trans %}days{% endtrans %}{% endif %}</span>{% endif %}
+</div>
+{% endmacro %}
+
+{% macro regenerate_panel(form, run_id) %}
+<details class="vx-regenerate" id="vx-regenerate">
+  <summary class="vx-button vx-button--secondary vx-regenerate__summary">
+    {{ icon_refresh() }} {% trans %}Regenerate job{% endtrans %}
+  </summary>
+  <div class="vx-regenerate__panel">
+    <form method="post" action="/runs/{{ run_id }}/regenerate" class="vx-stack vx-job-options">
+      <label>
+        {% trans %}Workflow{% endtrans %}
+        <select name="workflow_name">
+          {% for name, title in form.workflows %}
+          <option value="{{ name }}" {% if name == form.workflow_name %}selected{% endif %}>{{ title }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        {% trans %}Context{% endtrans %}
+        <textarea name="context" rows="2" maxlength="2000">{{ form.context }}</textarea>
+        {# Only the steps after the transcript. #}
+        <small class="vx-help">{% trans %}A new context changes the recap and the extractions, not the transcript already made.{% endtrans %}</small>
+      </label>
+      {{ advanced(form, form.whisper_models, form.llm_models, regenerate=true) }}
+      {# With nothing changed, every step is reused and the new job
+         looks identical. This asks for every step to run anyway. #}
+      <label class="vx-check">
+        <input type="checkbox" name="rerun_all" value="true" />
+        {% trans %}Run every step again{% endtrans %}
+      </label>
+      <p class="vx-help">{% trans %}Without it, steps whose settings do not change are reused from this job, not run again.{% endtrans %}</p>
+      <button type="submit" class="vx-button">{% trans %}Regenerate job{% endtrans %}</button>
+    </form>
+  </div>
+</details>
+{% endmacro %}
+
+{#
+  The same head for a job that is still
+  running or has failed. `aside` is what sits where «Regenerate job» goes
+  while there is nothing to regenerate yet: the live state badges.
+#}
+{% macro job_header(run, aside="") %}
+<header class="vx-job-head">
+  <div>
+    <h1>{{ run.name }}</h1>
+    {{ settings_line(run.head.settings, run.head) }}
+  </div>
+  {% if run.head.regenerate %}{{ regenerate_panel(run.head.regenerate, run.id) }}{% else %}{{ aside }}{% endif %}
+</header>
+{% endmacro %}

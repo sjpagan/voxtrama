@@ -1,0 +1,245 @@
+// The Transcript tab: bubbles per speaker turn, the
+// first speaker left and the second right, and the curved lines to the
+// cards (static/js/job_links.js draws them into .vx-links).
+@use "../abstracts" as tokens;
+
+// Bubbles get the wider column (roughly three to two).
+.vx-run-result {
+  position: relative;
+  grid-template-columns: 3fr 2fr;
+}
+
+@media (max-width: 46rem) {
+  .vx-run-result {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vx-links {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
+
+  path {
+    fill: none;
+    stroke-width: 1.5;
+  }
+}
+
+.vx-turns__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$vx-space-sm;
+  margin-bottom: tokens.$vx-space-md;
+}
+
+// Always shown: names are a guess until someone checks.
+.vx-turns__notice {
+  display: flex;
+  align-items: center;
+  gap: tokens.$vx-space-2xs;
+  margin: 0;
+  padding: tokens.$vx-space-2xs tokens.$vx-space-sm;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--vx-warning) 14%, transparent);
+  color: var(--vx-warning);
+  font-size: tokens.$vx-text-xs;
+
+  svg {
+    flex: 0 0 auto;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+}
+
+.vx-merge {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0 auto;
+  min-width: 9rem;
+
+  input[type="range"] {
+    margin: 0;
+  }
+}
+
+.vx-merge__label {
+  margin: 0;
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-xs;
+}
+
+.vx-turns {
+  max-height: 34rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0 tokens.$vx-space-xs 0 0;
+  list-style: none;
+}
+
+.vx-turn {
+  display: flex;
+  align-items: flex-start;
+  gap: tokens.$vx-space-sm;
+  margin-bottom: tokens.$vx-space-sm;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+
+    .vx-turn__bubble {
+      outline: 2px solid var(--vx-primary);
+    }
+  }
+}
+
+.vx-turn--right {
+  flex-direction: row-reverse;
+  padding-left: 12%;
+
+  .vx-turn__bubble {
+    flex-direction: row-reverse;
+  }
+}
+
+.vx-turn--left {
+  padding-right: 12%;
+}
+
+.vx-turn__time {
+  flex: 0 0 3rem;
+  padding-top: tokens.$vx-space-2xs;
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-turn--right .vx-turn__time {
+  text-align: right;
+}
+
+.vx-turn__bubble {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: tokens.$vx-space-xs;
+  padding: tokens.$vx-space-xs tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.8rem;
+  background: var(--vx-bg-elevated);
+}
+
+@each $n in 1, 2, 3, 4 {
+  .vx-turn__bubble[data-speaker-color="#{$n}"] {
+    border-color: color-mix(in srgb, var(--vx-speaker-#{$n}) 30%, transparent);
+    background: color-mix(in srgb, var(--vx-speaker-#{$n}) 8%, var(--vx-bg-elevated));
+  }
+}
+
+.vx-turn__text {
+  flex: 1 1 12rem;
+  margin: 0;
+}
+
+// The turn being spoken right now (static/js/job_follow.js): the
+// bubble lights up in the accent, a ring outside the speaker's own tint.
+.vx-turn--now .vx-turn__bubble {
+  border-color: var(--vx-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--vx-primary) 45%, transparent);
+}
+
+// How far into it the audio is: the bubble fills from the left as the
+// sentence plays (--vx-progress, written by static/js/job_follow.js).
+.vx-turn--now .vx-turn__bubble,
+.vx-transcript__row--now {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--vx-primary) 22%, transparent) var(--vx-progress, 0%),
+    transparent var(--vx-progress, 0%)
+  );
+}
+
+.vx-turn--now .vx-turn__time {
+  color: var(--vx-primary);
+  font-weight: 700;
+}
+
+// The turn a card was drawn from, or the card a turn fed.
+.vx-turn.vx-linked .vx-turn__bubble {
+  border-color: var(--vx-primary);
+  box-shadow: 0 0 0 1px var(--vx-primary);
+}
+
+.vx-turn__segments {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: tokens.$vx-text-sm;
+  color: var(--vx-text-muted);
+
+  summary {
+    cursor: pointer;
+  }
+
+  ol {
+    margin: tokens.$vx-space-3xs 0 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.vx-turn__segment-time {
+  font-variant-numeric: tabular-nums;
+  margin-right: tokens.$vx-space-2xs;
+}
+
+// The speaker chip that also fixes it (components/speaker_fix.html): a
+// <details> that opens inside the bubble or row, not over it. Both lists
+// scroll, and a floating panel would be cut by their edge.
+.vx-speaker-fix {
+  display: inline-block;
+  margin: 0;
+
+  > summary {
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker,
+    &::after {
+      display: none;
+    }
+  }
+
+  &[open] {
+    flex: 1 1 100%;
+  }
+}
+
+.vx-speaker-fix__panel {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-xs;
+  max-width: 20rem;
+  margin: tokens.$vx-space-xs 0 0;
+  padding: tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.75rem;
+  background: var(--vx-bg-elevated);
+  font-size: tokens.$vx-text-sm;
+  color: var(--vx-text);
+  cursor: default;
+
+  select,
+  input,
+  .vx-help,
+  button {
+    margin: 0;
+  }
+}
+
+.vx-speaker-fix__title {
+  margin: 0;
+  font-weight: 700;
+}

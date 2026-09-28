@@ -1,0 +1,66 @@
+{#
+  The workflow-choice page: where a Recording's row now leads.
+  `recording` is rendering.RecordingRow, `offers` is a list of
+  rendering.WorkflowOffer, both already computed by the route
+  (api.routes.workflow_choose). Nothing here calculates anything (the
+  rendering rule). The panel itself is
+  components/workflow_choice_panel.html, shared with the Workflows
+  section: this page only supplies the action (POST /recordings/{id}/runs,
+  api.routes.run_start) and the one hidden field that ties a submission
+  back to `recording`.
+
+  `selected` pre-marks the offer a person already
+  picked before landing here. `is_rerun` is true only when `recording`
+  already has a Run. In that case the notice below says, before the
+  Start button is anywhere near reach, that choosing here restarts every
+  step from Transcribe: POST /recordings/{id}/runs never carries
+  `reused_from_run_id` the way api.routes.run_retry's POST does, so
+  promising anything less than a fresh run would be a promise this page
+  cannot keep.
+
+  `recording.duration`/`speaker_count` say what is about to
+  be processed, in the page's header.
+  `speaker_count` is None until a Transcript exists (rendering.recordings'
+  docstring), so that half of the line is absent rather than claiming
+  zero speakers for audio nobody has diarised yet. Point 5's promise
+  (the recording and its transcript stay untouched by trying a
+  different workflow) sits under it unconditionally: it is true the
+  first time a workflow is chosen here too, not only on a re-run.
+#}
+{% extends "base.html" %}
+{% from "components/workflow_choice_panel.html" import workflow_choice_panel with context %}
+
+{% block title %}{% trans %}Choose a workflow{% endtrans %} | Voxtrama{% endblock %}
+
+{% block content %}
+<section class="vx-section">
+  <header class="vx-pagehead">
+    <h1>{{ recording.filename }}</h1>
+    {% if recording.duration %}
+    <p class="vx-pagehead__note">
+      {% trans %}Transcribed{% endtrans %} · {{ recording.duration }}
+      {%- if recording.speaker_count == 1 %} · {{ recording.speaker_count }} {% trans %}speaker{% endtrans %}
+      {%- elif recording.speaker_count %} · {{ recording.speaker_count }} {% trans %}speakers{% endtrans %}
+      {%- endif %}
+    </p>
+    {% endif %}
+    <p class="vx-pagehead__note">
+      {% trans %}Your original recording and transcript stay unchanged.{% endtrans %}
+    </p>
+  </header>
+
+  {% if is_rerun %}
+  <p class="vx-notice" role="status">
+    {% trans %}Choosing a workflow here starts a brand-new job on this recording: nothing already produced is reused, and processing, transcription included, begins again from the start.{% endtrans %}
+  </p>
+  {% endif %}
+
+  {{ workflow_choice_panel(
+      offers,
+      "/recordings/" ~ recording.id ~ "/runs",
+      {"recording_id": recording.id},
+      selected,
+      already_run
+  ) }}
+</section>
+{% endblock %}

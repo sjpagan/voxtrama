@@ -1,0 +1,113 @@
+{#
+  The profile page: the one place the local user's own
+  name can be written. `identity` is rendering.identity.Identity or None.
+  None means no name has been written yet, which is a blank form rather
+  than an error. Native form, no JavaScript: a page whose whole job is
+  two fields and a save button has nothing a script would add.
+
+  `setup` reuses this same form as the
+  guided setup's first step: the four-step tracker replaces the sidebar's
+  current-page marker, the copy asks "Who is using this install?", and
+  "Continue" carries `setup=true` so the POST below moves to Local
+  processing instead of staying on /profile. The design's circle updates
+  live as you type. That needs JavaScript, so
+  this shows the identity already stored, same as any other reload.
+#}
+{% extends "base.html" %}
+{% from "components/setup_steps.html" import setup_steps with context %}
+{% from "components/step_actions.html" import step_actions %}
+
+{# During setup the tab's title names this step ("Personal
+   settings", the wizard's label for it), not the question a reader
+   sees on the page. "Who is using this install?" said nothing about
+   being the first of four, the one gap the three other steps didn't share. #}
+{% block title %}
+  {% if setup %}{% trans %}Personal settings{% endtrans %}{% else %}{% trans %}Your profile{% endtrans %}{% endif %}
+   | Voxtrama
+{% endblock %}
+
+{% block content %}
+<section class="vx-section vx-profile">
+  {% if setup %}{{ setup_steps(wizard_steps) }}{% endif %}
+  <header class="vx-pagehead">
+    {% if setup %}
+    <h1>{% trans %}Who is using this install?{% endtrans %}</h1>
+    <p class="vx-pagehead__note">
+      {% trans %}Your name appears on the recordings and jobs you create. It never leaves this machine.{% endtrans %}
+    </p>
+    {% else %}
+    <h1>{% trans %}Your profile{% endtrans %}</h1>
+    {# The page says what it is, rather than letting two fields look like
+       a form someone left unfinished. The local
+       profile has no accounts to manage, so there is nothing else here
+       by design. #}
+    <p class="vx-pagehead__note">
+      {% trans %}Your name is what Voxtrama shows on the recordings and jobs you create. In the Community Edition it is the only thing there is to set here.{% endtrans %}
+    </p>
+    {% endif %}
+  </header>
+
+  {% if saved and not setup %}
+  <p class="vx-notice vx-notice--success" role="status">
+    {% if identity %}
+      {% trans %}Saved.{% endtrans %}
+    {% else %}
+      {# The circle disappearing is a consequence of what was typed, not
+         a fault: say so, or it reads as the save having failed. #}
+      {% trans %}Saved. With no name set, the circle at the top right is hidden.{% endtrans %}
+    {% endif %}
+  </p>
+  {% endif %}
+
+  <form method="post" action="/profile" class="vx-card vx-stack vx-profile__form">
+    {% if setup %}<input type="hidden" name="setup" value="true" />{% endif %}
+    <div class="vx-cluster">
+      <div class="vx-field">
+        <label for="vx-given-name">{% trans %}First name{% endtrans %}</label>
+        <input
+          type="text"
+          id="vx-given-name"
+          name="given_name"
+          autocomplete="given-name"
+          value="{{ identity.given_name if identity else "" }}"
+        />
+      </div>
+      <div class="vx-field">
+        <label for="vx-family-name">{% trans %}Last name{% endtrans %}</label>
+        {# Not required: a one-word name is ordinary (every existing
+           installation carries exactly one, seeded as "Owner"), and the
+           initials rule already reads it as a single letter. #}
+        <input
+          type="text"
+          id="vx-family-name"
+          name="family_name"
+          autocomplete="family-name"
+          value="{{ identity.family_name if identity else "" }}"
+        />
+      </div>
+    </div>
+    {% if setup and identity and identity.initials %}
+    <p class="vx-help">
+      <span class="vx-avatar">{{ identity.initials }}</span>
+      {% trans %}This is how you'll appear, top right.{% endtrans %}
+    </p>
+    {% endif %}
+    {% if setup %}
+    {# The action that concludes the step goes bottom right, with the
+       «You can skip this» note beside it on the left, no longer under the
+       button as before. #}
+    {% set start %}
+    <p class="vx-help">{% trans %}You can skip this and set later in Settings.{% endtrans %}</p>
+    {% endset %}
+    {% set primary %}
+    <button type="submit" class="vx-button">{% trans %}Continue{% endtrans %}</button>
+    {% endset %}
+    {{ step_actions(start, primary) }}
+    {% else %}
+    <div class="vx-cluster">
+      <button type="submit" class="vx-button">{% trans %}Save{% endtrans %}</button>
+    </div>
+    {% endif %}
+  </form>
+</section>
+{% endblock %}

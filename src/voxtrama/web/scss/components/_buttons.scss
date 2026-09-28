@@ -1,0 +1,67 @@
+// The kit's vx-button vocabulary: a primary and a
+// secondary variant, usable on a <button>, an <a> or a <label for="..."> (for
+// "Choose file", which needs no JavaScript to open the file picker). Neither
+// has a disabled state: a command nobody can use yet is not rendered at all.
+// View all (components/runs_list.html) still is not, for that reason. View
+// now leads to GET /runs/{id}/view.
+.vx-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  // Pico's [type=button] rule matches any type="button" attribute, not just
+  // <input>, so it gives "Try demo" (a <button type="button">) a
+  // margin-bottom this class never asked for. Same fix as .vx-icon-button
+  // (components/_shell.scss).
+  margin: 0;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+  background: var(--vx-primary);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--vx-primary-hover);
+  }
+}
+
+// Chained onto .vx-button instead of a bare class. A
+// single .vx-button--secondary selector ties with .vx-button on specificity,
+// so source order alone decides which `color` wins. In the light theme the
+// loser is #fff on this variant's near-white surface, invisible ("Try demo"
+// on the light home). The compound selector settles it in both themes.
+.vx-button.vx-button--secondary {
+  border-color: var(--vx-border);
+  background: var(--vx-surface);
+  color: var(--vx-text);
+
+  &:hover {
+    border-color: var(--vx-primary);
+    color: var(--vx-primary);
+    background: color-mix(in srgb, var(--vx-primary) 10%, transparent);
+  }
+}
+
+// Stopping a running job is a different act from going back or choosing: it
+// throws away work already done. It gets its own colour so nobody presses it
+// while meaning to press the button beside it.
+.vx-button--danger {
+  border-color: var(--vx-danger, #f6495a);
+  color: var(--vx-danger, #f6495a);
+  background: transparent;
+
+  &:hover {
+    background: color-mix(in srgb, var(--vx-danger, #f6495a) 12%, transparent);
+  }
+}
+
+// A secondary command in a card's foot ("Download" / "Remove" on a
+// profile card's library row), not a page's primary action. Smaller, so it
+// never competes with the primary button.
+.vx-button--small {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+}

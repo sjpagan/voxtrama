@@ -1,0 +1,12 @@
+/*! GENERATED FILE (via voxtrama.scss): edit the .scss sources under
+ * src/voxtrama/web/scss/ and rebuild with `make css`, do not edit
+ * static/css/voxtrama.min.css by hand. `/*!` keeps this comment through
+ * --style=compressed, which drops every plain comment. */
+
+// The project's only Sass entry point. Everything else is reached from
+// here through @use, never @import: Dart Sass deprecates @import and
+// would print a warning on every single build.
+@use "abstracts";
+@use "base";
+@use "layout";
+@use "components";

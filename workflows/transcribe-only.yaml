@@ -1,0 +1,20 @@
+name: transcribe-only
+title: Transcribe only
+version: 1.0.0
+schema_version: v1
+# The description is one line for the person choosing a workflow;
+# Nine words each, so the cards read alike side by side.
+# What it used to say, for whoever maintains this file:
+#   The shortest useful chain: an imported recording is transcribed, and every
+#   segment is labelled with the voice that spoke it. No summary, no extraction,
+#   no generative step. This is the workflow M1 exists to prove, from a clean
+#   clone to speakers told apart.
+description: Turn any recording into a transcript with its speakers.
+steps:
+  - id: transcribe
+    skill: transcribe
+    skill_version: 1.0.0
+  - id: diarize
+    skill: diarize
+    skill_version: 1.0.0
+    depends_on: [transcribe]

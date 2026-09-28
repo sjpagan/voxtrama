@@ -1,0 +1,147 @@
+// The home's new-job form and the Recent jobs table: Audio on the left,
+// Workflow and its options on the right, the last five jobs underneath
+// across both.
+@use "../abstracts" as tokens;
+
+.vx-section--wide {
+  max-width: min(80rem, 94%);
+}
+
+.vx-new-job {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: tokens.$vx-space-md;
+  align-items: start;
+  margin-bottom: tokens.$vx-space-md;
+
+  @media (max-width: 60rem) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.vx-new-job__title {
+  margin: 0 0 tokens.$vx-space-sm;
+  font-size: tokens.$vx-text-md;
+}
+
+.vx-new-job__drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: tokens.$vx-space-2xs;
+  margin: 0;
+  cursor: pointer;
+}
+
+.vx-button--small {
+  padding: tokens.$vx-space-3xs tokens.$vx-space-sm;
+  font-size: tokens.$vx-text-sm;
+}
+
+// The group of parts: one card, one row per file, dragged to reorder.
+.vx-parts {
+  margin-top: tokens.$vx-space-sm;
+  padding: tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.75rem;
+  background: var(--vx-surface);
+}
+
+.vx-parts__head {
+  margin: 0 0 tokens.$vx-space-2xs;
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+
+  strong {
+    color: var(--vx-text);
+  }
+}
+
+.vx-parts__list {
+  margin: 0 0 tokens.$vx-space-sm;
+  padding: 0;
+  list-style: none;
+}
+
+.vx-part {
+  display: flex;
+  align-items: center;
+  gap: tokens.$vx-space-xs;
+  margin: 0 0 tokens.$vx-space-2xs;
+  padding: tokens.$vx-space-2xs tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+  list-style: none;
+}
+
+.vx-part__grip {
+  display: flex;
+  color: var(--vx-text-muted);
+  cursor: grab;
+}
+
+// Consecutive parts or tracks recorded together. Tracks have no
+// order, so they show no grip (no script).
+.vx-parts__mode {
+  display: grid;
+  gap: tokens.$vx-space-2xs;
+  margin: tokens.$vx-space-sm 0 0;
+  padding: 0;
+  border: 0;
+  color: var(--vx-text-muted);
+
+  strong {
+    color: var(--vx-text);
+  }
+}
+
+.vx-parts:has(input[value="tracks"]:checked) .vx-part__grip {
+  visibility: hidden;
+}
+
+.vx-part__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vx-part__duration {
+  color: var(--vx-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-part__remove {
+  display: flex;
+  width: auto;
+  margin: 0;
+  padding: tokens.$vx-space-3xs;
+  border: 0;
+  border-radius: 999px;
+  background: var(--vx-border);
+  color: var(--vx-text);
+}
+
+.vx-check {
+  display: flex;
+  align-items: center;
+  gap: tokens.$vx-space-xs;
+  margin: 0;
+  font-size: tokens.$vx-text-sm;
+
+  input {
+    margin: 0;
+  }
+}
+
+// Pico sizes every input to 100% with a selector stronger than
+// .vx-sr-only's: without this the hidden file input kept the page's full
+// width and pushed a horizontal scroll onto the home.
+input[type="file"].vx-sr-only {
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+}

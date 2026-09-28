@@ -1,0 +1,35 @@
+// Pieces of the home page shared with nothing else: the Recent jobs
+// card and the `View all ›` link. The new-job form has its own files
+// (_new_job.scss, _new_job_setup.scss). The table is _jobs_table.scss.
+@use "../abstracts" as tokens;
+
+.vx-runs {
+  margin: 0;
+}
+
+.vx-run-row__name {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// `View all ›`: disabled, not missing. The full list of jobs is a page
+// of its own, and until it exists the link says so by being off.
+.vx-link {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$vx-space-3xs;
+  border: 0;
+  background: none;
+  color: var(--vx-primary);
+  font-size: tokens.$vx-text-sm;
+  font-weight: 600;
+  cursor: pointer;
+
+  &[disabled] {
+    color: var(--vx-text-muted);
+    cursor: not-allowed;
+  }
+}

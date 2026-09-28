@@ -1,0 +1,126 @@
+{
+  "$defs": {
+    "ContextRequirement": {
+      "description": "What a Skill needs beyond its input_schema.",
+      "enum": [
+        "segments",
+        "metadata",
+        "memory"
+      ],
+      "title": "ContextRequirement",
+      "type": "string"
+    },
+    "ModelClass": {
+      "description": "What kind of model a Skill runs.",
+      "enum": [
+        "extractive",
+        "generative"
+      ],
+      "title": "ModelClass",
+      "type": "string"
+    },
+    "ModelProfile": {
+      "description": "The hardware profiles, which minimum_model_profile refers to.",
+      "enum": [
+        "low",
+        "base",
+        "high"
+      ],
+      "title": "ModelProfile",
+      "type": "string"
+    },
+    "Privacy": {
+      "description": "Whether a Skill may let content leave the local machine.",
+      "enum": [
+        "any",
+        "local_only"
+      ],
+      "title": "Privacy",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The typed declaration of a skill.\n\ndeterministic is not a field: it follows from model_class, and is\nexposed as a computed property so the two values cannot diverge.",
+  "properties": {
+    "context_requirements": {
+      "items": {
+        "$ref": "#/$defs/ContextRequirement"
+      },
+      "title": "Context Requirements",
+      "type": "array"
+    },
+    "evidence_required": {
+      "title": "Evidence Required",
+      "type": "boolean"
+    },
+    "input_schema": {
+      "additionalProperties": true,
+      "title": "Input Schema",
+      "type": "object"
+    },
+    "minimum_confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Minimum Confidence",
+      "type": "number"
+    },
+    "minimum_model_profile": {
+      "$ref": "#/$defs/ModelProfile"
+    },
+    "model_class": {
+      "$ref": "#/$defs/ModelClass"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "output_language": {
+      "default": "same_as_audio",
+      "title": "Output Language",
+      "type": "string"
+    },
+    "output_schema": {
+      "additionalProperties": true,
+      "title": "Output Schema",
+      "type": "object"
+    },
+    "privacy": {
+      "$ref": "#/$defs/Privacy"
+    },
+    "retention_policy": {
+      "pattern": "^(follows_recording|[1-9][0-9]{0,4}d)$",
+      "title": "Retention Policy",
+      "type": "string"
+    },
+    "review_required": {
+      "title": "Review Required",
+      "type": "boolean"
+    },
+    "supported_audio_languages": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Audio Languages",
+      "type": "array"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "input_schema",
+    "output_schema",
+    "model_class",
+    "minimum_model_profile",
+    "evidence_required",
+    "minimum_confidence",
+    "review_required",
+    "retention_policy",
+    "privacy"
+  ],
+  "title": "Skill",
+  "type": "object"
+}

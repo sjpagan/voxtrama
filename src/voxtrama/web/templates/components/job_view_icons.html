@@ -1,0 +1,18 @@
+{#
+  Icons only the concluded job's view uses:
+  regenerate, the recap search arrows and the export files. Plain line art
+  like components/icons.html, kept apart so that file does not grow a
+  section only one page uses (the same reason components/job_icons.html
+  exists).
+#}
+{% macro icon_refresh() %}
+<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>
+{% endmacro %}
+
+{% macro icon_chevron_up() %}
+<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-7 7 7"/></svg>
+{% endmacro %}
+
+{% macro icon_file() %}
+<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/></svg>
+{% endmacro %}

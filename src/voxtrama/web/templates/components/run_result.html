@@ -1,0 +1,129 @@
+{#
+  "Read the result": a succeeded run's
+  player, transcript and extracted output. pages/run.html swaps this
+  section in once `run.result` is set, replacing the live chain and the
+  terminal a concluded run has nothing left to feed. `result` is
+  rendering.run_result.ResultView, built once by api.routes.run_page_result
+  from rows that route already read. static/js/run_result.js, static/js/
+  run_player.js, static/js/run_waveform.js and static/js/run_speakers.js
+  are the only things that change anything here afterwards,
+  and none of them makes a second request besides the audio.
+
+  The player (waveform, "12:34 / 28:17", a
+  volume slider) is a custom control surface, not the browser's
+  `<audio controls>`. AudioContext.decodeAudioData is native to
+  every browser this app targets, so drawing it costs no library and no
+  build chain. See static/js/run_waveform.js's docstring
+  for how, and for the ceiling it puts on a long recording. The `<audio>`
+  element stays in the DOM, without `controls`, only as the thing
+  every other script here plays/seeks (id="vx-run-player" is their whole
+  contract with it). A missing `audio_src` (a run whose Recording could
+  not be resolved) renders no player at all rather than one with nothing
+  to play.
+
+  Below the player, the tabs: Transcript,
+  Explore, Speakers (when the job still has its recording), Recap. The
+  curved lines between a bubble and the card drawn from it are
+  static/js/job_links.js, redrawn whenever either column
+  scrolls or the page resizes.
+#}
+{% from "components/icons.html" import icon_download, icon_pause, icon_play, icon_volume %}
+{% from "components/job_icons.html" import icon_more %}
+{% from "components/run_transcript.html" import run_transcript with context %}
+{% from "components/run_output.html" import run_output with context %}
+{% from "components/speakers_tab.html" import speakers_tab with context %}
+{% from "components/job_turns.html" import job_turns with context %}
+{% from "components/job_recap.html" import job_recap with context %}
+{% from "components/job_files.html" import job_files with context %}
+
+{% macro tab_label(tab) -%}
+  {%- if tab == "transcript" -%}{% trans %}Transcript{% endtrans %}
+  {%- elif tab == "explore" -%}{% trans %}Explore{% endtrans %}
+  {%- elif tab == "speakers" -%}{% trans %}Speakers{% endtrans %}
+  {%- elif tab == "files" -%}{% trans %}Files{% endtrans %}
+  {%- else -%}{% trans %}Recap{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{# The three tabs are radio buttons and CSS
+   (components/_job_tabs.scss), not a script. The checked one is the tab
+   rendering.run_result chose (Recap for a concluded job), and switching
+   never reloads, so the audio keeps playing. #}
+{% macro job_tabs(result, run_id) %}
+{% set tabs = ["transcript", "explore", "speakers", "recap", "files"] if result.recording_id else ["transcript", "explore", "recap", "files"] %}
+<div class="vx-tabs" id="vx-job-tabs">
+  {% for tab in tabs %}
+  <input type="radio" class="vx-tabs__radio" name="vx-job-tab" id="vx-tab-{{ tab }}" value="{{ tab }}"{% if result.tab == tab %} checked{% endif %}>
+  {% endfor %}
+  <div class="vx-tabs__list">
+    {% for tab in tabs %}<label class="vx-tabs__tab" for="vx-tab-{{ tab }}" data-tab="{{ tab }}">{{ tab_label(tab) }}</label>{% endfor %}
+  </div>
+  <div class="vx-tabs__panel" data-tab="transcript">
+    <div class="vx-run-result" id="vx-run-result">
+      {{ job_turns(result.turns, result.pause) }}
+      {{ run_output(result.items, run_id, result.turns) }}
+    </div>
+  </div>
+  <div class="vx-tabs__panel" data-tab="explore">{{ run_transcript(result.transcript, result.speaker_names, run_id, result.people) }}</div>
+  {% if result.recording_id %}<div class="vx-tabs__panel" data-tab="speakers">{{ speakers_tab(result.speakers, result.recording_id, run_id) }}</div>{% endif %}
+  <div class="vx-tabs__panel" data-tab="recap">{{ job_recap(result.recap, run_id) }}</div>
+  <div class="vx-tabs__panel" data-tab="files">{{ job_files(result, run_id) }}</div>
+</div>
+{% endmacro %}
+
+{% macro run_result(result, run_id) %}
+{% if result.audio_src %}
+<div class="vx-card vx-player">
+  <div class="vx-player__controls">
+    {# The jumps back and forward, «60s «10s 10s» 60s», around play. #}
+    <span class="vx-player__skips">
+      <button type="button" class="vx-player__skip" data-skip="-60" aria-label="{% trans %}Back 60 seconds{% endtrans %}">«60s</button>
+      <button type="button" class="vx-player__skip" data-skip="-10" aria-label="{% trans %}Back 10 seconds{% endtrans %}">«10s</button>
+    </span>
+    <button
+      type="button"
+      class="vx-player__toggle"
+      id="vx-player-toggle"
+      data-playing="false"
+      data-label-play="{% trans %}Play{% endtrans %}"
+      data-label-pause="{% trans %}Pause{% endtrans %}"
+      aria-label="{% trans %}Play{% endtrans %}"
+    >
+      <span class="vx-player__icon-play">{{ icon_play() }}</span>
+      <span class="vx-player__icon-pause">{{ icon_pause() }}</span>
+    </button>
+    <span class="vx-player__skips">
+      <button type="button" class="vx-player__skip" data-skip="10" aria-label="{% trans %}Forward 10 seconds{% endtrans %}">10s»</button>
+      <button type="button" class="vx-player__skip" data-skip="60" aria-label="{% trans %}Forward 60 seconds{% endtrans %}">60s»</button>
+    </span>
+    <span class="vx-player__time" id="vx-player-time">0:00 / 0:00</span>
+    <canvas class="vx-player__wave" id="vx-player-wave" height="56" tabindex="0"
+      data-recording-id="{{ result.recording_id }}"
+      role="slider" aria-label="{% trans %}Playback position{% endtrans %}"
+      aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></canvas>
+    {# Shown by static/js/run_waveform.js when the levels do not arrive:
+       an empty box reads as a fault, and the player works anyway
+       (playback, volume and jumping from a transcript row live
+       elsewhere). #}
+    <p class="vx-player__notice" id="vx-player-wave-notice" hidden>
+      {% trans %}No waveform for this recording. Playback works as usual.{% endtrans %}
+    </p>
+    <span class="vx-player__volume">
+      {{ icon_volume() }}
+      <input type="range" id="vx-player-volume" min="0" max="1" step="0.01" value="1"
+        aria-label="{% trans %}Volume{% endtrans %}">
+    </span>
+    {# The «⋮»: a native <details> holding what
+       the player does besides playing. Today, that is taking the audio away. #}
+    <details class="vx-player__menu">
+      <summary aria-label="{% trans %}More{% endtrans %}">{{ icon_more() }}</summary>
+      <div class="vx-player__menu-panel">
+        <a href="{{ result.audio_src }}" download>{{ icon_download() }} {% trans %}Download audio{% endtrans %}</a>
+      </div>
+    </details>
+  </div>
+  <audio id="vx-run-player" preload="metadata" src="{{ result.audio_src }}"></audio>
+</div>
+{% endif %}
+{{ job_tabs(result, run_id) }}
+{% endmacro %}

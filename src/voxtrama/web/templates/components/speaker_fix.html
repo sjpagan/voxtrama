@@ -1,0 +1,31 @@
+{#
+  The speaker chip of a bubble (Transcript) or a row (Explore), which also
+  fixes it: «the name is wrong on this sentence only». A native
+  <details> whose summary is the chip itself; inside, a form to
+  POST /runs/{id}/segments/speaker (api.routes.segment_speaker) with the
+  sentence's segments, one of the people already named on the recording,
+  a new name, or back to the detected speaker. Moving one sentence never
+  renames the voice: that is the Speakers tab.
+#}
+{% macro speaker_fix(run_id, name, color, segments, people, tab) %}
+<details class="vx-speaker-fix">
+  <summary class="vx-badge vx-transcript__speaker" data-speaker-color="{{ color }}" title="{% trans %}Change the speaker of this sentence{% endtrans %}">{{ name }}</summary>
+  <form method="post" action="/runs/{{ run_id }}/segments/speaker" class="vx-speaker-fix__panel">
+    <input type="hidden" name="tab" value="{{ tab }}">
+    {% for segment in segments %}<input type="hidden" name="segment_id" value="{{ segment.id }}">{% endfor %}
+    <p class="vx-speaker-fix__title">{% trans %}Who is speaking here?{% endtrans %}</p>
+    {% if people %}
+    <select name="person_id" aria-label="{% trans %}Speaker{% endtrans %}">
+      <option value="">{% trans %}The detected speaker{% endtrans %}</option>
+      {% for person_id, person_name in people %}
+      <option value="{{ person_id }}"{% if segments and segments[0].person_id == person_id %} selected{% endif %}>{{ person_name }}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+    <input type="text" name="new_name" maxlength="80" autocomplete="off"
+      placeholder="{% trans %}Or a new name{% endtrans %}" aria-label="{% trans %}New speaker name{% endtrans %}">
+    <p class="vx-help">{% trans %}Only this sentence changes. To rename a voice everywhere, use the Speakers tab.{% endtrans %}</p>
+    <button type="submit" class="vx-button vx-button--small">{% trans %}Save{% endtrans %}</button>
+  </form>
+</details>
+{% endmacro %}

@@ -1,0 +1,184 @@
+// The head of a concluded job and its three tabs:
+// title with «Regenerate job» at the right, the slim settings line, and the
+// Transcript · Explore · Recap tabs made of radio buttons (no script,
+// components/run_result.html).
+@use "../abstracts" as tokens;
+
+.vx-job-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: tokens.$vx-space-md;
+  margin-bottom: tokens.$vx-space-lg;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.vx-job-settings {
+  display: flex;
+  flex-wrap: wrap;
+  margin: tokens.$vx-space-3xs 0 0;
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+
+  > span + span::before,
+  > span + details::before,
+  > details + span::before {
+    content: "·";
+    margin-inline: tokens.$vx-space-2xs;
+  }
+}
+
+// «Context deduced» opens a small panel under the line,
+// without moving the line itself.
+.vx-job-settings__deduced {
+  position: relative;
+  display: inline;
+  margin: 0;
+
+  summary {
+    display: inline;
+    color: inherit;
+    cursor: pointer;
+    list-style: none;
+    text-decoration: underline dotted;
+    text-underline-offset: 0.2em;
+
+    &::-webkit-details-marker,
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.vx-job-settings__panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  z-index: 6;
+  width: min(28rem, 80vw);
+  padding: tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+  color: var(--vx-text);
+
+  p {
+    margin: 0 0 tokens.$vx-space-2xs;
+  }
+}
+
+.vx-job-settings__deduced-text {
+  white-space: pre-line;
+}
+
+.vx-job-settings__ok {
+  color: var(--vx-success);
+}
+
+// «Regenerate job»: a <details> whose panel floats under the button.
+.vx-regenerate {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.vx-regenerate__summary {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$vx-space-2xs;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  // Pico draws its own disclosure chevron on every summary.
+  &::after {
+    display: none;
+  }
+}
+
+.vx-regenerate__panel {
+  position: absolute;
+  z-index: 6;
+  right: 0;
+  width: min(34rem, 90vw);
+  margin-top: tokens.$vx-space-xs;
+  padding: tokens.$vx-space-lg;
+  border: 1px solid var(--vx-border);
+  border-radius: 1rem;
+  background: var(--vx-bg-elevated);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+
+  // The tags say «Default» on the home form. Here every value is the
+  // job's own, so they would say nothing true.
+  [data-tag] {
+    display: none;
+  }
+}
+
+// The tabs: the checked radio decides which panel shows and which label
+// is underlined. The radios stay focusable (arrow keys switch tabs) but
+// out of sight.
+.vx-tabs__radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.vx-tabs__list {
+  display: flex;
+  gap: tokens.$vx-space-xl;
+  margin-bottom: tokens.$vx-space-md;
+  border-bottom: 1px solid var(--vx-border);
+}
+
+.vx-tabs__tab {
+  padding: tokens.$vx-space-xs tokens.$vx-space-3xs;
+  margin-bottom: -1px;
+  border-bottom: 3px solid transparent;
+  color: var(--vx-text-muted);
+  cursor: pointer;
+}
+
+.vx-tabs__panel {
+  display: none;
+}
+
+@each $tab in transcript, explore, speakers, recap, files {
+  #vx-tab-#{$tab}:checked ~ .vx-tabs__list [data-tab="#{$tab}"] {
+    border-bottom-color: var(--vx-primary);
+    color: var(--vx-text);
+  }
+
+  #vx-tab-#{$tab}:focus-visible ~ .vx-tabs__list [data-tab="#{$tab}"] {
+    outline: 2px solid var(--vx-primary);
+    outline-offset: 2px;
+  }
+
+  #vx-tab-#{$tab}:checked ~ .vx-tabs__panel[data-tab="#{$tab}"] {
+    display: block;
+  }
+}
+
+// Changing the transcription model in «Regenerate job» redoes the transcript:
+// shown as soon as another model is picked, without a script. The
+// job's own model carries data-current.
+.vx-regenerate__warn {
+  display: none;
+  margin-top: tokens.$vx-space-2xs;
+  color: var(--vx-warning);
+}
+
+.vx-field:has(option[data-current]:not(:checked)) .vx-regenerate__warn {
+  display: block;
+}
+
+// The line under the step chain when every step was reused.
+.vx-job-reused {
+  margin: tokens.$vx-space-sm 0 0;
+  text-align: center;
+}

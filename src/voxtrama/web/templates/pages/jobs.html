@@ -1,0 +1,113 @@
+{#
+  The Jobs section: every job, newest first,
+  and `New job` back to the home form. `jobs` is rendering.jobs'
+  JobRow list; `deleting` is the row whose deletion dialog is open
+  (GET /jobs?delete=<id>), None otherwise.
+
+  The ⋮ menu is a <details>, like the identity menu: no script.
+  Regenerate is offered on a completed job only: a failed one has its own
+  «Retry this step» on its view. Delete... is offered once a job has
+  finished. One still going is stopped from its view first.
+
+  «Clean up» runs the one-week clean-up now (POST /jobs/prune);
+  `cleaned` is how much it removed, shown once on the way back.
+
+  The deletion dialog is rendered open by the server, not opened by a
+  script: three boxes, Audio · Transcript · Recap.
+  Only what is ticked goes. Ticking all three removes the job itself.
+#}
+{% extends "base.html" %}
+{% from "components/job_icons.html" import icon_more %}
+{% from "components/icons.html" import icon_trash, icon_play %}
+
+{% set _state_labels = {
+  "pending": gettext("Queued"),
+  "running": gettext("Running"),
+  "succeeded": gettext("Completed"),
+  "failed": gettext("Failed"),
+  "cancelled": gettext("Cancelled"),
+  "interrupted": gettext("Interrupted"),
+} %}
+
+{% block title %}{% trans %}Jobs{% endtrans %} | Voxtrama{% endblock %}
+
+{% block content %}
+<section class="vx-section vx-section--wide">
+  <header class="vx-pagehead vx-pagehead--actions">
+    <h1>{% trans %}Jobs{% endtrans %}</h1>
+    <form method="post" action="/jobs/prune" class="vx-pagehead__form">
+      <button type="submit" class="vx-button vx-button--secondary vx-button--inline" title="{% trans %}Removes failed, cancelled and interrupted jobs older than a week, and files no job uses{% endtrans %}">{% trans %}Clean up{% endtrans %}</button>
+    </form>
+    <a class="vx-button vx-button--inline" href="/">{% trans %}New job{% endtrans %}</a>
+  </header>
+
+  {% if cleaned is not none %}
+  <p class="vx-help" role="status">
+    {% if cleaned %}{% trans %}Leftovers removed:{% endtrans %} {{ cleaned }}.{% else %}{% trans %}Nothing to clean up.{% endtrans %}{% endif %}
+  </p>
+  {% endif %}
+
+  <div class="vx-card">
+    {% if jobs %}
+    <div class="vx-jobs-table vx-jobs-table--full" role="table">
+      <div class="vx-jobs-table__head" role="row">
+        <span role="columnheader">{% trans %}Name{% endtrans %}</span>
+        <span role="columnheader">{% trans %}Workflow{% endtrans %}</span>
+        <span role="columnheader">{% trans %}Audio length{% endtrans %}</span>
+        <span role="columnheader">{% trans %}Date{% endtrans %}</span>
+        <span role="columnheader">{% trans %}Status{% endtrans %}</span>
+        <span role="columnheader"><span class="vx-sr-only">{% trans %}Actions{% endtrans %}</span></span>
+      </div>
+      {% for job in jobs %}
+      <div class="vx-run-row{% if deleting and deleting.id == job.id %} vx-run-row--selected{% endif %}" role="row">
+        <a class="vx-run-row__name" role="cell" href="/runs/{{ job.id }}/view">{{ job.name }}</a>
+        <span class="vx-run-row__workflow" role="cell">{{ job.workflow }}</span>
+        <span role="cell">{{ job.audio_length or "-" }}</span>
+        <span role="cell">{{ job.date }}</span>
+        <span role="cell">
+          <span class="vx-badge{% if job.tone %} vx-badge--{{ job.tone }}{% endif %}">
+            <span class="vx-dot" aria-hidden="true"></span>
+            {{ _state_labels.get(job.state, job.state) }}
+            {% if job.progress %}<span class="vx-badge__extra">{{ job.progress[0] }} {% trans %}of{% endtrans %} {{ job.progress[1] }}</span>{% endif %}
+          </span>
+        </span>
+        <details class="vx-row-menu" role="cell">
+          <summary aria-label="{% trans %}Actions{% endtrans %}">{{ icon_more() }}</summary>
+          <div class="vx-row-menu__list">
+            <a href="/runs/{{ job.id }}/view">{% trans %}Open{% endtrans %}</a>
+            {% if job.state == "succeeded" %}
+            <a href="/runs/{{ job.id }}/view#vx-regenerate">{% trans %}Regenerate{% endtrans %}</a>
+            {% endif %}
+            {% if job.final %}
+            <a class="vx-row-menu__danger" href="/jobs?delete={{ job.id }}">{{ icon_trash() }} {% trans %}Delete...{% endtrans %}</a>
+            {% endif %}
+          </div>
+        </details>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="vx-help">{% trans %}No jobs yet.{% endtrans %} <a href="/">{% trans %}Create the first one{% endtrans %}</a></p>
+    {% endif %}
+  </div>
+
+  {% if deleting %}
+  <dialog class="vx-dialog" open aria-labelledby="vx-delete-title">
+    <article>
+    <form method="post" action="/jobs/{{ deleting.id }}/delete">
+      <h2 id="vx-delete-title">{% trans %}Delete{% endtrans %} "{{ deleting.name }}"?</h2>
+      <p class="vx-help">{% trans %}Choose what to delete. Anything you leave unchecked stays.{% endtrans %}</p>
+      <label class="vx-check"><input type="checkbox" name="audio" value="true" {% if not deleting.has_recording %}disabled{% endif %} /> {% trans %}Audio{% endtrans %}</label>
+      <label class="vx-check"><input type="checkbox" name="transcript" value="true" /> {% trans %}Transcript{% endtrans %}</label>
+      <label class="vx-check"><input type="checkbox" name="recap" value="true" checked /> {% trans %}Recap{% endtrans %}</label>
+      <p class="vx-help">{% trans %}All three removes the job itself.{% endtrans %}</p>
+      <div class="vx-dialog__actions">
+        <a class="vx-button vx-button--secondary" href="/jobs">{% trans %}Cancel{% endtrans %}</a>
+        <button type="submit" class="vx-button vx-button--danger">{% trans %}Delete selected{% endtrans %}</button>
+      </div>
+    </form>
+    </article>
+  </dialog>
+  {% endif %}
+</section>
+{% endblock %}

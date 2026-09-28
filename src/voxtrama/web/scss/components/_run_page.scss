@@ -1,0 +1,153 @@
+// The run page's pieces (restyled from a three-row list against the left edge
+// to a horizontal chain): the page's width ceiling, its header row, and the
+// live activity region static/js/run_page.js writes into. .vx-card
+// (components/_cards.scss) is reused as is for the header+chain card. The
+// chain itself moved to components/_step_chain.scss when it was shared with
+// the guided setup.
+@use "../abstracts" as tokens;
+
+// A card that follows the viewport to its edge is the "three
+// rows in a 1350px-wide box" defect that was measured. Same ceiling as
+// _home.scss, so a run page on the widest monitor still reads like the
+// design instead of stretching past it.
+.vx-run-page {
+  max-width: tokens.$vx-content-width;
+  // Inline only: layout/_index.scss's .vx-section already sets
+  // margin-bottom on this same element, and a bare `margin: 0 auto`
+  // here would win the cascade (components load after layout) and
+  // silently erase it.
+  margin-inline: auto;
+}
+
+// No margin of its own: .vx-section's gap already spaces the page's
+// blocks, and a margin on top of it doubled the space (measured).
+.vx-run-card {
+  margin-bottom: 0;
+}
+
+// "3 of 5", never "61%" alone: step_progress
+// (engine.step_progress) counts what the initial render already has. This
+// page cannot compute a percentage honestly (the finer-grained position
+// lives only in progress.json, read live), so none is invented to sit beside
+// it.
+.vx-run-progress {
+  align-self: center;
+  color: var(--vx-text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+// The chain itself (one item per RunStep) is
+// components/_step_chain.scss's .vx-chain, shared with the guided setup.
+// Nothing here draws it.
+
+// The live activity region (the "in corso" (in progress) note):
+// hidden by default, since no step has reported anything on first paint
+// (rendering.run_page's docstring says why), and shown by run_page.js when an
+// SSE `progress` message carries an activity or a ceiling.
+.vx-activity {
+  margin-bottom: 1.5rem;
+}
+
+.vx-activity__bar {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--vx-surface);
+  overflow: hidden;
+  margin-block: 0.5rem;
+}
+
+.vx-activity__bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--vx-primary);
+}
+
+.vx-activity__numbers {
+  display: flex;
+  justify-content: space-between;
+  color: var(--vx-text-muted);
+  font-size: 0.85rem;
+}
+
+.vx-activity__message {
+  margin: 0;
+  font-weight: 600;
+
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+.vx-activity__timing {
+  margin: 0.5rem 0 0;
+  color: var(--vx-text-muted);
+  font-size: 0.85rem;
+}
+
+// Three dots lighting up in turn: the step is alive even between two
+// progress events, which can be a minute apart on a slow model.
+.vx-dots span {
+  animation: vx-dot 1.2s infinite;
+  opacity: 0.2;
+
+  &:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  &:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes vx-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.2;
+  }
+
+  30% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vx-dots span {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+.vx-activity__bar--busy {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 30%;
+    border-radius: 999px;
+    background: var(--vx-primary);
+    opacity: 0.35;
+    animation: vx-busy 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes vx-busy {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(340%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vx-activity__bar--busy::after {
+    animation: none;
+  }
+}

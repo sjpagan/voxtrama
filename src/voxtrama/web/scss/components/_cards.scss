@@ -1,0 +1,35 @@
+// The kit's vx-card vocabulary (the home page): the three status cards
+// and the Recent runs card today, more cards tomorrow.
+.vx-card {
+  margin: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--vx-border);
+  border-radius: 1rem;
+  background: var(--vx-surface);
+}
+
+.vx-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+// A card's leading icon (the home page's status cards): a plain glyph, not the green
+// vx-badge check beside it. The two are separate signals (what this is, and
+// that it is ready).
+.vx-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--vx-text-muted);
+  font-size: 1.4rem;
+}

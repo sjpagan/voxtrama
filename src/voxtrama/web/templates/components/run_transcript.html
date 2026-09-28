@@ -1,0 +1,63 @@
+{#
+  The result panel's left column: every Segment of
+  the run's transcript, one row each (rendering.run_transcript.
+  TranscriptRowView, built from rows api.routes.run_page_result already
+  queried). `data-start`/`data-end` (raw seconds) and `data-segment-id` are
+  what static/js/run_result.js reads to seek the player on a row click
+  and to decide which rows an evidence link's interval covers.
+  They are never recomputed here: this render only writes the numbers down.
+
+  This is the Explore tab. Search in the text by word and by
+  speaker, every row a jump into the audio. The field is a
+  plain text input: a `type="search"` one got a second magnifier from the
+  browser beside ours (the «two lenses» defect). It is the one
+  search of the job view (components/text_find.html): «4 of 17», arrows,
+  the player following the match. The speaker filter hides rows
+  (static/js/run_result.js), and the search then looks only at the rows
+  still shown.
+
+  The speaker's name is whatever was already resolved: a
+  Person's given name once corrected by hand, the raw diarisation label
+  otherwise. Names are given in the Speakers tab. This tab is the
+  only place one sentence is given to someone else: its chips open
+  the fix (components/speaker_fix.html), the Transcript tab's do not.
+#}
+{% from "components/text_find.html" import text_find with context %}
+{% from "components/speaker_fix.html" import speaker_fix with context %}
+
+{% macro run_transcript(rows, speaker_names=(), run_id="", people=()) %}
+<div class="vx-card vx-transcript" id="vx-run-transcript">
+  {% if rows %}
+  <div class="vx-transcript__tools">
+    {{ text_find("#vx-transcript-rows", ".vx-transcript__text", gettext("Search transcript")) }}
+    {% if speaker_names|length > 1 %}
+    <select id="vx-transcript-speaker" aria-label="{% trans %}Speaker{% endtrans %}">
+      <option value="">{% trans %}All speakers{% endtrans %}</option>
+      {% for name in speaker_names %}<option value="{{ name }}">{{ name }}</option>{% endfor %}
+    </select>
+    {% endif %}
+  </div>
+  <ol class="vx-transcript__rows" id="vx-transcript-rows">
+    {% for row in rows %}
+    <li
+      class="vx-transcript__row"
+      id="vx-transcript-row-{{ row.id }}"
+      data-segment-id="{{ row.id }}"
+      data-start="{{ row.start }}"
+      data-end="{{ row.end }}"
+      data-speaker="{{ row.speaker or '' }}"
+      tabindex="0"
+    >
+      <span class="vx-transcript__time">{{ row.time }}</span>
+      {% if row.speaker %}
+      {{ speaker_fix(run_id, row.speaker, row.speaker_color, [row], people, "explore") }}
+      {% endif %}
+      <span class="vx-transcript__text">{{ row.text }}</span>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="vx-help">{% trans %}No transcript yet.{% endtrans %}</p>
+  {% endif %}
+</div>
+{% endmacro %}

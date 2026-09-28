@@ -1,0 +1,46 @@
+{#
+  The theme options (now inside the identity menu): three
+  states, and which one is active has to be readable, not merely visible
+  in the page's colours.
+
+  "Auto" on a dark system produces a page identical to "Dark", so the
+  appearance cannot tell you which you picked. Before the move that is what
+  the control's own <summary> was for, naming the current state ("Theme:
+  Dark") while the options underneath stayed collapsed. The move put this
+  macro inside components/header.html's identity menu, which is already
+  its own disclosure, so a second one nested inside it would be a menu the
+  keyboard has to open twice for the same information. The **options**
+  render open instead (the same buttons, doing the same POST), and the
+  active one carries the signal alone: bold, aria-current="true", and (for
+  auto) the only entry that says what it follows.
+
+  A form, no JavaScript: choosing is a submit, which also
+  closes the identity menu around it, because the browser navigates.
+  After the redirect the highlighted option shows the new state, so "did
+  it work" is answered by looking.
+
+  `choices` is rendering.theme.theme_choices. `origin` is the path this
+  control was used from, so POST /theme can send the browser back to it
+  instead of always to the home page.
+#}
+{% macro theme_options(choices, origin) %}
+<div class="vx-theme">
+  <span class="vx-menu__label">{% trans %}Theme{% endtrans %}</span>
+  <form method="post" action="/theme" class="vx-theme__menu">
+    <input type="hidden" name="origin" value="{{ origin }}" />
+    {% for choice in choices %}
+    <button
+      type="submit"
+      name="theme"
+      value="{{ choice.value }}"
+      class="vx-theme__option"
+      {% if choice.active %}aria-current="true"{% endif %}
+    >
+      {% if choice.value == "light" %}{% trans %}Light{% endtrans %}
+      {% elif choice.value == "dark" %}{% trans %}Dark{% endtrans %}
+      {% else %}{% trans %}Auto (follows your system){% endtrans %}{% endif %}
+    </button>
+    {% endfor %}
+  </form>
+</div>
+{% endmacro %}

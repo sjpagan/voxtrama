@@ -1,0 +1,64 @@
+# Apple Silicon: an arm64 Mac, Metal visible to torch as "mps", GPU and CPU
+# sharing one pool of memory (diagnostics.cpu_topology.has_unified_memory).
+# Three conditions declared, the most of any file here (tuning.selector
+# picks the file with the most conditions a machine satisfies).
+name: apple-silicon
+description: >
+  arm64 Mac with a unified-memory GPU visible to torch as "mps".
+applies_to:
+  architecture: arm64
+  accelerator: mps
+  unified_memory: true
+
+asr:
+  # faster-whisper runs on CTranslate2, which has no Metal backend: "cuda"
+  # or "cpu" are its only real devices, so ASR stays on CPU here even
+  # though the machine has a GPU. This is the one field in this file that
+  # is not a guess: it is CTranslate2's own supported device list.
+  device: cpu
+  # Same model/compute_type as the CPU profiles, i.e. today's
+  # transcription.profiles.PROFILES: no measurement yet says Apple
+  # Silicon's CPU wants a different pair.
+  profiles:
+    low:
+      model_size: small
+      compute_type: int8
+    base:
+      model_size: medium
+      compute_type: int8
+    high:
+      model_size: large-v3
+      compute_type: int8
+
+diarization:
+  # ESTIMATE: not measured on real hardware. torch's mps backend covers
+  # most of what speechbrain's embedding model needs; if an operation
+  # falls back to CPU, torch does that silently on its own.
+  device: mps
+
+chunking:
+  # ESTIMATE: nobody has run a parallel-chunk transcription on Apple
+  # Silicon yet. Two chunks of four cores is a guess sized for a common
+  # 8-performance-core chip, not a measurement.
+  parallel_chunks: 2
+  cores_per_chunk: 4
+  memory:
+    recommended_gib: 16
+    warning: >-
+      running {parallel_chunks} chunks in parallel is comfortable with about
+      {recommended_gib} GiB of unified memory shared between CPU and GPU;
+      this machine reports {actual_gib} GiB
+
+generative:
+  memory:
+    # ESTIMATE: unified memory means a local generative model competes
+    # with the GPU pool ASR and diarization already use, not with a
+    # separate one. 16 GiB is a starting point, not a measured ceiling.
+    recommended_gib: 16
+    warning: >-
+      a local generative model alongside transcription is comfortable with
+      about {recommended_gib} GiB of unified memory; this machine reports
+      {actual_gib} GiB
+  # See tuning/generic.yaml's own comment: no
+  # Apple-Silicon-specific measurement exists yet either.
+  timeout_seconds: 1800

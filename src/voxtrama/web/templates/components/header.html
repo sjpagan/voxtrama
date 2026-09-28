@@ -1,0 +1,162 @@
+{#
+  The shell's header: the brand, a "this runs locally" badge, and the
+  identity menu next to it.
+  No host, no port, no live check. Where the app listens is never named
+  in the markup, so the badge is a fixed label.
+
+  This corner used to hold four separate targets at three different
+  heights (badge, theme disclosure, identity circle, a settings gear that
+  led nowhere). The theme control took half the row for the least-used
+  preference, and the gear was a button with no destination. The header
+  now collapses the three "who am I / what does this look like / where are
+  the settings" commands into the one menu identity_menu() opens, so the
+  header keeps two targets, the badge and the trigger, sized and aligned
+  the same way.
+
+  Split in three macros because a sidebar-less page (no route
+  passes nav_items today, but base.html's {% else %} branch still exists
+  for one that has nowhere to navigate) and an interior section (the
+  brand moves into the sidebar column, see base.html) lay the same pieces
+  out differently. `site_brand()` and `header_actions()` are the parts
+  either layout composes. `site_header()` is what that sidebar-less
+  branch calls.
+#}
+{% from "components/icons.html" import icon_search, icon_settings, icon_user, icon_x %}
+{% from "components/theme_control.html" import theme_options with context %}
+{% macro site_brand() %}
+{# The brand leads home, as it does on most sites. #}
+<a class="vx-brand" href="/" aria-label="{% trans %}Voxtrama, home{% endtrans %}">
+  <img class="vx-brand__mark" src="{{ static_url('img/logo-mark.png') }}" alt="" width="45" height="32" />
+  <strong>Voxtrama</strong>
+</a>
+{% endmacro %}
+
+{% macro identity_menu(user_initial=none, user_full_name=none, theme_choices=none, origin="/") %}
+{# The trigger is always present: a circle with the initials when there
+   is a name to show, or a plain user icon when there is not
+   (the circle itself is conditional). Either way it opens the
+   same menu, so "no name yet" is never a dead end: the first thing the
+   fallback menu offers is the way to fix that. #}
+<details class="vx-identity">
+  <summary
+    class="vx-identity__trigger"
+    aria-label="{% if user_full_name %}{{ user_full_name }}{% else %}{% trans %}Your account{% endtrans %}{% endif %}"
+  >
+    {% if user_initial %}
+    <span class="vx-avatar" aria-hidden="true">{{ user_initial }}</span>
+    {% else %}
+    <span class="vx-icon-button" aria-hidden="true">{{ icon_user() }}</span>
+    {% endif %}
+  </summary>
+  <div class="vx-identity__menu">
+    {% if user_full_name %}
+    <p class="vx-identity__name">{{ user_full_name }}</p>
+    <a href="/profile" class="vx-identity__link">{% trans %}Your profile{% endtrans %}</a>
+    {% else %}
+    {# No name written yet (the menu's own empty state): the invite to write
+       one replaces the "Your profile" link rather than sitting beside
+       it, since the two would say the same thing twice. #}
+    <a href="/profile" class="vx-identity__link">{% trans %}Add your name{% endtrans %}</a>
+    {% endif %}
+    <hr class="vx-identity__divider" />
+    {% if theme_choices %}{{ theme_options(theme_choices, origin) }}{% endif %}
+    <hr class="vx-identity__divider" />
+    {# The gear that led nowhere now opens the same page
+       (api.routes.setup_settings) as Setup's sidebar entry
+       (rendering.nav), so "where are the settings" has one answer
+       whichever of the two a person clicks. #}
+    <a href="/setup" class="vx-identity__settings">
+      {{ icon_settings() }} {% trans %}Settings{% endtrans %}
+    </a>
+  </div>
+</details>
+{% endmacro %}
+
+{#
+  The navbar's search: a plain GET form, no
+  JavaScript. It searches only the text of finished transcripts
+  and the titles of jobs.
+#}
+{% macro site_search(query="") %}
+<form class="vx-search" method="get" action="/search" role="search">
+  <span class="vx-search__icon" aria-hidden="true">{{ icon_search() }}</span>
+  <input
+    class="vx-search__input"
+    type="search"
+    name="q"
+    value="{{ query }}"
+    placeholder="{% trans %}Search transcripts and jobs...{% endtrans %}"
+    aria-label="{% trans %}Search transcripts and jobs{% endtrans %}"
+  />
+  {# Reset empties the field. With a query already searched it is a link
+     back to /search, because a reset button would restore that query. #}
+  <span class="vx-search__actions">
+    {% if query %}
+    <a class="vx-search__reset" href="/search" aria-label="{% trans %}Clear the search{% endtrans %}">{{ icon_x() }}</a>
+    {% else %}
+    <button class="vx-search__reset" type="reset" aria-label="{% trans %}Clear the search{% endtrans %}">{{ icon_x() }}</button>
+    {% endif %}
+    <button class="vx-search__submit" type="submit">{% trans %}Search{% endtrans %}</button>
+  </span>
+</form>
+{% endmacro %}
+
+{% macro health_problem_label(key) -%}
+  {%- if key == "ollama-down" -%}{% trans %}Ollama not responding{% endtrans %}
+  {%- elif key == "summary-model-missing" -%}{% trans %}Summary model missing{% endtrans %}
+  {%- elif key == "transcription-model-missing" -%}{% trans %}Transcription model missing{% endtrans %}
+  {%- elif key == "storage-unusable" -%}{% trans %}Data folder unusable{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro health_problem_detail(key) -%}
+  {%- if key == "ollama-down" -%}{% trans %}The summary model can't be reached.{% endtrans %}
+  {%- elif key == "summary-model-missing" -%}{% trans %}No summary model is chosen, or Ollama does not have it.{% endtrans %}
+  {%- elif key == "transcription-model-missing" -%}{% trans %}The transcription model has not been downloaded yet.{% endtrans %}
+  {%- elif key == "storage-unusable" -%}{% trans %}The data folder is full or cannot be written.{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{#
+  The health pill: green when nothing stops a job, amber with the
+  most blocking problem otherwise. The detail opens in a <details>, like
+  the identity menu: every problem, each with the link to where it is
+  fixed (diagnostics.health.FIX_HREF). No health passed: no pill, rather
+  than a pill that guessed.
+#}
+{% macro health_pill(health) %}
+{% if health is not none %}
+{% if health.ok %}
+<span class="vx-health vx-health--ok">
+  <span class="vx-dot" aria-hidden="true"></span>
+  {% trans %}All systems ready{% endtrans %}
+</span>
+{% else %}
+<details class="vx-health vx-health--problem">
+  <summary class="vx-health__trigger">
+    <span class="vx-dot" aria-hidden="true"></span>
+    {{ health_problem_label(health.problems[0].key) }}
+  </summary>
+  <div class="vx-health__popover">
+    {% for problem in health.problems %}
+    <p class="vx-health__detail">{{ health_problem_detail(problem.key) }}</p>
+    <a class="vx-health__fix" href="{{ problem.href }}">{% trans %}Open settings{% endtrans %} ›</a>
+    {% endfor %}
+  </div>
+</details>
+{% endif %}
+{% endif %}
+{% endmacro %}
+
+{% macro header_actions(user_initial=none, user_full_name=none, theme_choices=none, origin="/", health=none) %}
+<div class="vx-header__actions">
+  {{ health_pill(health) }}
+  {{ identity_menu(user_initial, user_full_name, theme_choices, origin) }}
+</div>
+{% endmacro %}
+
+{% macro site_header(user_initial=none, user_full_name=none, theme_choices=none, origin="/", health=none, query="") %}
+{{ site_brand() }}
+{{ site_search(query) }}
+{{ header_actions(user_initial, user_full_name, theme_choices, origin, health) }}
+{% endmacro %}

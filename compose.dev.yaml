@@ -1,0 +1,37 @@
+# Development overlay, used together with compose.yaml, never alone:
+#
+#   docker compose -f compose.yaml -f compose.dev.yaml up
+#
+# No `profiles:` here: Compose profiles turn optional services on and off,
+# they do not override the command of a service that already exists. This
+# file overrides `web` and `worker` directly instead.
+#
+# `web` gets --reload and a read-only bind mount of src/, so an edit is
+# visible without a rebuild. `worker` gets the same mount and log level,
+# but rq has no reload and this file does not add a filesystem watcher for
+# it: after a change, restart it by hand (see README.md).
+
+services:
+  web:
+    command:
+      [
+        "uvicorn",
+        "voxtrama.api.app:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload",
+        "--reload-dir",
+        "/app/src",
+      ]
+    volumes:
+      - "./src:/app/src:ro"
+    environment:
+      VOXTRAMA_LOG_LEVEL: DEBUG
+
+  worker:
+    volumes:
+      - "./src:/app/src:ro"
+    environment:
+      VOXTRAMA_LOG_LEVEL: DEBUG

@@ -1,0 +1,66 @@
+{#
+  The run page's step chain (restyled from a one-row-per-step
+  list to a horizontal chain):
+  one item per RunStep (rendering.run_page.RunStepRow), each already
+  `pending`, `running`, `succeeded`, `failed` or `skipped` on its own
+  database row. A run interrupted partway still shows the steps it never
+  reached, instead of looking shorter than it was (engine.progress.
+  record_planned_steps's reasoning for writing every row up front).
+  static/js/run_page.js flips the one item whose step_id matches an
+  incoming SSE event's step_id. Every other item stays as this render
+  left it, reading the translated label that components/run_labels.
+  html's `label_catalog()` put on the page, not a dictionary of its
+  own. The chain's markup and CSS out into
+  components/step_chain.html, shared with the guided setup's chain
+  (components/setup_steps.html). This macro now only decides
+  what a run's five states look like: the icon per state below, and
+  the `id`/`data-step-state`/marker/label-text contract that
+  step_chain.html's docstring lists and draws.
+
+  The «Change workflow» panel that used to follow the chain is the
+  «Regenerate job» now, in the job's head (components/job_view.html).
+#}
+{% from "components/step_chain.html" import step_chain %}
+{% from "components/run_labels.html" import step_label, step_done_label with context %}
+{% from "components/icons.html" import icon_check, icon_alert, icon_minus %}
+
+{# The duration line under a step's status:
+   "2 min" or "< 1 min", never "0 min". rendering.run_step_outcome.
+   duration_parts already refuses to call a real, measured duration zero.
+   This only spells out the two shapes that refusal leaves. Empty for a
+   step rendering.run_page never timed (still going, or never reached),
+   which step_chain.html's `if item.duration` then skips. #}
+{% macro step_duration(step) -%}
+  {#- A step adopted from the previous job ran nothing, so it has no
+     duration of its own to show. -#}
+  {%- if step.reused -%}{% trans %}Reused{% endtrans %}
+  {%- elif step.duration_short -%}< 1 {% trans %}min{% endtrans %}
+  {%- elif step.duration_minutes is not none -%}{{ step.duration_minutes }} {% trans %}min{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro run_steps(steps) %}
+{% set items = [] %}
+{% for step in steps %}
+  {% set marker %}
+    {%- if step.state == "succeeded" -%}{{ icon_check() }}
+    {%- elif step.state == "skipped" -%}{{ icon_minus() }}
+    {%- elif step.state == "failed" -%}{{ icon_alert() }}
+    {%- endif -%}
+  {% endset %}
+  {% set _ = items.append({
+    "id": step.step_id,
+    "state": step.state,
+    "marker": marker,
+    "name": step.label,
+    "status": step_done_label(step.skill) if step.state == "succeeded" else step_label(step.state),
+    "duration": step_duration(step),
+  }) %}
+{% endfor %}
+{{ step_chain(items, id="vx-run-steps") }}
+{# What each step says once done, for run_page.js to write when an
+   SSE event moves a row past it. #}
+<ul id="vx-done-labels" hidden>
+  {% for step in steps %}<li data-step="{{ step.step_id }}">{{ step_done_label(step.skill) }}</li>{% endfor %}
+</ul>
+{% endmacro %}

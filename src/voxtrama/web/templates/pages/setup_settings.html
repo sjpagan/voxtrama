@@ -1,0 +1,194 @@
+{#
+  GET /setup: the writable twin of the four-step wizard. `configured`
+  is False on a first run with no voxtrama.toml yet. Everything else below
+  is only passed once it is True. `overview` is
+  rendering.SettingsOverviewView, one rendering.ConfigFieldView per fact,
+  `from_environment` true when a VOXTRAMA_* variable is the reason the value
+  in force differs from the file (config.installation_source's
+  precedence). See api.routes.setup_settings and rendering.setup_settings
+  for how that is decided. `profile_options` is a list of
+  rendering.ProfileOption; `provider`, `models`, `selected_model`,
+  `context_cap` and `context_limit` are the same shapes step 3 already
+  renders (pages/setup_model_ready.html), reused here rather than a second
+  reading of the same facts.
+
+  Three small forms, not one: each carries the fields it does *not* edit
+  forward as hidden inputs, filled from `config` itself (never from a
+  machine-based proposal), so saving one value never moves another
+  (api.routes.setup_settings's docstring). Picking a different
+  generative model is a GET first (the same `?model=` reload step 3 already
+  uses: only a request can re-read /api/show), then a POST to
+  save it.
+#}
+{% extends "base.html" %}
+{% from "components/icons.html" import icon_alert %}
+{% from "components/model_licence.html" import licence_asterisk, licence_disclosure, licence_note with context %}
+
+{% block title %}{% trans %}Settings{% endtrans %} | Voxtrama{% endblock %}
+
+{% block content %}
+<section class="vx-section">
+  <header class="vx-pagehead">
+    <h1>{% trans %}Settings{% endtrans %}</h1>
+    <p class="vx-pagehead__note">
+      {% trans %}What this installation is running with now, and what to change without redoing the whole setup.{% endtrans %}
+    </p>
+  </header>
+
+  {% if not configured %}
+  <div class="vx-card">
+    <p>
+      {% trans %}This installation has not been set up yet.{% endtrans %}
+      <a href="/setup/local-processing">{% trans %}Go to setup{% endtrans %}</a>
+    </p>
+  </div>
+  {% else %}
+
+  <div class="vx-card vx-setup-summary">
+    <dl>
+      <div>
+        <dt>{% trans %}Profile{% endtrans %}</dt>
+        <dd>
+          {{ overview.hardware_profile.value }}
+          {% if overview.hardware_profile.from_environment %}
+          <span class="vx-badge vx-badge--warning">{% trans %}from environment{% endtrans %}</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div>
+        <dt>{% trans %}Parallelism{% endtrans %}</dt>
+        <dd>
+          {{ overview.parallelism.value }}
+          {% if overview.parallelism.from_environment %}
+          <span class="vx-badge vx-badge--warning">{% trans %}from environment{% endtrans %}</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div>
+        <dt>{% trans %}Generative model{% endtrans %}</dt>
+        <dd>
+          {{ overview.generative_model.value }}
+          {% if overview.generative_model.from_environment %}
+          <span class="vx-badge vx-badge--warning">{% trans %}from environment{% endtrans %}</span>
+          {% endif %}
+        </dd>
+      </div>
+      <div>
+        <dt>{% trans %}Provider address{% endtrans %}</dt>
+        <dd>
+          {{ overview.provider_address.value }}
+          {% if overview.provider_address.from_environment %}
+          <span class="vx-badge vx-badge--warning">{% trans %}from environment{% endtrans %}</span>
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
+    {% if overview.hardware_profile.from_environment or overview.parallelism.from_environment
+        or overview.generative_model.from_environment or overview.provider_address.from_environment %}
+    <p class="vx-notice" role="status">
+      {{ icon_alert() }}
+      {% trans %}A value marked "from environment" is overridden by a VOXTRAMA_* variable; saving it below has no effect until that variable changes or is removed.{% endtrans %}
+    </p>
+    {% endif %}
+    <p class="vx-help">
+      {% trans %}Read from{% endtrans %} <code>voxtrama.toml</code>.
+    </p>
+  </div>
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}Change profile{% endtrans %}</h2>
+    <form method="post" action="{{ origin }}" class="vx-cluster">
+      <input type="hidden" name="cores_per_chunk" value="{{ config.cores_per_chunk }}" />
+      <input type="hidden" name="parallel_chunks" value="{{ config.parallel_chunks }}" />
+      {% if config.ollama_model %}<input type="hidden" name="ollama_model" value="{{ config.ollama_model }}" />{% endif %}
+      {% if context_limit %}<input type="hidden" name="context_limit" value="{{ context_limit }}" />{% endif %}
+      <div class="vx-field">
+        <label for="vx-hardware-profile">{% trans %}Profile{% endtrans %}</label>
+        <select id="vx-hardware-profile" name="hardware_profile">
+          {% for option in profile_options %}
+          <option value="{{ option.key }}" {% if option.key == config.hardware_profile %}selected{% endif %}>
+            {{ option.label }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="vx-button vx-button--small">{% trans %}Save{% endtrans %}</button>
+    </form>
+  </div>
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}Change parallelism{% endtrans %}</h2>
+    <form method="post" action="{{ origin }}" class="vx-cluster">
+      <input type="hidden" name="hardware_profile" value="{{ config.hardware_profile }}" />
+      {% if config.ollama_model %}<input type="hidden" name="ollama_model" value="{{ config.ollama_model }}" />{% endif %}
+      {% if context_limit %}<input type="hidden" name="context_limit" value="{{ context_limit }}" />{% endif %}
+      <div class="vx-field">
+        <label for="vx-cores-per-chunk">{% trans %}Cores per chunk{% endtrans %}</label>
+        <input type="number" min="1" id="vx-cores-per-chunk" name="cores_per_chunk" value="{{ config.cores_per_chunk }}" />
+      </div>
+      <div class="vx-field">
+        <label for="vx-parallel-chunks">{% trans %}Parallel chunks{% endtrans %}</label>
+        <input type="number" min="1" id="vx-parallel-chunks" name="parallel_chunks" value="{{ config.parallel_chunks }}" />
+      </div>
+      <button type="submit" class="vx-button vx-button--small">{% trans %}Save{% endtrans %}</button>
+    </form>
+  </div>
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}Change generative model{% endtrans %}</h2>
+    {% if not provider.configured %}
+    <p>{% trans %}Ollama is not configured: no generative model is offered.{% endtrans %}</p>
+    {% elif not provider.reachable %}
+    <p>
+      {{ icon_alert() }} {% trans %}Ollama is not reachable at{% endtrans %} {{ provider.host }}.
+      <a href="{{ origin }}">{% trans %}Recheck{% endtrans %}</a>
+    </p>
+    {% else %}
+    {% for row in models %}
+    <div class="vx-model-row-wrap">
+      <a class="vx-model-row {% if row.name == selected_model %}vx-model-row--selected{% endif %}"
+         href="{{ origin }}?model={{ row.name }}"
+         aria-current="{{ 'true' if row.name == selected_model else 'false' }}">
+        <span class="vx-cluster">
+          <span class="vx-radio vx-radio--dot {% if row.name == selected_model %}vx-radio--selected{% endif %}" aria-hidden="true"></span>
+          <span>{{ row.name }}</span>
+          {{ licence_asterisk(row) }}
+        </span>
+        <span>{{ row.size_label }}</span>
+        <span class="vx-badge vx-badge--success">{% trans %}Installed{% endtrans %}</span>
+      </a>
+      {{ licence_disclosure(row) }}
+    </div>
+    {% else %}
+    <p class="vx-help">{% trans %}Ollama has no models installed yet.{% endtrans %}</p>
+    {% endfor %}
+    {% if models %}{{ licence_note() }}{% endif %}
+    {% if selected_model %}
+    <form method="post" action="{{ origin }}" class="vx-cluster">
+      <input type="hidden" name="hardware_profile" value="{{ config.hardware_profile }}" />
+      <input type="hidden" name="cores_per_chunk" value="{{ config.cores_per_chunk }}" />
+      <input type="hidden" name="parallel_chunks" value="{{ config.parallel_chunks }}" />
+      <input type="hidden" name="ollama_model" value="{{ selected_model }}" />
+      {% if context_cap %}
+      <div class="vx-field">
+        <label for="vx-context-limit">{% trans %}Use at most:{% endtrans %}</label>
+        <input type="number" id="vx-context-limit" min="1" max="{{ context_cap }}" name="context_limit" value="{{ context_limit }}" />
+      </div>
+      {% endif %}
+      <button type="submit" class="vx-button vx-button--small">{% trans %}Save{% endtrans %}</button>
+    </form>
+    {% endif %}
+    {% endif %}
+  </div>
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}Restart the guided setup{% endtrans %}</h2>
+    <p class="vx-help">
+      {% trans %}Runs the whole tuning again from the first step: this machine is measured again, nothing here is kept as a starting point.{% endtrans %}
+    </p>
+    <a href="/setup/local-processing" class="vx-button vx-button--secondary">{% trans %}Restart setup{% endtrans %}</a>
+  </div>
+
+  {% endif %}
+</section>
+{% endblock %}

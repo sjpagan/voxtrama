@@ -1,0 +1,71 @@
+{#
+  The Speakers tab: every voice the job told
+  apart, then everyone added by hand, one row each (rendering.speakers_tab).
+
+  One form names them all: POST /recordings/{id}/speaker-names, one
+  `speaker_name__<label>` field per row, the same route the old «Name
+  speakers» dialog used. A name follows the voice everywhere the job shows
+  it. A blank field leaves that voice as it is.
+
+  «Listen» plays the row's first turns on the job's own player, one after
+  the other, a minute at most, and the small waveform beside it is drawn
+  from the recording's levels (static/js/run_speakers.js). `data-clips` is
+  the list of [start, end] pairs; nothing is sliced on the server.
+
+  «Add speaker» is a second form, POST /recordings/{id}/speakers: someone
+  the detection missed, who can then be given a turn in Explore.
+#}
+{% from "components/icons.html" import icon_alert, icon_play %}
+
+{% macro speakers_tab(rows, recording_id, run_id) %}
+<div class="vx-card vx-speakers" id="vx-speakers">
+  <div class="vx-speakers__intro">
+    <div>
+      <h3>{% trans %}Speakers{% endtrans %}</h3>
+      <p class="vx-help">{% trans %}Name each voice once: the name follows it in the transcript, in Explore and in the recap. To give one turn to someone else, use Explore.{% endtrans %}</p>
+    </div>
+    <p class="vx-turns__notice" role="note">{{ icon_alert() }} {% trans %}Speakers are told apart automatically and can be wrong.{% endtrans %}</p>
+  </div>
+  <form method="post" action="/recordings/{{ recording_id }}/speaker-names" class="vx-stack" id="vx-speakers-names">
+    <input type="hidden" name="run_id" value="{{ run_id }}">
+    {% if rows %}
+    <ul class="vx-speakers__list">
+      {% for row in rows %}
+      <li class="vx-speakers__row">
+        <span class="vx-speaker-naming__dot" data-speaker-color="{{ row.color }}" aria-hidden="true"></span>
+        <div class="vx-speakers__who">
+          <span class="vx-speakers__label">{% if row.added %}{% trans %}Added{% endtrans %}{% else %}{{ row.label }}{% endif %}</span>
+          <span class="vx-speakers__stats">{% if row.added %}{% trans %}Added by hand{% endtrans %}{% else %}{% trans %}Detected{% endtrans %}{% endif %}</span>
+        </div>
+        <input type="text" name="speaker_name__{{ row.label }}" value="{{ row.name }}" maxlength="80" autocomplete="off"
+          placeholder="{% trans %}Name this voice{% endtrans %}"
+          aria-label="{% trans %}Name for{% endtrans %} {{ row.label }}">
+        <div class="vx-speakers__listen">
+          {% if row.clips %}
+          <button type="button" class="vx-button vx-button--secondary vx-button--small vx-speakers__play"
+            data-clips="{{ row.clips|tojson|forceescape }}"
+            data-label-play="{% trans %}Listen{% endtrans %}" data-label-stop="{% trans %}Stop{% endtrans %}"
+            aria-label="{% trans %}Listen to{% endtrans %} {{ row.name or row.label }}">{{ icon_play() }} <span>{% trans %}Listen{% endtrans %}</span></button>
+          <canvas class="vx-speakers__wave" width="120" height="28" aria-hidden="true"></canvas>
+          {% endif %}
+        </div>
+        <span class="vx-speakers__stats vx-speakers__numbers">{{ row.turns }} {% if row.turns == 1 %}{% trans %}turn{% endtrans %}{% else %}{% trans %}turns{% endtrans %}{% endif %} · {{ row.time }}{% if not row.added %} · {{ row.percent }}%{% endif %}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vx-help">{% trans %}This transcript has no speakers told apart.{% endtrans %}</p>
+    {% endif %}
+  </form>
+  <form method="post" action="/recordings/{{ recording_id }}/speakers" class="vx-speakers__add">
+    <input type="hidden" name="run_id" value="{{ run_id }}">
+    <input type="text" name="name" maxlength="80" autocomplete="off" required
+      placeholder="{% trans %}Someone the detection missed{% endtrans %}" aria-label="{% trans %}Name of the speaker to add{% endtrans %}">
+    <button type="submit" class="vx-button vx-button--secondary">{% trans %}Add speaker{% endtrans %}</button>
+  </form>
+  <div class="vx-speakers__actions">
+    <p class="vx-help">{% trans %}Listen plays the first turns of that voice, one minute at most. Names belong to the recording: they stay if it is processed again.{% endtrans %}</p>
+    {% if rows %}<button type="submit" form="vx-speakers-names" class="vx-button">{% trans %}Save names{% endtrans %}</button>{% endif %}
+  </div>
+</div>
+{% endmacro %}

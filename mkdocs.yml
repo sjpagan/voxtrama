@@ -1,0 +1,71 @@
+# The usage documentation: how to install and use Voxtrama, for
+# people who will not read the code. Sources live in
+# docs/guide/. `make docs` builds it into site/ with
+# --strict, the same way CI does.
+site_name: Voxtrama
+site_description: Local-first audio intelligence workflows. From audio to verifiable knowledge.
+docs_dir: docs/guide
+site_dir: site
+strict: true
+
+theme:
+  name: material
+  language: en
+  logo: images/logo-mark.png
+  favicon: images/favicon.png
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - navigation.indexes
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Install: install.md
+      - First start: first-start.md
+  - Using Voxtrama:
+      - Start a job: new-job.md
+      - Follow a job: follow-a-job.md
+      - The job page: job-page.md
+      - Jobs, search and clean-up: jobs.md
+      - Workflows and skills: workflows.md
+  - Settings:
+      - Settings pages: settings.md
+      - Summary models and servers: model-servers.md
+  - Reference:
+      - Command line: cli.md
+      - Configuration: configuration.md
+      - Workflow files: workflow-files.md
+      - Taking your data with you: data-portability.md
+  - Troubleshooting: troubleshooting.md

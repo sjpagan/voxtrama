@@ -1,0 +1,111 @@
+<!doctype html>
+{# `locale` comes from render_context() (i18n/jinja.py), so it matches
+   whatever TranslatorDep negotiated for this request. Defaults to "en"
+   for the one caller that renders this template without merging that
+   context in: tests/test_web_shell.py, which only checks the markup
+   itself, not a negotiated locale. #}
+{# data-theme is written here, in the first bytes, and omitted entirely when the
+   choice is "auto" (see rendering.theme). An absent attribute lets
+   prefers-color-scheme decide. It also means no flash of the wrong theme,
+   since the document never exists without the choice applied. #}
+<html lang="{{ locale | default('en') }}"{% if theme_attribute %} data-theme="{{ theme_attribute }}"{% endif %}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Lets native controls (scrollbars, form widgets) pick a rendering
+         that matches whichever theme Pico resolves, before voxtrama.min.css
+         even loads. -->
+    <meta name="color-scheme" content="light dark" />
+    <title>{% block title %}Voxtrama{% endblock %}</title>
+    <!-- Pico first, voxtrama second: voxtrama's tokens build on Pico's
+         cascade, not the other way round. Both paths are root-relative
+         rather than relative, because this template is extended from
+         routes at different depths (/ and /runs/{id}/view) and a path
+         without the leading slash would resolve differently under each.
+         No host, no port, no CDN: a desktop build serves
+         these files from its own process and stays offline. -->
+    <link rel="icon" href="{{ static_url('img/favicon.ico') }}" sizes="any" />
+    <link rel="icon" type="image/png" href="{{ static_url('img/favicon-32.png') }}" sizes="32x32" />
+    <link rel="apple-touch-icon" href="{{ static_url('img/apple-touch-icon.png') }}" />
+    <link rel="manifest" href="{{ static_url('img/site.webmanifest') }}" />
+    <link rel="stylesheet" href="{{ static_url('vendor/pico/pico.min.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('css/voxtrama.min.css') }}" />
+    {# A page mid-poll (pages/setup_local_processing.html, while a model
+       downloads) puts a plain <meta http-equiv="refresh"> here: HTML, not
+       JavaScript, which the web interface does without (see that page's comment). Empty
+       for every other page. #}
+    {% block head_extra %}{% endblock %}
+  </head>
+  <body>
+    <!-- The sidebar is the shell's, not a page's, for whichever page
+         opts into it: it renders only when passed nav_items. Every route
+         does, now that the home page joined the rest. A section with no
+         route is not shown as "coming soon": Workflows and System simply
+         do not render until each gets one (rendering.sidebar_items). The
+         no-sidebar branch further down stays for a page with
+         nowhere at all to
+         navigate, and is what tests/test_web_shell.py exercises by
+         rendering this template with no context. -->
+    {# "with context" carries gettext/ngettext (render_context()'s own
+       per-request pair, merged into this render() call) into the
+       imported macros. Without it a {% trans %} inside one of them
+       finds no translator at all, not even the English fallback. #}
+    {% from "components/header.html" import site_brand, site_header, site_search, header_actions with context %}
+    {% from "components/sidebar.html" import sidebar_nav with context %}
+    {% from "components/back_link.html" import back_link as render_back_link with context %}
+    {% from "components/breadcrumb.html" import breadcrumb as render_breadcrumb with context %}
+    {% if nav_items %}
+    <!-- The shell: one navbar across the
+         full width (brand, search, health, identity) and under it the
+         sidebar beside the page. The brand moved out of the sidebar column
+         into the navbar; the sidebar keeps only the three sections. -->
+    <div class="vx-app vx-app--section">
+      <header class="vx-header vx-header--navbar">
+        {{ site_brand() }}
+        {{ site_search(search_query | default('')) }}
+        {{ header_actions(user_initial, user_full_name, theme_choices, origin | default('/'), health | default(none)) }}
+      </header>
+      <div class="vx-shell-body">
+      <aside class="vx-sidebar" aria-label="{% trans %}Primary{% endtrans %}">
+        {{ sidebar_nav(nav_items) }}
+      </aside>
+      <div class="vx-section-main">
+    {% else %}
+    <div class="vx-app">
+      <header class="vx-header">{{ site_header(user_initial, user_full_name, theme_choices, origin | default('/'), health | default(none), search_query | default('')) }}</header>
+      <div class="vx-layout">
+    {% endif %}
+        {# `{% block content %}` cannot appear twice in one template, even
+           inside mutually exclusive branches: Jinja resolves blocks by
+           static scan, not at render time. So both branches above open
+           their own wrapper and meet here, where this block is written
+           once, before closing whichever wrapper opened. #}
+        <main class="vx-main">
+          {# The breadcrumb (rendering.nav.Crumb) says where a page
+             is. The climb-back link ("← All runs",
+             rendering.nav.BackLink) only says "up one". A page
+             passing `breadcrumb` does not also render `back_link`: the
+             breadcrumb's last ring already says where you are, and two
+             ways to climb on the same row is noise.
+             `.vx-page-nav` puts both inside the same column base.html's
+             `.vx-section` pages open with (layout/_index.scss), rather
+             than the full-bleed `<main>`. Rendered outside it, either one
+             sat flush against the sidebar's edge. #}
+          {% if breadcrumb or back_link %}
+          <div class="vx-page-nav">
+            {% if breadcrumb %}{{ render_breadcrumb(breadcrumb) }}
+            {% elif back_link %}{{ render_back_link(back_link) }}{% endif %}
+          </div>
+          {% endif %}
+          {% block content %}{% endblock %}
+        </main>
+    {% if nav_items %}
+      </div>
+      </div>
+    </div>
+    {% else %}
+      </div>
+    </div>
+    {% endif %}
+  </body>
+</html>

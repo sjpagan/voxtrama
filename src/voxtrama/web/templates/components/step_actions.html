@@ -1,0 +1,29 @@
+{#
+  The commands that conclude a step: the primary action always sits
+  bottom right, not wherever it happened to be written in the markup. All
+  four setup steps put them in a .vx-cluster (a generic left-aligned
+  container), the same mistake the breadcrumb once had to fix.
+
+  A macro, not an {% include %}, on the same pattern as step_chain.html
+  and breadcrumb.html: no boolean parameter, the caller passes the
+  content of the two sides. The two sides are markup, not plain strings,
+  so they arrive already rendered from a {% set %}...{% endset %} block
+  built by the caller, the same idea as step_chain's item.marker
+  (components/setup_steps.html builds that content this way before
+  calling the macro). One {% call %} per side does not exist in Jinja
+  without inventing a new convention in this repo (here there is already
+  one {% call %}/macro per invocation), while the {% set %} pattern is
+  one the repo already uses elsewhere.
+
+  `start` and `primary` are already-rendered content (the «You can skip
+  this» note, a «Skip» link, or nothing). Both containers stay present
+  even when one is empty, because they are two flex children. With a
+  single child, justify-content: space-between would push it to the
+  left instead of the right.
+#}
+{% macro step_actions(start="", primary="") %}
+<div class="vx-step-actions">
+  <div class="vx-step-actions__start">{{ start }}</div>
+  <div class="vx-step-actions__primary">{{ primary }}</div>
+</div>
+{% endmacro %}

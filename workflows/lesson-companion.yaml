@@ -1,0 +1,38 @@
+# This workflow is reduced to the steps the 0.1 runs. What became of
+# the others the original chain named:
+#   - build_index: not done: the concepts, each with its moment in the audio, are the index.
+#   - generate_review_questions: not done.
+#   - validate_evidence: nothing to add: engine.anchoring checks every claim.
+#   - export: not a step: the job view exports the recap and the manifest.
+name: lesson-companion
+title: Lesson companion
+version: 2.0.0
+schema_version: v1
+# The description is one line for the person choosing a workflow;
+# Nine words each, so the cards read alike side by side.
+# What it used to say, for whoever maintains this file:
+#   Turns a lesson or dispense recording into key concepts and definitions,
+#   for teachers and students, reduced to what the 0.1 runs.
+description: Turn a lesson into key concepts to study from.
+steps:
+  - id: transcribe
+    skill: transcribe
+    skill_version: 1.0.0
+  - id: diarize
+    skill: diarize
+    skill_version: 1.0.0
+    depends_on: [transcribe]
+  # Summarize era registrata nel motore (engine.skill_catalog
+  # GENERATIVE_SKILL_NAMES la elenca, engine.anchoring ri-ancora le sue
+  # citazioni, i test la coprono) e nessun workflow la nominava: codice
+  # eseguibile che nessun run poteva raggiungere. Sta prima della skill
+  # tematica perche' il riassunto e' il documento che serve subito, e
+  # dipende da diarize come lei: chi legge il recap vuole sapere chi parla.
+  - id: summarize
+    skill: summarize
+    skill_version: 1.0.0
+    depends_on: [diarize]
+  - id: extract_concepts
+    skill: extract_concepts
+    skill_version: 1.0.0
+    depends_on: [diarize]

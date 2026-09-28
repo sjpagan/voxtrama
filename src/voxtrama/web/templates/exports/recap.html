@@ -1,0 +1,33 @@
+{#
+  A concluded job's recap as a standalone HTML file («Export» on the
+  Recap tab): one self-contained page, styles inline, no script and no
+  link back to this installation, so it opens anywhere it is sent. The
+  same blocks the PDF and DOCX exports are written from
+  (rendering.recap_document), in the same order.
+#}
+<!doctype html>
+<html lang="{{ locale }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }}</title>
+<style>
+  body { font: 16px/1.5 system-ui, sans-serif; max-width: 46rem; margin: 2.5rem auto; padding: 0 1rem; color: #1b1f2a; }
+  h1 { margin: 0; font-size: 1.8rem; }
+  .meta, .note { color: #667; font-size: 0.85rem; }
+  h2 { margin: 1.6rem 0 0.4rem; font-size: 1.2rem; }
+  ul { padding-left: 1.2rem; margin: 0; }
+  li { margin: 0.3rem 0; }
+</style>
+</head>
+<body>
+{% for block in blocks %}
+{% if block.kind == "title" %}<h1>{{ block.text }}</h1>
+{% elif block.kind == "meta" %}<p class="meta">{{ block.text }}</p>
+{% elif block.kind == "heading" %}<h2>{{ block.text }}</h2><ul>
+{% elif block.kind == "bullet" %}<li>{{ block.text }}</li>
+{% elif block.kind == "note" %}</ul><p class="note">{{ block.text }}</p>
+{% endif %}
+{% endfor %}
+</body>
+</html>

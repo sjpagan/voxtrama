@@ -1,0 +1,153 @@
+{#
+  GET /models: the permanent library of every model this
+  installation manages. `summary` is rendering.InstallationSummaryView;
+  `transcription_rows` and `speaker_row` are rendering.WeightRowView
+  (`transcription_rows` the three hardware profiles, `speaker_row`
+  ECAPA-TDNN); `provider` is setup.generative_step.GenerativeProviderState
+  and `generative_models` a list of rendering.ModelRowView, read the same
+  way step 3 already reads them. The Generative group is read-only
+  here (Voxtrama does not run `ollama pull`), so it carries no
+  action of its own.
+
+  Rows, not cards: the three profiles are not a choice on
+  this page the way they are at step 2. Nothing here decides which one
+  the installation runs, only what is downloaded and what it costs to
+  drop it, so `.vx-model-row`, already in use for step 3's list, is
+  reused rather than `.vx-profile-card`.
+
+  `download` is a rendering.DownloadView or None, the same view
+  step 2 already renders (`download_view`). The row whose `label` matches
+  `download.model_label` shows its bar instead of its size while
+  `downloading` is true, and the page polls itself the same plain way
+  step 2 does (see `head_extra` below).
+#}
+{% extends "base.html" %}
+{% from "components/icons.html" import icon_alert, icon_download, icon_trash %}
+{% from "components/model_licence.html" import licence_asterisk, licence_disclosure, licence_note with context %}
+
+{% block title %}{% trans %}Models{% endtrans %} | Voxtrama{% endblock %}
+
+{% block head_extra %}
+{%- if downloading %}<meta http-equiv="refresh" content="2" />{% endif -%}
+{% endblock %}
+
+{% macro _weight_row(row) %}
+{% set row_downloading = downloading and download.model_label == row.label %}
+<div class="vx-model-row">
+  <span class="vx-cluster">
+    <span>{{ row.label }}</span>
+    {% if row.installed %}<span class="vx-badge vx-badge--success">{% trans %}Installed{% endtrans %}</span>{% endif %}
+    {% if row_downloading %}<span class="vx-badge">{{ icon_download() }} {% trans %}Downloading{% endtrans %}</span>{% endif %}
+  </span>
+  {% if row_downloading %}
+  <span>{{ download.done_label }} / {{ download.total_label }}</span>
+  {% else %}
+  <span>{{ row.size_label }}</span>
+  {% endif %}
+  <span class="vx-cluster">
+    <a class="vx-profile-card__licence" href="{{ row.page_url }}" target="_blank" rel="noopener noreferrer">
+      {{ row.licence }} {% trans %}licence{% endtrans %}
+    </a>
+    {% if not downloading %}
+    <form method="post" action="{{ remove_path if row.installed else download_path }}">
+      <input type="hidden" name="key" value="{{ row.key }}" />
+      {% if row.installed %}
+      <button type="submit" class="vx-button vx-button--danger vx-button--small">
+        {{ icon_trash() }} {% trans %}Remove{% endtrans %}
+      </button>
+      {% else %}
+      <button type="submit" class="vx-button vx-button--small">
+        {{ icon_download() }} {% trans %}Download{% endtrans %}
+      </button>
+      {% endif %}
+    </form>
+    {% endif %}
+  </span>
+</div>
+{% if row_downloading %}
+<div class="vx-setup-storagebar">
+  <div class="vx-setup-storagebar__fill" style="width: {{ download.percent }}%"></div>
+</div>
+{% endif %}
+{% if row.redownload_notice %}
+<p class="vx-help">
+  {% trans %}Removing this downloads it again the next time it is needed.{% endtrans %}
+</p>
+{% endif %}
+{% endmacro %}
+
+{% block content %}
+<section class="vx-section">
+  <header class="vx-pagehead">
+    <h1>{% trans %}Models{% endtrans %}</h1>
+    <p class="vx-pagehead__note">
+      {% trans %}What is downloaded, what it costs, and what this installation actually uses.{% endtrans %}
+    </p>
+  </header>
+
+  <div class="vx-card vx-setup-summary">
+    {% if summary.configured %}
+    <dl>
+      <div><dt>{% trans %}Profile{% endtrans %}</dt><dd>{{ summary.profile_label }}</dd></div>
+      <div><dt>{% trans %}Parallelism{% endtrans %}</dt><dd>{{ summary.parallelism_label }}</dd></div>
+      <div><dt>{% trans %}Generative model{% endtrans %}</dt><dd>{{ summary.generative_model or "-" }}</dd></div>
+      <div><dt>{% trans %}Context window{% endtrans %}</dt><dd>{{ summary.context_cap_label or "-" }}</dd></div>
+    </dl>
+    {% else %}
+    <p>
+      {% trans %}This installation has not been set up yet.{% endtrans %}
+      <a href="/setup/local-processing">{% trans %}Go to setup{% endtrans %}</a>
+    </p>
+    {% endif %}
+  </div>
+
+  {% if downloading %}
+  <p class="vx-notice" role="status">
+    {{ icon_alert() }} {% trans %}A download is already in progress. Try again once it finishes.{% endtrans %}
+  </p>
+  {% endif %}
+  {% if download and download.failed and not downloading %}
+  <p class="vx-notice vx-notice--danger" role="alert">
+    {% trans %}The download failed:{% endtrans %} {{ download.message }}
+  </p>
+  {% endif %}
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}Transcription{% endtrans %}</h2>
+    {% for row in transcription_rows %}{{ _weight_row(row) }}{% endfor %}
+  </div>
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}Speakers{% endtrans %}</h2>
+    {{ _weight_row(speaker_row) }}
+  </div>
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}Generative{% endtrans %}</h2>
+    {% if not provider.configured %}
+    <p>{% trans %}Ollama is not configured: no generative model is offered.{% endtrans %}</p>
+    {% elif not provider.reachable %}
+    <p>{{ icon_alert() }} {% trans %}Ollama is not reachable at{% endtrans %} {{ provider.host }}.</p>
+    {% else %}
+    {% for row in generative_models %}
+    <div class="vx-model-row-wrap">
+      <div class="vx-model-row">
+        <span class="vx-cluster">
+          <span>{{ row.name }}</span>
+          {{ licence_asterisk(row) }}
+        </span>
+        <span>{{ row.size_label }}</span>
+        <span class="vx-badge vx-badge--success">{% trans %}Installed{% endtrans %}</span>
+      </div>
+      {{ licence_disclosure(row) }}
+    </div>
+    {% else %}
+    <p class="vx-help">{% trans %}Ollama has no models installed yet.{% endtrans %}</p>
+    {% endfor %}
+    {% if generative_models %}
+    {{ licence_note() }}
+    {% endif %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,67 @@
+// The Recent jobs table under the new-job form: Name, Workflow,
+// Status and a ⋮ menu (<details>, no script) holding View and Delete.
+@use "../abstracts" as tokens;
+
+.vx-jobs-table__head,
+.vx-jobs-table .vx-run-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr) minmax(0, 1fr) 2.5rem;
+  align-items: center;
+  gap: tokens.$vx-space-sm;
+  padding: tokens.$vx-space-2xs 0;
+  border-bottom: 1px solid var(--vx-border);
+}
+
+.vx-jobs-table__head {
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+}
+
+.vx-jobs-table .vx-run-row__workflow {
+  color: var(--vx-text-muted);
+}
+
+.vx-row-menu {
+  position: relative;
+  margin: 0;
+
+  summary {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    cursor: pointer;
+
+    &::-webkit-details-marker,
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.vx-row-menu__list {
+  position: absolute;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  min-width: 9rem;
+  padding: tokens.$vx-space-2xs;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+
+  a,
+  button {
+    display: flex;
+    gap: tokens.$vx-space-2xs;
+    width: 100%;
+    margin: 0;
+    padding: tokens.$vx-space-2xs tokens.$vx-space-sm;
+    border: 0;
+    background: transparent;
+    color: var(--vx-text);
+    font-size: tokens.$vx-text-sm;
+    text-align: left;
+    text-decoration: none;
+  }
+}

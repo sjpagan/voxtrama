@@ -1,0 +1,91 @@
+{#
+  Step 4 of the guided setup ("Private storage"). `write_probe`
+  is diagnostics.identity.IdentityReport (its own write probe, reused as
+  instructed rather than rewritten); `usage` is rendering.DiskUsageView or
+  None when the volume could not be read. The POST below is the only
+  place InstallationConfig is ever written (see this route's docstring).
+#}
+{% extends "base.html" %}
+{% from "components/setup_steps.html" import setup_steps with context %}
+{% from "components/step_actions.html" import step_actions %}
+{% from "components/icons.html" import icon_check, icon_alert %}
+
+{% block title %}{% trans %}Where your recordings live{% endtrans %} | Voxtrama{% endblock %}
+
+{% block content %}
+<section class="vx-section vx-setup">
+  {{ setup_steps(wizard_steps) }}
+  <header class="vx-pagehead">
+    <h1>{% trans %}Where your recordings live{% endtrans %}</h1>
+    <p class="vx-pagehead__note">
+      {% trans %}Recordings, transcripts and generated outputs are written here. Nothing is uploaded.{% endtrans %}
+    </p>
+  </header>
+
+  <div class="vx-setup__path"><code>{{ data_dir }}</code></div>
+
+  <ul class="vx-setup-checks">
+    <li>
+      {% if write_probe.data_dir_exists %}{{ icon_check() }}{% else %}{{ icon_alert() }}{% endif %}
+      {% trans %}Folder exists{% endtrans %}
+    </li>
+    <li>
+      {% if write_probe.write_ok %}{{ icon_check() }}{% else %}{{ icon_alert() }}{% endif %}
+      {% if write_probe.write_ok %}
+        {% trans %}Writable: test file created and removed{% endtrans %}
+      {% else %}
+        {{ write_probe.write_error }}
+      {% endif %}
+    </li>
+    <li>
+      {% if usage %}{{ icon_check() }}{% else %}{{ icon_alert() }}{% endif %}
+      {% if usage %}{{ usage.free_label }}{% else %}{% trans %}Free space could not be read{% endtrans %}{% endif %}
+    </li>
+  </ul>
+  {% if usage %}
+  <div class="vx-setup-storagebar">
+    <div class="vx-setup-storagebar__fill" style="width: {{ (usage.free_fraction * 100)|round(1) }}%"></div>
+  </div>
+  <p class="vx-cluster vx-help">
+    <span>{{ usage.free_label }}</span>
+    <span>{{ usage.used_of_total_label }}</span>
+  </p>
+  {% endif %}
+
+  <div class="vx-card vx-setup-summary">
+    <h2>{% trans %}Ready to start{% endtrans %}</h2>
+    <p class="vx-help">{% trans %}Review what you decided before Voxtrama saves this setup.{% endtrans %}</p>
+    <dl>
+      <div><dt>{% trans %}Name{% endtrans %}</dt><dd>{{ person_name or "-" }}</dd></div>
+      <div><dt>{% trans %}Profile{% endtrans %}</dt><dd>{{ profile_label }}</dd></div>
+      <div><dt>{% trans %}Parallelism{% endtrans %}</dt><dd>{{ parallelism_label }}</dd></div>
+      <div><dt>{% trans %}Generative model{% endtrans %}</dt><dd>{{ ollama_model or "-" }}</dd></div>
+      <div><dt>{% trans %}Data folder{% endtrans %}</dt><dd>{{ data_dir }}</dd></div>
+    </dl>
+    <p class="vx-help">
+      {% trans %}Saved to{% endtrans %} <code>{{ data_dir }}/voxtrama.toml</code>:
+      {% trans %}readable, editable, copyable to another machine.{% endtrans %}
+    </p>
+  </div>
+
+  {# «Try the demo» used to sit to the left of «Finish setup».
+     The command was removed: the demo does
+     not exist (it was a link to the home page, where the button of the
+     same name did nothing), and this step's stylesheet adopted the rule
+     that a command that submits nothing is worse than no command. When
+     a real demo exists it comes back here: it needs an audio file, and
+     no media file is tracked in the repository. #}
+  {% set start %}{% endset %}
+  {% set primary %}
+  <button type="submit" class="vx-button">{% trans %}Finish setup{% endtrans %}</button>
+  {% endset %}
+  <form method="post" action="{{ origin }}">
+    <input type="hidden" name="hardware_profile" value="{{ hardware_profile }}" />
+    <input type="hidden" name="cores_per_chunk" value="{{ cores_per_chunk }}" />
+    <input type="hidden" name="parallel_chunks" value="{{ parallel_chunks }}" />
+    {% if ollama_model %}<input type="hidden" name="ollama_model" value="{{ ollama_model }}" />{% endif %}
+    {% if context_limit %}<input type="hidden" name="context_limit" value="{{ context_limit }}" />{% endif %}
+    {{ step_actions(start, primary) }}
+  </form>
+</section>
+{% endblock %}

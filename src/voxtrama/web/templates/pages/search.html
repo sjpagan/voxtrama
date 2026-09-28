@@ -1,0 +1,56 @@
+{#
+  GET /search: results grouped by job.
+  The job's name in evidence with workflow and date, `Open job ›`, and
+  under it every occurrence (time, speaker, the sentence with the words
+  marked), each linking to that line of the job's transcript. A job found
+  by its title alone shows with no lines under it.
+#}
+{% extends "base.html" %}
+
+{% block title %}{% trans %}Search{% endtrans %} | Voxtrama{% endblock %}
+
+{% block content %}
+<section class="vx-section vx-section--wide">
+  <header class="vx-pagehead">
+    <h1>
+      {% if search_query %}{% trans %}Results for{% endtrans %} "{{ search_query }}"{% else %}{% trans %}Search{% endtrans %}{% endif %}
+    </h1>
+    {% if groups %}
+    <p class="vx-pagehead__note">{{ match_count }} {% trans %}matches in{% endtrans %} {{ groups|length }} {% trans %}jobs{% endtrans %}</p>
+    {% endif %}
+  </header>
+
+  {% if search_too_short %}
+  <p>{% trans %}Type at least two characters.{% endtrans %}</p>
+  {% elif not groups %}
+  <p>{% trans %}The search produced no results.{% endtrans %}</p>
+  {% endif %}
+
+  {% for group in groups %}
+  <article class="vx-card vx-search-group">
+    <header class="vx-search-group__head">
+      <div>
+        <h2><a href="/runs/{{ group.run_id }}/view">{{ group.name }}</a></h2>
+        <p class="vx-help">{{ group.workflow }} · {{ group.date }}</p>
+      </div>
+      <a class="vx-link" href="/runs/{{ group.run_id }}/view">{% trans %}Open job{% endtrans %} ›</a>
+    </header>
+    {% if group.hits %}
+    <ol class="vx-search-hits">
+      {% for hit in group.hits %}
+      <li>
+        <a class="vx-search-hit" href="{{ hit.href }}">
+          <span class="vx-search-hit__time">{{ hit.time }}</span>
+          {% if hit.speaker %}<span class="vx-speaker-chip">{{ hit.speaker }}</span>{% else %}<span></span>{% endif %}
+          <span class="vx-search-hit__text">{% for text, match in hit.parts %}{% if match %}<mark>{{ text }}</mark>{% else %}{{ text }}{% endif %}{% endfor %}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="vx-help">{% trans %}Found in the job's name.{% endtrans %}</p>
+    {% endif %}
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

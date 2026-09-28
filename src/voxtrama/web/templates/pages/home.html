@@ -1,0 +1,29 @@
+{#
+  The home page: the place where a job is
+  created. The new-job form, then the last five jobs. What left the home
+  with this layout: the hero, the status row (now the navbar's health pill),
+  the single upload box (now the form's Audio card) and `Try demo`.
+#}
+{% extends "base.html" %}
+{% from "components/new_job_form.html" import new_job_form with context %}
+{% from "components/runs_list.html" import runs_list with context %}
+{% from "components/first_run_card.html" import first_run_card with context %}
+
+{% block title %}{% trans %}New job{% endtrans %} | Voxtrama{% endblock %}
+
+{% block head_extra %}
+{%- if first_run and first_run.downloading %}<meta http-equiv="refresh" content="3" />{% endif -%}
+{% endblock %}
+
+{% block content %}
+<section class="vx-section vx-section--wide">
+  <header class="vx-pagehead">
+    <h1>{% trans %}New job{% endtrans %}</h1>
+    <p class="vx-pagehead__note">{% trans %}Upload audio, choose what to produce, start.{% endtrans %}</p>
+  </header>
+  {% if first_run %}{{ first_run_card(first_run) }}{% endif %}
+  {{ new_job_form(job_workflows, job_selected_workflow, job_defaults, transcription_models, summary_models, gate) }}
+  {{ runs_list(runs, workflow_titles) }}
+</section>
+<script src="{{ static_url('js/new_job.js') }}" defer></script>
+{% endblock %}

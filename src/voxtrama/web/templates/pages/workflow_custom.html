@@ -1,0 +1,74 @@
+{#
+  GET /workflows/new: the custom workflow's form, empty («Start
+  from scratch»), a copy of a system workflow («Duplicate»), or the custom
+  one being edited. `form` is rendering.workflow_custom.CustomForm.
+
+  Steps are chosen among the skills this installation has, never written
+  here. A generative step's instructions can be rewritten here, starting
+  from the system skill's; they live on the step, the skill itself never
+  changes. Transcription is always on: every other step reads the
+  transcript. The steps run in the fixed order
+  shown, whatever order they were ticked in (workflow.custom_build).
+#}
+{% extends "base.html" %}
+{% from "components/workflow_words.html" import skill_title, skill_text with context %}
+{% from "components/icons.html" import icon_chevron_right %}
+
+{% block title %}{% trans %}Custom workflow{% endtrans %} | Voxtrama{% endblock %}
+
+{% block content %}
+<section class="vx-section vx-workflows">
+  <header class="vx-pagehead">
+    <h1>{% if form.original %}{% trans %}Edit custom workflow{% endtrans %}{% else %}{% trans %}Create custom workflow{% endtrans %}{% endif %}</h1>
+    <p class="vx-pagehead__note">{% trans %}Compose it from the skills Voxtrama already has.{% endtrans %}</p>
+  </header>
+
+  <form method="post" action="/workflows/custom" class="vx-card vx-stack vx-wf-form">
+    {% if form.source %}<input type="hidden" name="source" value="{{ form.source }}">{% endif %}
+    {% if form.original %}<input type="hidden" name="original" value="{{ form.original }}">{% endif %}
+    <label>
+      {% trans %}Name{% endtrans %}
+      <input type="text" name="title" value="{{ form.title }}" maxlength="60" required autocomplete="off">
+    </label>
+    <label>
+      {% trans %}Description{% endtrans %}
+      <input type="text" name="description" value="{{ form.description }}" maxlength="140" autocomplete="off"
+        placeholder="{% trans %}One line: what this workflow turns a recording into.{% endtrans %}">
+    </label>
+
+    <fieldset class="vx-wf-form__steps">
+      <legend>{% trans %}Steps{% endtrans %}</legend>
+      <ol class="vx-wf-steps vx-wf-steps--pick">
+        {% for skill in form.skills %}
+        <li class="vx-wf-step">
+          <label class="vx-wf-pick">
+            <input type="checkbox" name="skill" value="{{ skill.value }}"{% if skill.checked %} checked{% endif %}{% if skill.required %} disabled{% endif %}>
+            <span>
+              <strong>{{ skill_title(skill.name) }}</strong>
+              <span class="vx-help">{{ skill_text(skill.name) }}{% if skill.required %} {% trans %}Always on: every other step reads the transcript.{% endtrans %}{% endif %}</span>
+            </span>
+          </label>
+          {# The instructions this step sends to the model, starting
+             from the system skill's; shown only while the step is ticked. #}
+          {% if skill.instructions %}
+          <details class="vx-wf-instr vx-wf-instr--edit"{% if skill.edited %} open{% endif %}>
+            <summary>
+              <span class="vx-wf-instr__chevron" aria-hidden="true">{{ icon_chevron_right() }}</span>
+              {% trans %}Instructions{% endtrans %}{% if skill.edited %} <span class="vx-wf-tag">{% trans %}Edited{% endtrans %}</span>{% endif %}
+            </summary>
+            <textarea name="instructions:{{ skill.name }}" rows="12" spellcheck="false">{{ skill.instructions }}</textarea>
+            <p class="vx-help">{% trans %}Starts from the system instructions. Keep {transcript} where the transcript goes; {language} and {detail} are filled in too. The answer must keep the same fields.{% endtrans %}</p>
+          </details>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+    </fieldset>
+
+    <div class="vx-cluster">
+      <button type="submit" class="vx-button">{% trans %}Save workflow{% endtrans %}</button>
+      <a class="vx-button vx-button--secondary" href="/workflows">{% trans %}Cancel{% endtrans %}</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

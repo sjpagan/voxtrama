@@ -1,0 +1,285 @@
+// Pico already renders every native control (button, input, select, table,
+// details/summary) correctly against the tokens in base/_theme. The home
+// page's components land here too.
+@use "../abstracts" as tokens;
+
+// The shell's header: brand
+// plus the "runs locally" badge and the identity menu. See
+// components/header.html on why the badge is never computed and where
+// settings now lives (a disabled entry in that menu, not a gear here).
+// The navbar: brand, search, then the health pill
+// and identity at the far edge. The search takes the room between them.
+.vx-header--navbar {
+  justify-content: flex-start;
+
+  .vx-header__actions {
+    margin-left: auto;
+  }
+}
+
+.vx-search {
+  position: relative;
+  flex: 0 1 36rem;
+  margin: 0 0 0 tokens.$vx-space-xl;
+}
+
+.vx-search__icon {
+  position: absolute;
+  top: 50%;
+  left: tokens.$vx-space-sm;
+  display: flex;
+  transform: translateY(-50%);
+  z-index: 3; // above the input, which Pico raises to 2 while focused
+  color: var(--vx-text-muted);
+  pointer-events: none;
+}
+
+// Pico squares the left corners of any input that is not the first child of
+// a [role=search] group, and the icon comes first here. This selector matches
+// Pico's specificity and loads after it, so all four corners stay round.
+.vx-search[role="search"] > input.vx-search__input {
+  margin: 0;
+  padding-left: 2.5rem;
+  padding-right: 7.5rem; // room for the reset and search buttons
+  border-radius: 0.75rem;
+  background: var(--vx-surface);
+}
+
+// Inside the field, on the right: reset (only while there is text) and
+// the submit button. Absolute, like the icon, so Pico's [role=search] group
+// rules do not stretch them or square the field's corners.
+.vx-search .vx-search__actions {
+  position: absolute;
+  top: 50%;
+  right: 0.375rem;
+  z-index: 3; // Pico raises a focused group child to 2
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transform: translateY(-50%);
+}
+
+.vx-search .vx-search__reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--vx-text-muted);
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &:hover {
+    background: var(--vx-bg-elevated);
+    color: var(--vx-text);
+  }
+}
+
+.vx-search__input::-webkit-search-cancel-button {
+  display: none; // the reset button below does this job
+}
+
+.vx-search__input:placeholder-shown ~ .vx-search__actions .vx-search__reset {
+  display: none;
+}
+
+.vx-search .vx-search__submit {
+  width: auto;
+  margin: 0;
+  padding: 0.35rem 0.9rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: var(--vx-gradient-primary);
+  box-shadow: none;
+  color: #fff;
+  font-size: tokens.$vx-text-sm;
+  font-weight: 600;
+}
+
+// The health pill: green when nothing stops a job, amber with the
+// most blocking problem otherwise, and its detail in a <details> popover.
+.vx-health {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$vx-space-2xs;
+  min-height: 2.25rem;
+  margin: 0;
+  padding: 0 tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 999px;
+  font-size: tokens.$vx-text-sm;
+  white-space: nowrap;
+}
+
+.vx-health--ok .vx-dot {
+  background: var(--vx-success);
+}
+
+.vx-health--problem {
+  border-color: var(--vx-warning);
+  color: var(--vx-warning);
+
+  .vx-dot {
+    background: var(--vx-warning);
+  }
+}
+
+.vx-health__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$vx-space-2xs;
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::after {
+    display: none;
+  }
+}
+
+.vx-health__popover {
+  position: absolute;
+  top: calc(100% + #{tokens.$vx-space-2xs});
+  right: 0;
+  z-index: 10;
+  width: 18rem;
+  padding: tokens.$vx-space-sm tokens.$vx-space-md;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.75rem;
+  background: var(--vx-bg-elevated);
+  color: var(--vx-text);
+  white-space: normal;
+}
+
+.vx-health__detail {
+  margin: 0 0 tokens.$vx-space-3xs;
+}
+
+.vx-health__fix {
+  display: inline-block;
+  margin-bottom: tokens.$vx-space-2xs;
+  color: var(--vx-primary);
+}
+
+// Holds the breadcrumb and the back link inside the same column every
+// .vx-section page opens with (layout/_index.scss), instead of the full-bleed
+// <main> they used to sit in. Measured on /setup/local-processing, the back
+// link's left edge sat at x=192, right on the sidebar's border, because
+// neither inherited .vx-section's max-width and margin-inline: auto.
+.vx-page-nav {
+  max-width: tokens.$vx-content-width;
+  margin-inline: auto;
+  // A rule under the row, not a margin: the wayfinding belongs to the page
+  // but is not part of it. A line says that and whitespace alone did not, so
+  // the breadcrumb read as the page's first line of text. It spans the
+  // content column because the row, title included, is aligned to it.
+  margin-bottom: tokens.$vx-space-md;
+  padding-bottom: tokens.$vx-space-2xs;
+  border-bottom: 1px solid var(--vx-border);
+}
+
+// The link back to the list a page belongs to ("← All runs"): muted, small,
+// and above whatever the page's content opens with. Never inside the card
+// that content renders, which is why base.html places it outside
+// {% block content %} instead of each page including it in its title.
+.vx-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.$vx-space-2xs;
+  margin-bottom: tokens.$vx-space-sm;
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--vx-text);
+  }
+}
+
+.vx-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--vx-text);
+  text-decoration: none;
+}
+
+.vx-brand__mark {
+  display: block;
+  width: auto;
+  height: 2rem;
+}
+
+// One shared control height for everything on this row: the badge and the
+// identity menu's trigger, only two now that the theme control and the
+// settings gear moved into that menu. align-items: center below then lines
+// them up on one edge instead of the three different ones this row once had.
+// .vx-badge's rule (components/_badges.scss) sets a shorter, pill-shaped
+// height everywhere else (Recent runs, a run's state), so the height is added
+// here, scoped to this row, not changed globally.
+.vx-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .vx-badge {
+    min-height: 2.25rem;
+    box-sizing: border-box;
+  }
+}
+
+.vx-icon-button,
+.vx-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  // Pico's [type=button] rule (same specificity as this class, so load order
+  // decides) gives every type="button" element a margin-bottom, not only
+  // <input type="button">. Left alone, that bottom margin grows
+  // .vx-header__actions' flex line past either child's height and centres the
+  // button's *margin* box instead of its visible one, pushing it above the
+  // "Local" badge next to it. Removing it beats a
+  // compensating margin-top, which would break as soon as the badge's height
+  // changes.
+  margin: 0;
+  padding: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.vx-icon-button {
+  border: 1px solid var(--vx-border);
+  background: transparent;
+  color: var(--vx-text-muted);
+
+  &:hover {
+    color: var(--vx-text);
+    border-color: var(--vx-primary);
+  }
+}
+
+// The identity circle that sits next to the "Local" badge
+// (rendering.identity.header_initial computes the letter, never this
+// stylesheet).
+.vx-avatar {
+  cursor: default;
+  background: var(--vx-gradient-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}

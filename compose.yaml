@@ -1,0 +1,148 @@
+# Settings: `.env` beside this file (see .env.example), then voxtrama.toml.
+#
+# No `user:` line on any service: docker-entrypoint.sh aligns ownership at
+# startup instead. The port binds to 127.0.0.1 only: the
+# network boundary is Docker's, not the app's.
+
+services:
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+    command: ["alembic", "upgrade", "head"]
+    # .env reaches the application, not only compose's own ${...}.
+    # Optional, so a checkout with no .env still starts. `environment:`
+    # below wins over it, so VOXTRAMA_DATA_DIR stays /data in here.
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      VOXTRAMA_DATA_DIR: /data
+      VOXTRAMA_QUEUE_URL: redis://redis:6379/0
+      # The same value in every service on purpose: web reads it to
+      # announce which model a run will download, worker reads it to decide
+      # which one to load. Letting them differ means announcing one model
+      # and fetching another, which is worse than not announcing at all.
+      # A null value (not ${VOXTRAMA_HARDWARE_PROFILE:-base}) so that when
+      # nobody set it on the host, it is *omitted* here rather than injected
+      # as an explicit "base" that would outrank whatever the guided setup
+      # wrote to voxtrama.toml (config.settings' own TOML source). Either
+      # the host set it and all three containers see it, or none did and
+      # all three fall through to the same mounted voxtrama.toml.
+      VOXTRAMA_HARDWARE_PROFILE:
+      # huggingface_hub draws its own bars on stdout, which in the worker is
+      # where the structured log lives. Voxtrama reports download
+      # progress itself, through the run's progress file.
+      HF_HUB_DISABLE_PROGRESS_BARS: "1"
+    volumes:
+      - "${VOXTRAMA_DATA_DIR:-${HOME}/Voxtrama}:/data"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    restart: "no"
+
+  web:
+    build:
+      context: .
+    ports:
+      # Host side only: the container always listens on 8000 internally
+      # (see the Dockerfile's CMD). Overridable so a busy 8000 does not
+      # force whoever is testing to stop whatever else is on it. Deliberately
+      # not VOXTRAMA_PORT: that name is Settings.port, an unused field
+      # meant for the application's own bind, not for this mapping.
+      - "127.0.0.1:${VOXTRAMA_HOST_PORT:-8000}:8000"
+    # .env reaches the application, not only compose's own ${...}.
+    # Optional, so a checkout with no .env still starts. `environment:`
+    # below wins over it, so VOXTRAMA_DATA_DIR stays /data in here.
+    env_file:
+      - path: .env
+        required: false
+    # host.docker.internal is Docker Desktop's name for the host.
+    # Docker Engine on Linux resolves it only with this line.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      VOXTRAMA_DATA_DIR: /data
+      # The same expression that picks the bind mount below, passed
+      # through as its own variable so the guided setup's "Private
+      # storage" step can show the folder the way whoever runs `docker
+      # compose up` actually typed it, never `/data`, the mount point
+      # only this container sees.
+      VOXTRAMA_HOST_DATA_DIR: ${VOXTRAMA_DATA_DIR:-${HOME}/Voxtrama}
+      VOXTRAMA_QUEUE_URL: redis://redis:6379/0
+      # The same value in every service on purpose: web reads it to
+      # announce which model a run will download, worker reads it to decide
+      # which one to load. Letting them differ means announcing one model
+      # and fetching another, which is worse than not announcing at all.
+      # A null value (not ${VOXTRAMA_HARDWARE_PROFILE:-base}) so that when
+      # nobody set it on the host, it is *omitted* here rather than injected
+      # as an explicit "base" that would outrank whatever the guided setup
+      # wrote to voxtrama.toml (config.settings' own TOML source). Either
+      # the host set it and all three containers see it, or none did and
+      # all three fall through to the same mounted voxtrama.toml.
+      VOXTRAMA_HARDWARE_PROFILE:
+      # huggingface_hub draws its own bars on stdout, which in the worker is
+      # where the structured log lives. Voxtrama reports download
+      # progress itself, through the run's progress file.
+      HF_HUB_DISABLE_PROGRESS_BARS: "1"
+    volumes:
+      - "${VOXTRAMA_DATA_DIR:-${HOME}/Voxtrama}:/data"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+    command: ["python", "-m", "voxtrama.worker.main"]
+    # .env reaches the application, not only compose's own ${...}.
+    # Optional, so a checkout with no .env still starts. `environment:`
+    # below wins over it, so VOXTRAMA_DATA_DIR stays /data in here.
+    env_file:
+      - path: .env
+        required: false
+    # host.docker.internal is Docker Desktop's name for the host.
+    # Docker Engine on Linux resolves it only with this line.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      VOXTRAMA_DATA_DIR: /data
+      VOXTRAMA_QUEUE_URL: redis://redis:6379/0
+      # The same value in every service on purpose: web reads it to
+      # announce which model a run will download, worker reads it to decide
+      # which one to load. Letting them differ means announcing one model
+      # and fetching another, which is worse than not announcing at all.
+      # A null value (not ${VOXTRAMA_HARDWARE_PROFILE:-base}) so that when
+      # nobody set it on the host, it is *omitted* here rather than injected
+      # as an explicit "base" that would outrank whatever the guided setup
+      # wrote to voxtrama.toml (config.settings' own TOML source). Either
+      # the host set it and all three containers see it, or none did and
+      # all three fall through to the same mounted voxtrama.toml.
+      VOXTRAMA_HARDWARE_PROFILE:
+      # huggingface_hub draws its own bars on stdout, which in the worker is
+      # where the structured log lives. Voxtrama reports download
+      # progress itself, through the run's progress file.
+      HF_HUB_DISABLE_PROGRESS_BARS: "1"
+    volumes:
+      - "${VOXTRAMA_DATA_DIR:-${HOME}/Voxtrama}:/data"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      disable: true
+    restart: unless-stopped
+
+# VOXTRAMA_EXTRA_ROOTS is not covered by
+# this file: if you need an extra writable root, add its bind mount
+# to the services above by hand.

@@ -1,0 +1,33 @@
+{#
+  The live activity region a run's current step fills in,
+  written entirely by static/js/run_page.js from the SSE stream, never by
+  this render (rendering.run_page's docstring explains why no
+  progress.json read happens server-side). Hidden until the first SSE
+  message arrives, because before that there is nothing honest to show:
+  not "0%", which would claim a fact nobody has published yet.
+
+  A bounded activity shows a position over a total ("12:04 / 18:30"). A
+  generative step shows how many parts of the transcript the model has
+  read ("2 of 4 parts read", data-parts). A step with nothing to
+  count shows only its sentence, a moving bar and the elapsed time; its
+  timeout is no longer drawn as if it were the end of the bar.
+#}
+{% macro run_activity() %}
+<div class="vx-card vx-activity" id="vx-run-activity" hidden
+     data-parts="{% trans %}{done} of {total} parts read{% endtrans %}">
+  {# The sentence with three dots that keep moving while the step
+     runs, and under the bar how long it has been going and roughly how
+     long is left, counted in the browser from the step's start time. #}
+  <p class="vx-activity__message"><span id="vx-activity-message"></span><span class="vx-dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span></p>
+  <div class="vx-activity__bar">
+    <div class="vx-activity__bar-fill" id="vx-activity-bar-fill"></div>
+  </div>
+  <div class="vx-activity__numbers">
+    <span id="vx-activity-position"></span>
+    <span id="vx-activity-total"></span>
+  </div>
+  <p class="vx-activity__timing" id="vx-activity-timing" hidden
+     data-elapsed="{% trans %}Elapsed {time}{% endtrans %}"
+     data-left="{% trans %}about {time} left{% endtrans %}"></p>
+</div>
+{% endmacro %}

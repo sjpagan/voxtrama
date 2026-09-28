@@ -1,0 +1,42 @@
+// Pico's h1/h2/h3 carry a top margin scaled to the *viewport's* root
+// font-size (--pico-typography-spacing-top: 3rem on an h1 alone), not this
+// shell's rhythm, and nothing here reset it before. It was measured what that
+// adds up to on a page that opens with one: every page/*.html title
+// (pages/run.html, pages/choose_workflow.html, the setup pages,
+// pages/profile.html) carried that margin. .vx-card__header's h3 rule
+// (components/_cards.scss) already zeroed it for card headings. This is the
+// same fix, made once for every heading.
+@use "../abstracts" as tokens;
+
+// Pico resizes the ROOT font against the viewport: 100% under 576px, then
+// 106.25%, 112.5%, 118.75%, 125% at 1280px and 131.25% at 1536px. Every rem
+// in this project therefore meant a different number of pixels depending on
+// window width: 20px per rem on an ordinary desktop, 21px at the width the
+// design was drawn at, against the 16px that abstracts/_tokens.scss says it
+// measured it in ("treated as 1:1 with browser px (16px root)").
+//
+// That explains "everything is too big": a 25-31% multiplier under every
+// component, present since the first stylesheet. A scale measured off a
+// design cannot survive a root that moves, so the root is pinned.
+//
+// Pinning it does NOT stop anyone from reading at their own size: a person
+// who sets a larger default font in the browser still gets it, because 100%
+// is that preference. Only Pico's own adjustment on top of it goes away.
+:root {
+  --pico-font-size: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin-top: 0;
+}
+
+// The type scale's "h1" (abstracts/_tokens.scss): a page title reads at the
+// size .vx-hero__title's clamp settles on at its narrowest, not Pico's
+// smaller default (2rem). A class selector such as .vx-hero__title still
+// beats this bare element rule regardless of load order, so the hero's clamp
+// is untouched.
+h1 {
+  font-size: tokens.$vx-text-h1;
+}

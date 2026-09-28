@@ -1,0 +1,164 @@
+{#
+  The workflow-choice panel: one card per workflow
+  (rendering.WorkflowOffer), each its own native form (no
+  JavaScript). Generic: no Recording, no recording_id baked in anywhere,
+  because the Workflows section reuses this macro to offer the same
+  choice starting from the library instead of a recording's row.
+  `action` is the URL every form here posts to. `hidden_fields` is a dict
+  of extra values that submission needs to carry along (today, only
+  `recording_id`) whose meaning this macro has no business knowing.
+
+  A workflow presents by its readable `title` (workflow.
+  definition.Workflow's field) and what it produces: its
+  `description`, plus `produces` (rendering.workflow_offers' reading
+  of each step's skill, never a hand-written list) shown in the same words
+  as components/run_output.html's "Verified output" filter, imported
+  from there rather than a second translation of the same four nouns.
+  `name`, the file's identifier, still travels (POST /runs and the
+  CLI both take it), but only as the hidden field below, never shown: a
+  person choosing here reads `title`, not the file that backs it.
+
+  `already_run` maps a workflow's `name` to the most
+  recent succeeded Run api.routes.workflow_choose already found for this
+  Recording, when there is one. It is empty for pages/workflow_library.
+  html's call, which has no Recording to check against, so a workflow shown
+  from the library never claims to already have a result. An offer named
+  there gets "View result" instead of the form: rerunning it blind, with
+  no sign the answer already exists, is the wasted work that was
+  measured.
+
+  Two levels, decided while this was being built. What everyone touches
+  every time (the workflow and the Start button) stays open. What a
+  run can override (hardware profile, generative model, a step's skill)
+  sits inside a closed <details> (same element as
+  components/header.html's identity menu), because most runs want the
+  installation's settings and should not have to look at them.
+  Nothing chosen there is submitted unless a select is
+  changed: the blank option is the true default (RunChoices' None,
+  workflow.choices' docstring), never re-submitted as an explicit value,
+  so a run that opened the details and closed it again without touching
+  anything reads exactly like one that never opened it.
+
+  Each blank option is labelled with the value it stands for ("As
+  configured (base)", not just "Use the default"), so provenance is
+  legible without reading code: is this what the installation already
+  says, or something this run chose. The line right under Start is pure
+  CSS (form:has(select option:not([value=""]):checked), components/
+  _forms.scss), not a script. It stays hidden until a select
+  inside this same form holds a non-blank value. It is visual only:
+  components/_forms.scss's comment on that rule names who this
+  leaves out, and where an override made in here is still readable
+  afterwards.
+
+  `offer.available` is false for a workflow whose options are empty or
+  that failed to load at all: it still gets a card, with the reason
+  instead of a form. A dead, silent option reads as a fault (the
+  rule for a deactivated workflow, extended here to a broken one).
+
+  `selected` names the one offer, if any, a person
+  already picked before landing on whichever page called this macro. It
+  gets the same `vx-workflow-card--selected` ring pages/workflow_library.
+  html draws for its cards, not a second style.
+#}
+{% from "components/icons.html" import icon_cube %}
+{% from "components/run_output.html" import output_kind_label with context %}
+
+{% macro workflow_choice_panel(offers, action, hidden_fields, selected=none, already_run={}) %}
+<div class="vx-stack">
+  {% for offer in offers %}
+  {% set run_id = already_run.get(offer.name) %}
+  <div class="vx-card{% if offer.name == selected %} vx-workflow-card--selected{% endif %}">
+    <div class="vx-card__header">
+      <h3>{{ icon_cube() }} {{ offer.title }}</h3>
+      {% if run_id %}<span class="vx-badge vx-badge--success">{% trans %}Already run{% endtrans %}</span>{% endif %}
+    </div>
+    {% if offer.description %}<p>{{ offer.description }}</p>{% endif %}
+    {% if offer.produces %}
+    <p class="vx-help">
+      {% trans %}Produces:{% endtrans %}
+      {% for kind in offer.produces %}{{ output_kind_label(kind) }}{% if not loop.last %} · {% endif %}{% endfor %}
+    </p>
+    {% endif %}
+
+    {% if run_id %}
+    <div class="vx-cluster">
+      <a class="vx-button vx-button--secondary" href="/runs/{{ run_id }}/view">
+        {% trans %}View result{% endtrans %}
+      </a>
+    </div>
+    {% elif offer.available %}
+    <form method="post" action="{{ action }}" class="vx-stack vx-run-choices">
+      {% for key, value in hidden_fields.items() %}
+      <input type="hidden" name="{{ key }}" value="{{ value }}" />
+      {% endfor %}
+      <input type="hidden" name="workflow_name" value="{{ offer.name }}" />
+
+      <details class="vx-run-choices__options">
+        <summary>{% trans %}Job options{% endtrans %}</summary>
+
+        <div class="vx-field">
+          <label for="vx-hw-{{ offer.name }}">{% trans %}Hardware profile{% endtrans %}</label>
+          <select id="vx-hw-{{ offer.name }}" name="hardware_profile">
+            <option value="">
+              {% trans %}As configured{% endtrans %} ({{ offer.hardware_profile_default }})
+            </option>
+            {% for profile in offer.hardware_profiles %}
+            <option value="{{ profile }}">{{ profile }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        {% if offer.generative_models is not none %}
+        <div class="vx-field">
+          <label for="vx-model-{{ offer.name }}">{% trans %}Generative model{% endtrans %}</label>
+          {% if offer.generative_models %}
+          <select id="vx-model-{{ offer.name }}" name="generative_model">
+            <option value="">
+              {% if offer.generative_model_default %}
+              {% trans %}As configured{% endtrans %} ({{ offer.generative_model_default }})
+              {% else %}
+              {% trans %}As configured (each step's own default){% endtrans %}
+              {% endif %}
+            </option>
+            {% for model in offer.generative_models %}
+            <option value="{{ model }}">{{ model }}</option>
+            {% endfor %}
+          </select>
+          {% else %}
+          <p class="vx-help">
+            {% trans %}No generative model satisfies every step of this workflow; it runs with each step's own default.{% endtrans %}
+          </p>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {% for step in offer.step_choices %}
+        <div class="vx-field">
+          <label for="vx-step-{{ offer.name }}-{{ step.step_id }}">
+            {% trans %}Skill for step{% endtrans %} {{ step.step_id }}
+          </label>
+          <select id="vx-step-{{ offer.name }}-{{ step.step_id }}" name="step_skill__{{ step.step_id }}">
+            <option value="">{% trans %}As configured{% endtrans %} ({{ step.default_label }})</option>
+            {% for option in step.options %}
+            <option value="{{ option.value }}">{{ option.label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endfor %}
+      </details>
+
+      <p class="vx-run-choices__notice vx-help" role="status">
+        {% trans %}This job will use options different from the installation's own settings.{% endtrans %}
+      </p>
+
+      <div class="vx-cluster">
+        <button type="submit" class="vx-button">{% trans %}Start job{% endtrans %}</button>
+      </div>
+    </form>
+    {% else %}
+    <p class="vx-notice">{{ offer.unavailable_reason }}</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}

@@ -1,0 +1,98 @@
+# Second generative skill written as a file, following summarize.
+#
+# Produces a structured list of decisions, each carrying a verbatim quote,
+# never a block of prose: prose cannot be anchored field by field.
+# engine.anchoring re-anchors every quote against the transcript right after
+# this step returns; this file never mentions evidence or needs_review
+# itself, only the four fields (decision, owner, deadline, quote) the model
+# actually produces.
+#
+# output_schema.properties.decisions.items inlines engine.anchoring's own
+# CLAIM_SCHEMA fragment (quote, evidence, needs_review) instead of
+# referencing it, because a skill file has no way to import a module.
+#
+# owner is a string, not a person_id: a person_id is born only
+# from a human act, and a name read off a transcript by a model is a string
+# the model happened to read, not that act. Calling it anything else would
+# be a promise this skill cannot keep.
+skill:
+  name: extract_decisions
+  version: 1.0.0
+  input_schema:
+    type: object
+    properties:
+      transcript_id:
+        type: string
+    required:
+      - transcript_id
+  output_schema:
+    type: object
+    additionalProperties: false
+    properties:
+      decisions:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          properties:
+            decision:
+              type: string
+            owner:
+              type: [string, "null"]
+            deadline:
+              type: [string, "null"]
+            quote:
+              type: string
+            evidence:
+              type: [object, "null"]
+              properties:
+                start:
+                  type: number
+                end:
+                  type: number
+            needs_review:
+              type: boolean
+          required:
+            - decision
+            - quote
+    required:
+      - decisions
+  context_requirements:
+    - segments
+  model_class: generative
+  minimum_model_profile: low
+  # False, deliberately: one citation out of several failing to anchor
+  # must not discard an entire run: needs_review on that one field is the
+  # correct outcome, not a failed run.
+  evidence_required: false
+  # 0.0: what confidence means here, and which threshold might gate
+  # needs_review, is an open decision, same as summarize (skills/summarize.yaml).
+  # A number picked here would quietly become that decision.
+  minimum_confidence: 0.0
+  review_required: false
+  retention_policy: follows_recording
+  output_language: same_as_audio
+  # any, not local_only: the provider behind this skill can be remote, and
+  # declaring local_only here would be false. A workflow that must keep this
+  # local restricts it itself.
+  privacy: any
+
+# {language} and {transcript} are filled in by engine.generative._build_prompt.
+# The transcript carries only Segment.text, one per
+# line: no timestamp, no segment id, no speaker label. With timestamps
+# inline the model copied them into its quotes, and 0 of 5 citations
+# anchored; without them, all of them did.
+prompt: |
+  Read the transcript below and identify every decision that was made, as a
+  JSON object with one field, "decisions": a list of objects, each with
+  "decision" (what was decided, in your own words, in {language}), "owner"
+  (the name of the person responsible for it, or null if none was named),
+  "deadline" (when it is due, or null if none was given), and "quote" (a
+  passage copied verbatim from the transcript, that supports that decision).
+
+  Copy "quote" exactly as it appears below: no paraphrasing, no added words,
+  no prefix of any kind, not even a timestamp. Reply with the JSON object
+  only, nothing before or after it.
+
+  Transcript:
+  {transcript}

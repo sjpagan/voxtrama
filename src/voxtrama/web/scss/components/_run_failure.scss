@@ -1,0 +1,108 @@
+// The run page's failed-state pieces: the
+// reason banner, and the "What this run did produce" card below it. Kept
+// apart from _run_page.scss, which holds the live page's furniture. A run
+// that shows one of these two never shows that file's activity bar or
+// terminal panel, and the two files' rules never overlap.
+@use "../abstracts" as tokens;
+
+.vx-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--vx-border);
+  background: var(--vx-surface);
+}
+
+// A left border in the tone that names it, the same construction
+// components/_step_chain.scss already uses for --chain-line-color: one
+// custom property, not a colour repeated across every rule that needs it.
+.vx-banner--warning {
+  border-left: 4px solid var(--vx-warning);
+}
+
+.vx-banner__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--vx-warning) 16%, transparent);
+  color: var(--vx-warning);
+}
+
+.vx-banner__body {
+  flex: 1 1 auto;
+
+  h3 {
+    margin: 0 0 0.35rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--vx-text-muted);
+  }
+}
+
+// The failure's facts, as a definition list instead of woven into a
+// translated sentence (components/run_failure_banner.html's docstring says
+// why). Same grid shape as .vx-setup-summary dl (components/_setup.scss).
+.vx-banner__facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1.5rem;
+  margin: 0.75rem 0 0;
+
+  div {
+    display: contents;
+  }
+
+  dt {
+    color: var(--vx-text-muted);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+// The remedies sit under the sentence, side by side.
+.vx-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+
+  form {
+    margin: 0;
+  }
+}
+
+.vx-produced {
+  margin-bottom: 1.5rem;
+}
+
+.vx-produced__lead {
+  margin: 0 0 1rem;
+  color: var(--vx-text-muted);
+}
+
+.vx-produced__table {
+  width: 100%;
+  border-collapse: collapse;
+
+  td {
+    padding: 0.35rem 0.75rem 0.35rem 0;
+    vertical-align: top;
+  }
+}
+
+.vx-produced__time,
+.vx-produced__speaker {
+  color: var(--vx-text-muted);
+  white-space: nowrap;
+}

@@ -1,0 +1,173 @@
+{#
+  The run page: a run's own state and its step chain,
+  kept live over api.routes.run_events's SSE stream by static/js/
+  run_page.js, run_activity.js, run_vitality.js and run_terminal.js. No
+  `{% include %}`, no calculation here. `run` is rendering.run_page.RunPageView, built
+  once by api.routes.run_page from rows the route already read.
+  Everything that changes while someone watches (a step's position, a
+  generative step's elapsed time, the worker's vitality, the SSE
+  connection itself) is written into the DOM by the modules below, from
+  data this render never touches. See run_page.js's docstring on
+  why, and rendering.run_page's on why no progress.json read happens here
+  either. `label_catalog()` at the bottom is the one exception: it *is*
+  rendered here, `{% trans %}` and all, so run_page.js never has to carry
+  English text of its own for a live update to show.
+
+  The header and the step chain are folded into one card, capped at a
+  reading width instead of following the viewport to its edge
+  (components/_run_page.scss's `$vx-content-width`). The cap removes the
+  empty-feeling, edge-to-edge card.
+
+  The page also carries the live terminal panel (static/js/run_terminal.js, another
+  SSE-driven renderer above) and, once `run.failure` is set, the whole
+  block below the chain swaps for the failed page's two cards.
+  A run in that state has nothing left
+  to stream, so it renders none of the live pieces rather than
+  showing them stopped.
+
+  There is a third branch, `run.result`, once a run turns `succeeded`:
+  the live pieces have nothing left to show either, but unlike a failure
+  there is a whole result to read instead of a banner: the player, the
+  transcript and the extracted output (components/run_result.html),
+  entirely server-rendered from rows api.routes.run_page_result already
+  read. No SSE connects for this state at all.
+
+  A concluded job gets its own head instead of the live one: title,
+  «Regenerate job» and the settings line (components/job_view.html), then
+  the spheres, the player and the three tabs. A running and a failed
+  job get the same head, the live badges where «Regenerate job» will be. The activity log
+  stays under a job that is over, closed.
+#}
+{% extends "base.html" %}
+{% from "components/run_steps.html" import run_steps with context %}
+{% from "components/run_activity.html" import run_activity with context %}
+{% from "components/run_terminal.html" import run_terminal with context %}
+{% from "components/run_failure_banner.html" import run_failure_banner with context %}
+{% from "components/run_produced.html" import run_produced with context %}
+{% from "components/run_result.html" import run_result with context %}
+{% from "components/job_view.html" import job_header with context %}
+{% from "components/run_labels.html" import run_state_label, label_catalog with context %}
+
+{% block title %}{{ run.name }} | Voxtrama{% endblock %}
+
+{% block content %}
+<section
+  class="vx-section vx-run-page"
+  id="vx-run-page"
+  data-run-id="{{ run.id }}"
+  data-run-final="{{ "true" if run.is_final else "false" }}"
+  data-log-offset="{{ run.log_offset }}"
+>
+  <div class="vx-card vx-run-card">
+    {% if run.result %}
+    {{ job_header(run) }}
+    {% else %}
+    {% set live_badges %}
+      <div class="vx-cluster">
+        {# Fact before estimate: the step
+           count is what engine.step_progress.step_progress derives from
+           rows this render already has, never a percentage. The
+           finer-grained position lives only in progress.json, read live,
+           not here. Hidden when a run has no steps yet to count, and
+           hidden again once run.is_final: a count of steps "reached"
+           adds nothing to a state already shown right beside it
+           (`● Failed`), and read together they mislead. Measured on a
+           real run that said "3 of 3 · Failed" with one of
+           those three steps failed, not done. The alternative
+           (count only the succeeded ones, "2 of 3") is ambiguous in
+           its own way once skipped steps exist: "2 of 3" says nothing
+           about whether the third was skipped or never reached. So this
+           drops the count, and the chain right below already shows which
+           step fell over.
+           Only "of" goes through {% trans %}: i18n.translator.Translator
+           has no newstyle-gettext interpolation (the i18n
+           package docstring explains why one
+           Translator per request rules out
+           Environment.install_gettext_translations, the shortcut that
+           would otherwise supply it). So the two numbers sit outside the
+           translated span rather than in a `{% trans %}` call this
+           Translator cannot answer. static/js/run_page.js's
+           refreshStepProgress() keeps `current` honest while a run is
+           still live by recounting [data-step-id] in the DOM rather
+           than trusting this render's snapshot. It also hides this
+           same element the moment an SSE event says the run just
+           went final, the live mirror of the `not run.is_final` below. #}
+        {% if run.step_progress_total and not run.is_final %}
+        <span class="vx-run-progress" id="vx-run-progress">
+          <span id="vx-run-progress-current">{{ run.step_progress_current }}</span>
+          {% trans %}of{% endtrans %}
+          {{ run.step_progress_total }}
+        </span>
+        {% endif %}
+        {# Hidden until run_page.js's EventSource `onerror` fires: a
+           server or network gone, distinct from the worker gone. Neither
+           GET /runs/{id}/events nor GET /runs/{id}/vitality can tell a
+           reader anything once the connection itself is down. #}
+        <span id="vx-run-connection" class="vx-badge vx-badge--warning" hidden>
+          <span class="vx-dot" aria-hidden="true"></span>
+          {% trans %}Connection lost, retrying...{% endtrans %}
+        </span>
+        {# Hidden until run_vitality.js's polling of GET /runs/{id}/vitality
+           reports the worker gone: the one visible difference between a
+           run that is still working and one whose worker died on it. #}
+        <span id="vx-run-vitality" class="vx-badge vx-badge--warning" hidden>
+          <span class="vx-dot" aria-hidden="true"></span>
+          {% trans %}Worker not responding{% endtrans %}
+        </span>
+        <span
+          id="vx-run-state"
+          class="vx-badge{% if run.state_tone %} vx-badge--{{ run.state_tone }}{% endif %}"
+        >
+          <span class="vx-dot" aria-hidden="true"></span>
+          <span id="vx-run-state-label">{{ run_state_label(run.state) }}</span>
+        </span>
+      </div>
+    {% endset %}
+    {{ job_header(run, live_badges) }}
+    {% endif %}
+    {{ run_steps(run.steps) }}
+    {# A regeneration where nothing changed looks like the same job.
+       Say so, and where to ask for every step to run again. #}
+    {% if run.is_final and run.steps and run.steps | rejectattr("reused") | list | length == 0 %}
+    <p class="vx-help vx-job-reused">{% trans %}Nothing changed, so every step was reused from the previous job. To run them again, open «Regenerate job» and tick «Run every step again».{% endtrans %}</p>
+    {% endif %}
+  </div>
+  {% if run.failure %}
+  {{ run_failure_banner(run.failure) }}
+  {% if run.produced %}{{ run_produced(run.produced) }}{% endif %}
+  {{ run_terminal(run) }}
+  {% elif run.result %}
+  {{ run_result(run.result, run.id) }}
+  {{ run_terminal(run) }}
+  {% else %}
+  {{ run_activity() }}
+  {{ run_terminal(run) }}
+  {% endif %}
+  {{ label_catalog(run.step_states, run.run_states) }}
+</section>
+{# run_activity.js, run_vitality.js and run_terminal.js first: all three
+   `defer`, executed in document order, and run_page.js calls
+   window.VxRunActivity, window.VxRunVitality and window.VxRunTerminal
+   from its own event handlers. #}
+<script src="{{ static_url('js/run_activity.js') }}" defer></script>
+<script src="{{ static_url('js/run_vitality.js') }}" defer></script>
+<script src="{{ static_url('js/run_terminal.js') }}" defer></script>
+<script src="{{ static_url('js/run_events_connection.js') }}" defer></script>
+<script src="{{ static_url('js/run_page.js') }}" defer></script>
+{% if run.result %}
+{# run_evidence.js before run_result.js: with `defer` the declaration
+   order is the execution order, and run_result calls
+   window.vxEvidence.init() at the end of its own startup. #}
+<script src="{{ static_url('js/run_evidence.js') }}" defer></script>
+<script src="{{ static_url('js/run_result.js') }}" defer></script>
+<script src="{{ static_url('js/text_find.js') }}" defer></script>
+<script src="{{ static_url('js/job_links.js') }}" defer></script>
+<script src="{{ static_url('js/job_follow.js') }}" defer></script>
+<script src="{{ static_url('js/job_fields.js') }}" defer></script>
+<script src="{{ static_url('js/run_player.js') }}" defer></script>
+<script src="{{ static_url('js/run_waveform_shape.js') }}" defer></script>
+<script src="{{ static_url('js/run_waveform_draw.js') }}" defer></script>
+<script src="{{ static_url('js/run_waveform.js') }}" defer></script>
+<script src="{{ static_url('js/run_speakers.js') }}" defer></script>
+{% endif %}
+{% endblock %}

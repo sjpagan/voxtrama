@@ -1,0 +1,218 @@
+{
+  "$defs": {
+    "OnError": {
+      "additionalProperties": false,
+      "description": "A step's behaviour on failure: retry, then an optional fallback step.",
+      "properties": {
+        "fallback_step": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fallback Step"
+        },
+        "retry": {
+          "$ref": "#/$defs/RetryPolicy"
+        }
+      },
+      "title": "OnError",
+      "type": "object"
+    },
+    "Privacy": {
+      "description": "Whether a Skill may let content leave the local machine.",
+      "enum": [
+        "any",
+        "local_only"
+      ],
+      "title": "Privacy",
+      "type": "string"
+    },
+    "RetryPolicy": {
+      "additionalProperties": false,
+      "description": "How many times a failed step is retried before falling back or failing.",
+      "properties": {
+        "max_attempts": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Max Attempts",
+          "type": "integer"
+        }
+      },
+      "title": "RetryPolicy",
+      "type": "object"
+    },
+    "SkillRef": {
+      "additionalProperties": false,
+      "description": "A skill named the way a Step already names one: name plus version.",
+      "properties": {
+        "skill": {
+          "title": "Skill",
+          "type": "string"
+        },
+        "skill_version": {
+          "title": "Skill Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "skill",
+        "skill_version"
+      ],
+      "title": "SkillRef",
+      "type": "object"
+    },
+    "Step": {
+      "additionalProperties": false,
+      "description": "One step of a Workflow: a Skill, its dependencies, and its failure handling.",
+      "properties": {
+        "allows": {
+          "$ref": "#/$defs/StepAllows"
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Condition"
+        },
+        "depends_on": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Depends On",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "instructions": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Instructions"
+        },
+        "on_error": {
+          "$ref": "#/$defs/OnError"
+        },
+        "privacy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Privacy"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "skill": {
+          "title": "Skill",
+          "type": "string"
+        },
+        "skill_version": {
+          "title": "Skill Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "skill",
+        "skill_version"
+      ],
+      "title": "Step",
+      "type": "object"
+    },
+    "StepAllows": {
+      "additionalProperties": false,
+      "description": "What a run may choose for this step. Empty means: nothing, here.\n\nAn empty list is the restrictive default, not \"anything goes\": \"the\ntighter constraint wins\" extends to the run itself, so a step that\ndeclares nothing here offers no choice to widen.",
+      "properties": {
+        "models": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Models",
+          "type": "array"
+        },
+        "skills": {
+          "items": {
+            "$ref": "#/$defs/SkillRef"
+          },
+          "title": "Skills",
+          "type": "array"
+        }
+      },
+      "title": "StepAllows",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A named, versioned composition of Skills.\n\nSee docs/guide/workflow-files.md for how to write one: this docstring\nbecomes this schema's own \"description\", so the pointer survives\nscripts/generate_workflow_schemas.py regenerating workflow-v1.json.\n\n`title` is `name` read by a person, not by the CLI or POST\n/recordings/{id}/runs: both of those still take `name`, which stays\nthe file's own identifier, lowercase and hyphenated, forever. Optional\nhere, at the schema's own level, rather than required: the dozens of\nthrowaway Workflow objects the engine's own test suite builds to\nexercise dependency graphs, retries and conditions have no page to be\nreadable on, and forcing every one of them to invent a title would be\na cost paid by code no page ever shows. The actual requirement\n(every workflow the package ships declares one) is enforced\ninstead where it means something: tests/test_workflows_reach_every_\nskill.py's own coverage of workflows/*.yaml. rendering.workflow_offers.\nbuild_offer falls back to a formatted `name` for the rare Workflow\nthat reaches it without one.",
+  "properties": {
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "privacy": {
+      "$ref": "#/$defs/Privacy",
+      "default": "any"
+    },
+    "schema_version": {
+      "const": "v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "steps": {
+      "items": {
+        "$ref": "#/$defs/Step"
+      },
+      "title": "Steps",
+      "type": "array"
+    },
+    "title": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Title"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "schema_version",
+    "description",
+    "steps"
+  ],
+  "title": "Workflow",
+  "type": "object"
+}

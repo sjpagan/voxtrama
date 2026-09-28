@@ -1,0 +1,49 @@
+// Status indicators (the home page): the header's "Local" badge, the
+// three status cards' checkmarks and a run's state dot in the Recent runs
+// card. color-mix derives every tone from the palette tokens
+// (abstracts/_tokens.scss) instead of a second, hand-tinted hex value.
+.vx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: var(--vx-surface);
+  color: var(--vx-text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.vx-badge--success {
+  background: color-mix(in srgb, var(--vx-success) 16%, transparent);
+  color: var(--vx-success);
+}
+
+.vx-badge--warning {
+  background: color-mix(in srgb, var(--vx-warning) 16%, transparent);
+  color: var(--vx-warning);
+}
+
+// The Jobs table paints every state: failed
+// red, a job still running blue (its own colour, not the warning amber).
+.vx-badge--danger {
+  background: color-mix(in srgb, var(--vx-danger) 16%, transparent);
+  color: var(--vx-danger);
+}
+
+.vx-badge--info {
+  background: color-mix(in srgb, var(--vx-primary) 16%, transparent);
+  color: var(--vx-primary);
+}
+
+.vx-badge__extra {
+  margin-left: 0.4rem;
+  color: var(--vx-text-muted);
+}
+
+.vx-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: currentColor;
+}

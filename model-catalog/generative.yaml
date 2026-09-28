@@ -1,0 +1,38 @@
+# The generative model table: which text-generation models
+# `voxtrama doctor` checks against this machine's memory, and what each one
+# is declared to need. A copy in $VOXTRAMA_DATA_DIR/model-catalog/generative.yaml
+# overrides this one: trying another combination needs no release.
+#
+# model-catalog/, not models/: $VOXTRAMA_DATA_DIR/models is Settings.models_dir,
+# a third-party cache (faster-whisper's download_root, huggingface_hub's
+# cache_dir) with its own layout and its own pruning. A document a
+# person edits by hand does not belong where that cache can sweep it away.
+#
+# Kept short and true rather than long and guessed: every entry below is a
+# model that exists, with parameters_b and quantization taken from its own
+# published GGUF, not invented. Fewer entries, all real, beats a longer table
+# with guessed ones.
+#
+# required_memory_gib is declared, not derived: deriving it from parameters_b
+# and quantization would mean inventing the KV cache and context length, two
+# numbers nobody has measured for these models on Voxtrama's own workloads.
+# It is the weight file's own size, rounded up for a small amount of runtime
+# headroom. diagnostics.generative reserves memory for the OS and Voxtrama
+# itself separately; this number is the model alone.
+version: 1
+models:
+  - name: qwen3:30b-a3b-instruct-q4_K_M
+    parameters_b: 30.5
+    active_parameters_b: 3.3      # MoE: what actually runs at each token
+    quantization: q4_K_M
+    required_memory_gib: 20.0
+    note: "MoE: the memory is the full weights, the speed follows the active parameters"
+  - name: llama3.1:8b-instruct-q4_K_M
+    parameters_b: 8.03
+    quantization: q4_K_M
+    required_memory_gib: 6.0
+    note: "dense: every parameter runs at every token, unlike the MoE entry above"
+  - name: mistral:7b-instruct-v0.3-q4_K_M
+    parameters_b: 7.25
+    quantization: q4_K_M
+    required_memory_gib: 5.0

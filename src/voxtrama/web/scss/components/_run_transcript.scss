@@ -1,0 +1,127 @@
+// The succeeded-run page's two-column body and its left column, the
+// transcript. Split
+// out of _run_result.scss once the player (components/_run_player.scss) and
+// the output cards (components/_run_output.scss) each grew enough rules to
+// push that file past this project's file-length limit, the same split
+// _run_page.scss and _run_terminal.scss went through for the live page.
+@use "../abstracts" as tokens;
+
+// Two columns side by side (03's Transcript / Verified output split),
+// collapsing to one below the breakpoint layout/_index.scss uses for
+// .vx-col-4/.vx-col-8. A grid of its own, not the shared 12-column one, since
+// neither column is a 4 or 8 span of it.
+.vx-run-result {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 46rem) {
+  .vx-run-result {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Both columns share a scrollable body capped well short of the viewport
+// (03's Transcript pane scrolls independently of the page): a run's full
+// transcript or results can run far longer than one screen, and neither
+// should push the other column's cards out of reach.
+.vx-transcript__rows,
+.vx-output__list {
+  max-height: 32rem;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// The Explore tab's word search (components/_text_find.scss)
+// and, beside it, the speaker filter.
+.vx-transcript__tools {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+  margin-bottom: 0.75rem;
+
+  select {
+    width: auto;
+    margin: 0;
+  }
+}
+
+.vx-transcript__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.6rem 0.5rem;
+  border-radius: 0.6rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--vx-bg-elevated);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--vx-primary);
+    outline-offset: -2px;
+  }
+}
+
+// The row an evidence link's interval covers: a blue ring around it, not
+// a background fill, which would compete with the search highlight's <mark>
+// on the same row.
+// The segment being spoken right now (static/js/job_follow.js).
+.vx-transcript__row--now {
+  background: color-mix(in srgb, var(--vx-primary) 14%, transparent);
+
+  .vx-transcript__time {
+    color: var(--vx-primary);
+    font-weight: 700;
+  }
+}
+
+.vx-transcript__row--active {
+  border-color: var(--vx-primary);
+  background: color-mix(in srgb, var(--vx-primary) 10%, transparent);
+}
+
+.vx-transcript__time {
+  flex: 0 0 auto;
+  color: var(--vx-text-muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}
+
+// One of four colours, cycling (rendering.run_transcript's
+// speaker_color) rather than a fixed one per badge: abstracts/_tokens.scss
+// names four --vx-speaker-* tokens for this, unused until now.
+.vx-transcript__speaker {
+  flex: 0 0 auto;
+
+  &[data-speaker-color="1"] {
+    background: color-mix(in srgb, var(--vx-speaker-1) 20%, transparent);
+    color: var(--vx-speaker-1);
+  }
+
+  &[data-speaker-color="2"] {
+    background: color-mix(in srgb, var(--vx-speaker-2) 20%, transparent);
+    color: var(--vx-speaker-2);
+  }
+
+  &[data-speaker-color="3"] {
+    background: color-mix(in srgb, var(--vx-speaker-3) 20%, transparent);
+    color: var(--vx-speaker-3);
+  }
+
+  &[data-speaker-color="4"] {
+    background: color-mix(in srgb, var(--vx-speaker-4) 20%, transparent);
+    color: var(--vx-speaker-4);
+  }
+}
+
+.vx-transcript__text {
+  flex: 1 1 16rem;
+}

@@ -1,0 +1,42 @@
+{#
+  The breadcrumb says where you are, not "back".
+  components/back_link.html answers a different question ("← All runs")
+  and stays a separate component. A macro, not an {% include %}, on the
+  same shape as back_link.html and step_chain.html: one parameter,
+  no booleans, no markup in a route.
+
+  `crumbs` is a list of rendering.nav.Crumb, root first. An ancestor renders
+  as a link. The last ring does not: it is a <span aria-current="page">,
+  the same "where you are" that `sidebar_nav` marks with `aria-current="page"`
+  on the sidebar's current item. `crumb.label` replaces the translated
+  `crumb_label(key)` when the text is data instead of a fixed word
+  (a recording's filename, api.routes.run_page), never a route's markup.
+#}
+{% macro crumb_label(key) -%}
+  {%- if key == "runs" -%}{% trans %}Jobs{% endtrans %}
+  {%- elif key == "setup" -%}{% trans %}Settings{% endtrans %}
+  {%- elif key == "setup-personal" -%}{% trans %}Personal settings{% endtrans %}
+  {%- elif key == "setup-processing" -%}{% trans %}Local processing{% endtrans %}
+  {%- elif key == "setup-model" -%}{% trans %}Model ready{% endtrans %}
+  {%- elif key == "setup-storage" -%}{% trans %}Private storage{% endtrans %}
+  {%- elif key == "choose-workflow" -%}{% trans %}Choose workflow{% endtrans %}
+  {%- elif key == "workflows" -%}{% trans %}Workflow{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro breadcrumb(crumbs) %}
+<nav class="vx-breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    {% for crumb in crumbs %}
+    <li>
+      {% if loop.last %}
+      <span aria-current="page">{{ crumb.label if crumb.label else crumb_label(crumb.key) }}</span>
+      {% else %}
+      <a href="{{ crumb.href }}">{{ crumb.label if crumb.label else crumb_label(crumb.key) }}</a>
+      <span class="vx-breadcrumb__sep" aria-hidden="true">&rsaquo;</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</nav>
+{% endmacro %}

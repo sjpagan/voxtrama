@@ -1,0 +1,40 @@
+// The theme options (inside the identity menu), split out of _shell.scss
+// (its 150-line cap). They no longer have a <details> of
+// their own: components/theme_control.html's docstring explains why a
+// disclosure nested inside .vx-identity's would cost a second keyboard action
+// for nothing. The three buttons render open, in normal flow, inside
+// .vx-identity__menu's panel (components/_identity.scss).
+.vx-theme {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.vx-theme__menu {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.vx-theme__option {
+  margin: 0;
+  padding: 0.35rem 0.6rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: none;
+  color: var(--vx-text);
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--vx-surface);
+  }
+}
+
+.vx-theme__option[aria-current="true"] {
+  color: var(--vx-primary);
+  font-weight: 700;
+}

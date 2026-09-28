@@ -1,0 +1,84 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "voxtrama"
+version = "0.1.0a1"
+description = "Local-first audio intelligence workflows."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+
+dependencies = [
+    "pydantic>=2.13,<3",
+    "pydantic-settings>=2.15,<3",
+    "sqlalchemy>=2.0,<3",
+    "alembic>=1.20,<2",
+    "fastapi>=0.141,<1",
+    # FastAPI needs it to parse multipart/form-data (the file-upload form)
+    # and does not pull it in on its own outside the fastapi[all]
+    # extra, the same reason jinja2 below is declared explicitly.
+    "python-multipart>=0.0.20,<1",
+    # Renders src/voxtrama/web/templates/. Not a transitive dependency of
+    # plain fastapi (only the fastapi[all] extra pulls it in): it happens
+    # to already be on disk as torch's, so leaving it undeclared would
+    # work by accident today and break the day diarisation's own
+    # dependencies change.
+    "jinja2>=3.1,<4",
+    # Interface translation: gettext catalogs (.po/.mo), CLDR plural rules, and locale-
+    # aware date/number formatting. A runtime dependency, not a dev one:
+    # catalogs are loaded and formatted at request time, not only extracted
+    # at build time.
+    "babel>=2.17,<3",
+    # Verifies the Ed25519 signature of the edition's policy block
+    # (edition/policy.py). Signature checking is not something to hand-roll.
+    "cryptography>=50,<51",
+    "uvicorn[standard]>=0.53,<1",
+    "gunicorn>=23,<24",
+    "typer>=0.27,<1",
+    "rq>=2.12,<3",
+    "redis>=8.1,<9",
+    "pyyaml>=6.0,<7",
+    "jsonschema>=4.25,<5",
+    "faster-whisper>=1.2,<2",
+    # Diarisation. speechbrain pulls torch and torchaudio, which
+    # is the whole reason the Dockerfile installs those two from the CPU
+    # index first: left to PyPI they arrive built against a different ABI
+    # and the import dies claiming the install is broken.
+    "speechbrain>=1.0,<2",
+    "scikit-learn>=1.5,<2",
+    "soundfile>=0.12,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1,<10",
+    "httpx>=0.28,<1",
+    "ruff>=0.16,<1",
+]
+
+[project.scripts]
+voxtrama = "voxtrama.cli.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/voxtrama"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    # Downloads a model on first run and takes seconds, not milliseconds.
+    # Marked so a developer can skip it with `-m "not slow"`; CI runs it,
+    # because diarisation going wrong silently is the project's first risk.
+    "slow: needs a model and real audio",
+    # The home page sends a first visit to the guided setup; tests.
+    # conftest turns that off except for tests marked with this.
+    "first_visit: keep the redirect of a first visit to the guided setup",
+]

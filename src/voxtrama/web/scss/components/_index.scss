@@ -1,0 +1,36 @@
+// Components, one concern per file like abstracts/ and base/.
+// _shell.scss held all of it until the home rewrite added enough component
+// kinds that a single file would have gone well past this project's
+// 150-line cap.
+@forward "shell";
+@forward "identity";
+@forward "sidebar";
+@forward "breadcrumb";
+@forward "theme_control";
+@forward "badges";
+@forward "buttons";
+@forward "forms";
+@forward "upload_gate";
+@forward "cards";
+@forward "home";
+@forward "new_job";
+@forward "new_job_setup";
+@forward "jobs_table";
+@forward "jobs_page";
+@forward "step_chain";
+@forward "step_actions";
+@forward "run_page";
+@forward "run_terminal";
+@forward "run_failure";
+@forward "run_player";
+@forward "run_transcript";
+@forward "run_output";
+@forward "job_view";
+@forward "job_turns";
+@forward "job_recap";
+@forward "job_files";
+@forward "text_find";
+@forward "speaker_naming";
+@forward "speakers_tab";
+@forward "setup";
+@forward "workflow_library";

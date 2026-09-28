@@ -1,0 +1,74 @@
+{#
+  The Transcript tab of a concluded job: one bubble per
+  speaker turn (rendering.job_turns), the first speaker on the left and
+  the second on the right, beside the verified cards (components/
+  run_output.html) linked to the sentence they come from.
+
+  A chip here only says who speaks. Names are given in the Speakers
+  tab, and one turn is given to someone else only in Explore.
+
+  Above the bubbles, the one search of the job view (components/
+  text_find.html), marking the words inside the bubbles. Above it: the notice that speaker names are assigned
+  automatically, always shown, and the job's «Merge pauses
+  under», a GET form, so the grouping is the
+  server's and works without script. static/js/run_result.js only sends
+  it when the slider is released. Every bubble keeps the ASR segments it
+  joined, with their times, behind a native <details>.
+
+  `data-start`/`data-end` on each turn are what static/js/run_result.js
+  seeks the player to, and what static/js/run_evidence.js compares an
+  evidence interval against: the same contract the Explore rows keep.
+#}
+{% from "components/icons.html" import icon_alert %}
+{% from "components/text_find.html" import text_find with context %}
+
+{% macro merge_form(pause) %}
+<form method="get" class="vx-merge" id="vx-merge-form">
+  <input type="hidden" name="tab" value="transcript">
+  <label class="vx-merge__label" for="vx-merge">
+    {% trans %}Merge pauses under{% endtrans %} <output id="vx-merge-value">{{ pause }}</output> s
+  </label>
+  <input type="range" id="vx-merge" name="merge" min="0.5" max="5" step="0.1" value="{{ pause }}">
+  <noscript><button type="submit" class="vx-button vx-button--small">{% trans %}Apply{% endtrans %}</button></noscript>
+</form>
+{% endmacro %}
+
+{% macro speaker_chip(name, color) %}<span class="vx-badge vx-transcript__speaker" data-speaker-color="{{ color }}">{{ name }}</span>{% endmacro %}
+
+{% macro job_turns(turns, pause) %}
+<div class="vx-card vx-turns-card">
+  <div class="vx-turns__toolbar">
+    <p class="vx-turns__notice" role="note">
+      {{ icon_alert() }}
+      {% trans %}Speaker names are assigned automatically and may occasionally be wrong.{% endtrans %}
+    </p>
+    {{ merge_form(pause) }}
+  </div>
+  {% if turns %}{{ text_find("#vx-turns", ".vx-turn__text", gettext("Search transcript")) }}{% endif %}
+  {% if turns %}
+  <ol class="vx-turns" id="vx-turns">
+    {% for turn in turns %}
+    <li class="vx-turn vx-turn--{{ turn.side }}" data-start="{{ turn.start }}" data-end="{{ turn.end }}" tabindex="0">
+      <span class="vx-turn__time">{{ turn.time }}</span>
+      <div class="vx-turn__bubble" data-speaker-color="{{ turn.speaker_color }}">
+        {% if turn.speaker %}{{ speaker_chip(turn.speaker, turn.speaker_color) }}{% endif %}
+        <p class="vx-turn__text">{{ turn.text }}</p>
+        {% if turn.segments|length > 1 %}
+        <details class="vx-turn__segments">
+          <summary>{% trans %}Original segments{% endtrans %} ({{ turn.segments|length }})</summary>
+          <ol>
+            {% for segment in turn.segments %}
+            <li><span class="vx-turn__segment-time">{{ segment.time }}</span>{% if segment.speaker %} {{ speaker_chip(segment.speaker, segment.speaker_color) }}{% endif %} {{ segment.text }}</li>
+            {% endfor %}
+          </ol>
+        </details>
+        {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="vx-help">{% trans %}No transcript yet.{% endtrans %}</p>
+  {% endif %}
+</div>
+{% endmacro %}

@@ -1,0 +1,109 @@
+// The Recap tab: search with «2 of 5» and arrows, the
+// Export menu, then the recap: sections, points with their source,
+// provenance at the foot of each section.
+@use "../abstracts" as tokens;
+
+.vx-recap__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$vx-space-sm;
+  margin-bottom: tokens.$vx-space-lg;
+}
+
+.vx-export {
+  position: relative;
+  margin: 0 0 0 auto;
+
+  summary {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$vx-space-2xs;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.vx-export__menu {
+  position: absolute;
+  z-index: 6;
+  right: 0;
+  min-width: 9rem;
+  // «Manifest (JSON)» is the longest entry: one line, never wrapped.
+  white-space: nowrap;
+  margin: tokens.$vx-space-2xs 0 0;
+  padding: tokens.$vx-space-2xs;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.75rem;
+  background: var(--vx-bg-elevated);
+  list-style: none;
+
+  li {
+    list-style: none;
+    margin: 0;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: tokens.$vx-space-xs;
+    padding: tokens.$vx-space-2xs tokens.$vx-space-sm;
+    border-radius: 0.5rem;
+    color: var(--vx-text);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--vx-surface);
+    }
+  }
+}
+
+.vx-recap__section {
+  margin-bottom: tokens.$vx-space-lg;
+
+  h3 {
+    margin: 0 0 tokens.$vx-space-2xs;
+  }
+}
+
+.vx-recap__points {
+  margin: 0;
+  padding-left: tokens.$vx-space-lg;
+
+  li {
+    margin-bottom: tokens.$vx-space-2xs;
+  }
+
+  li::marker {
+    color: var(--vx-primary);
+  }
+}
+
+.vx-recap__source {
+  display: inline-block;
+  width: auto;
+  margin: 0 0 0 tokens.$vx-space-2xs;
+  padding: 0.05rem tokens.$vx-space-2xs;
+  border: 1px solid color-mix(in srgb, var(--vx-primary) 40%, transparent);
+  border-radius: 0.4rem;
+  background: color-mix(in srgb, var(--vx-primary) 14%, transparent);
+  color: var(--vx-text);
+  font-size: tokens.$vx-text-xs;
+  vertical-align: baseline;
+}
+
+.vx-recap__provenance {
+  margin: tokens.$vx-space-xs 0 0;
+  padding-top: tokens.$vx-space-2xs;
+  border-top: 1px solid var(--vx-border);
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-xs;
+}

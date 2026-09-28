@@ -1,0 +1,114 @@
+{#
+  The new-job form: the home creates a job.
+  The fields come in this order: the audio first, then the workflow, the
+  job's name (prefilled from the first file) and its context, then
+  `Advanced` (closed by default), then `Start job`. One <form>, posted
+  whole to POST /jobs (api.routes.job_create), which answers with the job's
+  own view.
+
+  Without JavaScript the form still works: the file input takes
+  several files in the order they were picked, every field posts its value
+  and the server keeps only what differs from the defaults. static/js/
+  new_job.js adds what needs a script: dropping files, the list of parts
+  with their durations, reordering by dragging, the `Default`/`Changed`
+  tags, the steppers, and the cores the chosen numbers will take.
+
+  There is no video-address field: Voxtrama does not download audio from
+  third-party sites.
+
+  With the installation not ready, `Start job` is not rendered: the
+  reasons and the links that fix them stand in its place.
+#}
+{% from "components/job_icons.html" import icon_cloud_upload, icon_grip, icon_plus, workflow_icon %}
+{% from "components/icons.html" import icon_minus, icon_x %}
+{% from "components/job_fields.html" import advanced, gate_notice with context %}
+
+{% macro _workflow_blurb(offer) -%}
+  {%- if offer.name == "meeting-decisions" -%}{% trans %}Capture decisions, action items and follow-ups.{% endtrans %}
+  {%- elif offer.name == "lesson-companion" -%}{% trans %}Turn lectures into structured notes and study aids.{% endtrans %}
+  {%- elif offer.name == "research-interview" -%}{% trans %}Extract evidence, themes and interview insights.{% endtrans %}
+  {%- else -%}{{ offer.description | truncate(90) }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro new_job_form(workflows, selected, defaults, whisper_models, llm_models, gate) %}
+<form class="vx-new-job" method="post" action="/jobs" enctype="multipart/form-data" id="vx-new-job">
+  <section class="vx-card vx-new-job__audio" aria-labelledby="vx-audio-title">
+    <h2 class="vx-new-job__title" id="vx-audio-title">{% trans %}Audio{% endtrans %}</h2>
+    <label class="vx-dropzone vx-new-job__drop" for="vx-job-files">
+      <span class="vx-dropzone__icon" aria-hidden="true">{{ icon_cloud_upload() }}</span>
+      <span>{% trans %}Drop audio files or{% endtrans %} <span class="vx-link">{% trans %}choose from disk{% endtrans %}</span></span>
+      <span class="vx-button vx-button--secondary vx-button--small">{% trans %}Choose files{% endtrans %}</span>
+    </label>
+    <input class="vx-sr-only" type="file" id="vx-job-files" name="files" accept="audio/*" multiple />
+    <p class="vx-dropzone__feedback" id="vx-job-feedback" role="status"></p>
+    <div class="vx-parts" id="vx-parts" hidden>
+      <p class="vx-parts__head"><strong>{% trans %}Group 1{% endtrans %}</strong> <span id="vx-parts-summary"></span></p>
+      <ol class="vx-parts__list" id="vx-parts-list"></ol>
+      {# Several files are either consecutive parts or tracks recorded
+         together. Tracks have no order, so their grips go
+         (components/_new_job.scss). #}
+      <fieldset class="vx-parts__mode" id="vx-merge-field">
+        <input type="hidden" name="merge" value="true" />
+        <legend class="vx-sr-only">{% trans %}How are these files related?{% endtrans %}</legend>
+        <label class="vx-check"><input type="radio" name="parts_mode" value="sequence" checked />
+          <span><strong>{% trans %}One after another{% endtrans %}</strong> · {% trans %}they continue from each other, like segments of one long recording{% endtrans %}</span></label>
+        <label class="vx-check"><input type="radio" name="parts_mode" value="tracks" />
+          <span><strong>{% trans %}At the same time{% endtrans %}</strong> · {% trans %}separate microphones or channels recorded together{% endtrans %}</span></label>
+      </fieldset>
+    </div>
+    <template id="vx-part-template">
+      <li class="vx-part" draggable="true">
+        <span class="vx-part__grip" aria-hidden="true">{{ icon_grip() }}</span>
+        <span class="vx-part__name"></span>
+        <span class="vx-part__duration"></span>
+        <button type="button" class="vx-part__remove" aria-label="{% trans %}Remove{% endtrans %}">{{ icon_x() }}</button>
+      </li>
+    </template>
+  </section>
+
+  <section class="vx-card vx-new-job__setup" aria-labelledby="vx-workflow-title">
+    <h2 class="vx-new-job__title" id="vx-workflow-title">{% trans %}Workflow{% endtrans %}</h2>
+    <div class="vx-workflow-picks" role="radiogroup" aria-labelledby="vx-workflow-title">
+      {% for offer in workflows %}
+      <label class="vx-workflow-pick">
+        <input type="radio" name="workflow_name" value="{{ offer.name }}" {% if offer.name == selected %}checked{% endif %} />
+        <span class="vx-workflow-pick__icon" aria-hidden="true">{{ workflow_icon(offer.name) }}</span>
+        <strong class="vx-workflow-pick__title">{{ offer.title }}</strong>
+        <span class="vx-workflow-pick__text">{{ _workflow_blurb(offer) }}</span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="vx-new-job__pair">
+      <label>{% trans %}Job name{% endtrans %}
+        <input type="text" name="label" id="vx-job-label" maxlength="200" placeholder="{% trans %}Named after the first file{% endtrans %}" />
+      </label>
+      <label>{% trans %}Context{% endtrans %}
+        <textarea name="context" rows="2" maxlength="2000" placeholder="{% trans %}Names, acronyms and topics help the transcription{% endtrans %}"></textarea>
+        {# Where what is written here goes. #}
+        <small class="vx-help">{% trans %}Read by the transcription and the summary models, and kept in the job's record. With a remote provider it leaves this machine.{% endtrans %}</small>
+      </label>
+    </div>
+
+    {{ advanced(defaults, whisper_models, llm_models) }}
+
+    <div class="vx-new-job__actions">
+      {% if gate.allowed %}
+      <button type="submit" class="vx-button">{% trans %}Start job{% endtrans %}</button>
+      {% else %}
+      {{ gate_notice(gate) }}
+      {% endif %}
+    </div>
+  </section>
+</form>
+<ul id="vx-job-strings" hidden>
+  <li data-key="changed">{% trans %}Changed{% endtrans %}</li>
+  <li data-key="default">{% trans %}Default{% endtrans %}</li>
+  <li data-key="parts">{% trans %}{count} parts{% endtrans %}</li>
+  <li data-key="part">{% trans %}1 part{% endtrans %}</li>
+  <li data-key="cores">{% trans %}≈ {cores} cores{% endtrans %}</li>
+  <li data-key="cores-of">{% trans %}≈ {cores} of {total} cores{% endtrans %}</li>
+  <li data-key="rejected-type">{% trans %}Only audio files can be added.{% endtrans %}</li>
+</ul>
+{% endmacro %}

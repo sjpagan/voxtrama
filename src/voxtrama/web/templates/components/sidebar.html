@@ -1,0 +1,109 @@
+{#
+  The shell's sidebar. A macro, not an
+  {% include %}: its one parameter is explicit, so a page (or a test)
+  can render it without building whatever the rest of the
+  shell needs.
+
+  `items` is a list of rendering.NavItem: key, href (None when the
+  section has no route yet), active, `children` (Setup's four steps,
+  empty for every other entry today) and `footer`. This template decides
+  nothing about which sections exist, which is current, or what a child's
+  href carries forward (that is rendering.sidebar_items's job), only
+  how each already-decided item looks.
+
+  There is no "coming soon" branch: rendering.sidebar_items
+  no longer hands this template a section with neither an href nor a
+  child that has one, so every item left to draw is a link. A parent's
+  children render as a nested <ul>, but only while that parent is
+  active (`item.active`, true when the parent itself or one of its
+  children matches `current`). No JavaScript, no <details>:
+  what to show is decided server-side, once, the same way sidebar_items
+  decides everything else.
+
+  `item.active` alone used to put `aria-current="page"` on both the
+  parent and its active child, two elements claiming the same page.
+  `has_active_child` tells the two states apart. When a child is active,
+  the parent only *contains* the current page and gets a class, not
+  `aria-current`: that attribute is an accessibility statement, and two
+  of them in the same bar would be a false one. The deepest match
+  alone carries `aria-current="page"`. The same condition that reveals
+  the children (`item.children and item.active`) also draws the caret
+  next to the parent's label. It says the section *has* steps, not
+  that anything expands, since nothing does.
+#}
+{% from "components/icons.html" import icon_home, icon_play, icon_workflow, icon_cube, icon_laptop, icon_settings, icon_chevron_down %}
+{% macro nav_label(key) -%}
+  {%- if key == "home" -%}{% trans %}Home{% endtrans %}
+  {%- elif key == "runs" -%}{% trans %}Jobs{% endtrans %}
+  {%- elif key == "workflows" -%}{% trans %}Workflow{% endtrans %}
+  {%- elif key == "models" -%}{% trans %}Models{% endtrans %}
+  {%- elif key == "system" -%}{% trans %}System{% endtrans %}
+  {%- elif key == "setup" -%}{% trans %}Settings{% endtrans %}
+  {%- elif key == "settings" -%}{% trans %}Settings{% endtrans %}
+  {%- elif key == "setup-settings" -%}{% trans %}Overview{% endtrans %}
+  {%- elif key == "setup-privacy" -%}{% trans %}Data &amp; privacy{% endtrans %}
+  {%- elif key == "setup-personal" -%}{% trans %}Personal settings{% endtrans %}
+  {%- elif key == "setup-processing" -%}{% trans %}Local processing{% endtrans %}
+  {%- elif key == "setup-model" -%}{% trans %}Model ready{% endtrans %}
+  {%- elif key == "setup-storage" -%}{% trans %}Private storage{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{# One icon per top-level section, chosen for what each section already
+   means elsewhere in this kit rather than copied from a draft design's
+   glyph, which changes from one draft to the next while the sections'
+   names do not. icon_play() already marks "running" on a step's
+   marker (components/_run_page.scss), icon_laptop() is "this machine" on
+   "Local processing". Setup's children carry no icon: the design never
+   nests the sidebar at all, so a fourth row of glyphs would be a design
+   decision made up rather than measured from anywhere. #}
+{% macro nav_icon(key) -%}
+  {%- if key == "home" -%}{{ icon_home() }}
+  {%- elif key == "runs" -%}{{ icon_play() }}
+  {%- elif key == "workflows" -%}{{ icon_workflow() }}
+  {%- elif key == "models" -%}{{ icon_cube() }}
+  {%- elif key == "system" -%}{{ icon_laptop() }}
+  {%- elif key == "setup" -%}{{ icon_settings() }}
+  {%- elif key == "settings" -%}{{ icon_settings() }}
+  {%- endif -%}
+{%- endmacro %}
+
+{# One item, its icon and label, and (while it is active) its
+   children nested underneath. No icon on a child row: see
+   nav_icon's comment on why. #}
+{% macro _nav_item(item) %}
+{% set has_active_child = item.children | selectattr("active") | list | length > 0 %}
+<li>
+  <a href="{{ item.href }}"{% if item.active and not has_active_child %} aria-current="page"{% endif %}{% if has_active_child %} class="vx-nav-current-ancestor"{% endif %}>
+    <span class="vx-nav-icon" aria-hidden="true">{{ nav_icon(item.key) }}</span>
+    {{ nav_label(item.key) }}
+    {% if item.children and item.active %}
+    <span class="vx-nav-caret" aria-hidden="true">{{ icon_chevron_down() }}</span>
+    {% endif %}
+  </a>
+  {% if item.children and item.active %}
+  <ul class="vx-nav-sublist">
+    {% for child in item.children %}
+    <li>
+      <a href="{{ child.href }}" {% if child.active %}aria-current="page"{% endif %}>{{ nav_label(child.key) }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</li>
+{% endmacro %}
+
+{% macro sidebar_nav(items) %}
+{% set footer_items = items | selectattr("footer") | list %}
+<ul class="vx-nav-list">
+  {% for item in items | rejectattr("footer") %}
+  {{ _nav_item(item) }}
+  {% endfor %}
+  {% if footer_items %}
+  <li class="vx-nav-separator" role="separator"><hr /></li>
+  {% for item in footer_items %}
+  {{ _nav_item(item) }}
+  {% endfor %}
+  {% endif %}
+</ul>
+{% endmacro %}

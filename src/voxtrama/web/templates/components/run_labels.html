@@ -1,0 +1,60 @@
+{#
+  Every translated label the run page's live JavaScript needs. A
+  code review caught the defect this file closes:
+  static/js/run_page.js used to carry its own English dictionary
+  (`{pending: "Waiting", ...}`) and write `event.state` straight into the
+  DOM. Both bypass the translation catalogue, invisibly, as long as no
+  non-English catalogue exists to prove it. The labels live here instead,
+  behind `{% trans %}` like everything else this page shows, and
+  `label_catalog()` renders them once, hidden, as data run_page.js reads
+  off the DOM. The module stays the renderer of numbers its docstring
+  describes, not a second source of English text.
+#}
+{% macro step_label(state) -%}
+  {%- if state == "pending" -%}{% trans %}Waiting{% endtrans %}
+  {%- elif state == "running" -%}{% trans %}In progress{% endtrans %}
+  {%- elif state == "succeeded" -%}{% trans %}Done{% endtrans %}
+  {%- elif state == "failed" -%}{% trans %}Failed{% endtrans %}
+  {%- elif state == "skipped" -%}{% trans %}Skipped{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{# A finished step says what it left, not just `Done`; a step
+   this file does not know keeps `Done`. #}
+{% macro step_done_label(skill) -%}
+  {%- if skill == "transcribe" -%}{% trans %}Transcript ready{% endtrans %}
+  {%- elif skill == "diarize" -%}{% trans %}Speakers identified{% endtrans %}
+  {%- elif skill == "summarize" -%}{% trans %}Recap ready{% endtrans %}
+  {%- elif skill == "extract_decisions" -%}{% trans %}Decisions ready{% endtrans %}
+  {%- elif skill == "extract_themes" -%}{% trans %}Themes ready{% endtrans %}
+  {%- elif skill == "extract_concepts" -%}{% trans %}Concepts ready{% endtrans %}
+  {%- else -%}{{ step_label("succeeded") }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro run_state_label(state) -%}
+  {%- if state == "pending" -%}{% trans %}Pending{% endtrans %}
+  {%- elif state == "running" -%}{% trans %}Running{% endtrans %}
+  {%- elif state == "succeeded" -%}{% trans %}Succeeded{% endtrans %}
+  {%- elif state == "failed" -%}{% trans %}Failed{% endtrans %}
+  {%- elif state == "cancelled" -%}{% trans %}Cancelled{% endtrans %}
+  {%- elif state == "interrupted" -%}{% trans %}Interrupted{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{#
+  `step_states`/`run_states` are fields of rendering.run_page.RunPageView:
+  every value StepState/RunState can take, nothing about this one run.
+  This macro only decides how each looks. Which states exist is a domain
+  fact the presenter supplies.
+#}
+{% macro label_catalog(step_states, run_states) %}
+<ul id="vx-state-labels" hidden>
+  {% for state in step_states %}
+  <li data-catalog="step" data-state="{{ state }}">{{ step_label(state) }}</li>
+  {% endfor %}
+  {% for state in run_states %}
+  <li data-catalog="run" data-state="{{ state }}">{{ run_state_label(state) }}</li>
+  {% endfor %}
+</ul>
+{% endmacro %}

@@ -1,0 +1,16 @@
+language: en
+version: 1.0.0
+passages:
+  - id: scripted
+    kind: scripted
+    text: |
+      Good morning, I am calibrating speech recognition.
+      I am reading at a normal pace, without rushing.
+      The review on 14 March 2026 started at 9:45 and ran for 52 minutes.
+      The minutes mention the GDPR and ISO 27001.
+      Present were Giulia Ferrari and a colleague from Ljubljana.
+      That is all.
+  - id: unpredictable
+    kind: unpredictable
+    text: |
+      Seven, four, nine, two, eight. Code: alpha, romeo, zulu, one four. Lantern, quartz, willow, engine, eighty. Nordström, Vasquez, Iwuchukwu.

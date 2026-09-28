@@ -1,0 +1,49 @@
+{#
+  The licence asterisk, and the disclosure it opens: shared by
+  step 3's model list (pages/setup_model_ready.html) and the
+  Generative group of the models library (pages/models.html). One
+  markup for "this is not a licence we recognise as permissive", not one
+  invented per page. The distinction matters in the note below: the
+  asterisk covers three different cases, and only one of them is a licence
+  known to be restrictive.
+  `row` is anything carrying `licence_permissive`, `licence_spdx` and
+  `licence_text` the way rendering.setup_models.ModelRowView already does.
+#}
+{% macro licence_asterisk(row) %}
+{% if not row.licence_permissive %}
+<span class="vx-licence-flag" aria-hidden="true">*</span>
+{% endif %}
+{% endmacro %}
+
+{% macro licence_disclosure(row) %}
+{% if not row.licence_permissive %}
+<details class="vx-licence-disclosure">
+  <summary>
+    {% if row.licence_spdx %}
+    * {{ row.licence_spdx }}
+    {% elif row.licence_text %}
+    * {% trans %}licence not recognised{% endtrans %}
+    {% else %}
+    * {% trans %}licence unknown{% endtrans %}
+    {% endif %}
+  </summary>
+  {% if row.licence_text %}
+  <div class="vx-licence-text">{{ row.licence_text }}</div>
+  {% else %}
+  <p class="vx-help">{% trans %}Could not be read from Ollama.{% endtrans %}</p>
+  {% endif %}
+</details>
+{% endif %}
+{% endmacro %}
+
+{% macro licence_note() %}
+<p class="vx-help">
+  {# Three cases carry the asterisk: a recognised non-permissive licence,
+     an unrecognised licence, an unreadable licence. Saying «not a permissive
+     licence» would be true only of the first. For the other two we would
+     claim something we do not know, which is never done: we
+     report, we do not certify. So the sentence is about our recognition,
+     not about the licence itself. #}
+  * {% trans %}not a licence Voxtrama recognises as permissive. Open it to read the text exactly as the model declares it{% endtrans %}
+</p>
+{% endmacro %}

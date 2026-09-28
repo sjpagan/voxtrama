@@ -1,0 +1,202 @@
+// The succeeded-run player's custom controls:
+// play/pause, elapsed/total time, a waveform and
+// volume. Split out of _run_result.scss (which held the player, the
+// transcript and the output cards together) once the player grew from
+// one bare <audio controls> into five pieces, well past this project's
+// file-length limit.
+@use "../abstracts" as tokens;
+
+.vx-player {
+  margin-bottom: 0; // .vx-section's gap spaces it
+
+  // The <audio> element itself carries no `controls`: every
+  // control a person sees is drawn below instead, static/js/run_player.js
+  // and static/js/run_waveform.js's doing.
+  audio {
+    display: none;
+  }
+}
+
+.vx-player__controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vx-player__toggle {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 0;
+  border-radius: 50%;
+  // Indigo, sweeping to violet, with a glow around it.
+  background: linear-gradient(135deg, var(--vx-primary), var(--vx-accent));
+  box-shadow: 0 0 1.25rem color-mix(in srgb, var(--vx-accent) 45%, transparent);
+  color: #fff;
+  font-size: 1.35rem;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--vx-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Only one of the two icons shows at a time, by the button's data-playing
+// (static/js/run_player.js). No script has to keep two DOM nodes from
+// drifting into two different SVGs for the same state.
+.vx-player__icon-pause {
+  display: none;
+}
+
+.vx-player__toggle[data-playing="true"] .vx-player__icon-play {
+  display: none;
+}
+
+.vx-player__toggle[data-playing="true"] .vx-player__icon-pause {
+  display: flex;
+}
+
+.vx-player__time {
+  flex: 0 0 auto;
+  color: var(--vx-text);
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+// The waveform canvas grows to fill the space between the time and the volume
+// control. Its width in device pixels is
+// set by static/js/run_waveform.js from this element's *layout* width, not
+// the other way around.
+.vx-player__wave {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  height: 3.5rem;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--vx-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Takes the waveform's place when one cannot be drawn, instead of leaving a
+// gap that reads as a fault.
+.vx-player__notice {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  color: var(--vx-text-muted);
+  font-size: 0.9rem;
+}
+
+.vx-player__volume {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--vx-text-muted);
+
+  input[type="range"] {
+    width: 6rem;
+    height: auto;
+    margin: 0;
+    background: none;
+    // The browser's own slider, tinted: its track fills up to the thumb,
+    // which Pico's flat restyle does not.
+    appearance: auto;
+    accent-color: var(--vx-accent);
+  }
+}
+
+// The «⋮» menu at the far right of the player.
+.vx-player__menu {
+  position: relative;
+  flex: 0 0 auto;
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    border-radius: 50%;
+    color: var(--vx-text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker,
+    &::after {
+      display: none;
+    }
+
+    &:hover {
+      color: var(--vx-text);
+    }
+  }
+}
+
+.vx-player__menu-panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 5;
+  min-width: 12rem;
+  padding: 0.4rem;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: 0.4rem;
+    color: var(--vx-text);
+    text-decoration: none;
+
+    &:hover {
+      background: color-mix(in srgb, var(--vx-primary) 18%, transparent);
+    }
+  }
+}
+
+@media (max-width: 46rem) {
+  .vx-player__volume {
+    display: none;
+  }
+}
+
+// «60s «10s 10s» 60s», around the play button.
+.vx-player__skips {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0.25rem;
+}
+
+.vx-player__skip {
+  width: auto;
+  margin: 0;
+  padding: 0.2rem 0.45rem;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--vx-text-muted);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+
+  &:hover {
+    color: var(--vx-text);
+    border-color: var(--vx-primary);
+  }
+}

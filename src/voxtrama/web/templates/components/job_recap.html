@@ -1,0 +1,70 @@
+{#
+  The Recap tab of a concluded job, the tab a
+  concluded job opens on. The recap is rendering.job_recap: one section
+  per kind of result, every point with its source (speaker · time, a
+  button that plays the audio from there) and every section with its
+  provenance (workflow · skill · model).
+
+  The search field finds a word inside the recap: the one search of the
+  job view (components/text_find.html), with «2 of 5» and arrows.
+  «Export» is a native <details> menu of plain downloads, served by
+  api.routes.job_recap_export, and the manifest to share without the
+  context's text (api.routes.run_manifest_export). No
+  script involved.
+#}
+{% from "components/icons.html" import icon_chevron_down %}
+{% from "components/job_view_icons.html" import icon_file %}
+{% from "components/text_find.html" import text_find with context %}
+
+{% macro recap_title(kind) -%}
+  {%- if kind == "key_point" -%}{% trans %}Key points{% endtrans %}
+  {%- elif kind == "decision" -%}{% trans %}Decisions{% endtrans %}
+  {%- elif kind == "concept" -%}{% trans %}Concepts{% endtrans %}
+  {%- elif kind == "theme" -%}{% trans %}Themes{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro recap_toolbar(run_id) %}
+<div class="vx-recap__toolbar">
+  {{ text_find("#vx-recap-body", ".vx-recap__text", gettext("Search recap")) }}
+  <details class="vx-export">
+    <summary class="vx-button vx-button--secondary vx-button--small">{% trans %}Export{% endtrans %} {{ icon_chevron_down() }}</summary>
+    <ul class="vx-export__menu">
+      <li><a href="/runs/{{ run_id }}/recap.pdf" download>{{ icon_file() }} PDF</a></li>
+      <li><a href="/runs/{{ run_id }}/recap.html" download>{{ icon_file() }} HTML</a></li>
+      <li><a href="/runs/{{ run_id }}/recap.docx" download>{{ icon_file() }} DOCX</a></li>
+      <li><a href="/runs/{{ run_id }}/manifest.json" download title="{% trans %}What the job ran with, without the context you wrote{% endtrans %}">{{ icon_file() }} {% trans %}Manifest (JSON){% endtrans %}</a></li>
+    </ul>
+  </details>
+</div>
+{% endmacro %}
+
+{% macro job_recap(sections, run_id) %}
+<div class="vx-card vx-recap">
+  {% if sections %}
+  {{ recap_toolbar(run_id) }}
+  <div class="vx-recap__body" id="vx-recap-body">
+    {% for section in sections %}
+    <section class="vx-recap__section">
+      <h3>{{ recap_title(section.kind) }}</h3>
+      <ul class="vx-recap__points">
+        {% for point in section.points %}
+        <li>
+          <span class="vx-recap__text">{{ point.text }}</span>
+          {% if point.time %}
+          <button type="button" class="vx-recap__source" data-start="{{ point.start }}">{% if point.speaker %}{{ point.speaker }} · {% endif %}{{ point.time }}</button>
+          {% endif %}
+          {% if point.needs_review %}<span class="vx-badge vx-badge--warning">{% trans %}Needs review{% endtrans %}</span>{% endif %}
+          {% if point.edited %}<span class="vx-badge" title="{% trans %}Corrected by hand{% endtrans %}">{% trans %}Edited{% endtrans %}</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      <p class="vx-recap__provenance">{{ section.provenance.workflow }} · {{ section.provenance.skill }}{% if section.provenance.model %} · {{ section.provenance.model }}{% endif %}</p>
+    </section>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="vx-help">{% trans %}This job produced a transcript only, with no recap.{% endtrans %}</p>
+  {% endif %}
+</div>
+{% endmacro %}

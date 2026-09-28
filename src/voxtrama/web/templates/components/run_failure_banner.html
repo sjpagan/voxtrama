@@ -1,0 +1,84 @@
+{#
+  The failed-run banner: title and sentence
+  chosen by rendering.run_failure.FailureBanner.title_key, never composed
+  from Run.error here (this template is left nothing to calculate,
+  the same restraint pages/run.html's docstring states for the step
+  count). A code this module's Python half does not recognise
+  carries `title_key=None` instead, and `banner.message` (Run.error
+  itself) is shown as the one honest thing left to say about it, like
+  engine.validation.error_code_for's "internal" fallback.
+
+  `banner.memory` holds the memory numbers, shown as a small
+  facts list rather than woven into a translated sentence, because
+  i18n.translator.Translator has no newstyle-gettext interpolation
+  (pages/run.html's docstring on the same limit for "3 of 5"). A
+  `<dl>` says "Parallel chunks used: 2 (recommended: 4)" without a
+  translated span having to contain a number.
+#}
+{% from "components/icons.html" import icon_alert, icon_settings %}
+{% from "components/job_view_icons.html" import icon_refresh %}
+
+{% macro _title(key) -%}
+  {%- if key == "generative_model_not_configured" -%}{% trans %}No summary model configured{% endtrans %}
+  {%- elif key == "generative_model_unreachable" -%}{% trans %}No summary model reachable{% endtrans %}
+  {%- elif key == "job_timeout" -%}{% trans %}This job ran out of time{% endtrans %}
+  {%- elif key == "memory_exhausted" -%}{% trans %}This step ran out of memory{% endtrans %}
+  {%- elif key == "interrupted" -%}{% trans %}The worker stopped responding{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro _message(key) -%}
+  {%- if key == "generative_model_not_configured" -%}
+    {%- trans %}The transcript is done. The recap needs a local summary model: choose one in Settings.{% endtrans %}
+  {%- elif key == "generative_model_unreachable" -%}
+    {%- trans %}The transcript is done. The recap needs Ollama, which did not answer.{% endtrans %}
+  {%- elif key == "job_timeout" -%}
+    {%- trans %}Every step that finished is saved. Retrying runs only what is left.{% endtrans %}
+  {%- elif key == "memory_exhausted" -%}
+    {%- trans %}This step used more memory than this machine could give it.{% endtrans %}
+  {%- elif key == "interrupted" -%}
+    {%- trans %}The process running this step stopped answering before it could finish, often the same thing as running out of memory.{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro _action(action) %}
+  {% if action.key == "open_settings" %}
+  <a class="vx-button vx-button--secondary" href="{{ action.href }}">{{ icon_settings() }} {% trans %}Open settings{% endtrans %}</a>
+  {% elif action.key == "retry" %}
+  <form method="post" action="{{ action.href }}">
+    <button type="submit" class="vx-button">{{ icon_refresh() }} {% trans %}Retry this step{% endtrans %}</button>
+  </form>
+  {% endif %}
+{% endmacro %}
+
+{% macro run_failure_banner(banner) %}
+<div class="vx-banner vx-banner--warning" id="vx-run-failure">
+  <span class="vx-banner__icon" aria-hidden="true">{{ icon_alert() }}</span>
+  <div class="vx-banner__body">
+    <h3>{% if banner.title_key %}{{ _title(banner.title_key) }}{% else %}{% trans %}This job failed{% endtrans %}{% endif %}</h3>
+    <p>{% if banner.title_key %}{{ _message(banner.title_key) }}{% else %}{{ banner.message }}{% endif %}</p>
+    {% if banner.title_key and banner.message %}<p class="vx-banner__detail">{{ banner.message }}</p>{% endif %}
+    {% if banner.memory %}
+    <dl class="vx-banner__facts">
+      <div>
+        <dt>{% trans %}Parallel chunks used{% endtrans %}</dt>
+        <dd>{{ banner.memory.used_parallel_chunks }} ({% trans %}recommended{% endtrans %} {{ banner.memory.recommended_parallel_chunks }})</dd>
+      </div>
+      <div>
+        <dt>{% trans %}Cores per chunk used{% endtrans %}</dt>
+        <dd>{{ banner.memory.used_cores_per_chunk }} ({% trans %}recommended{% endtrans %} {{ banner.memory.recommended_cores_per_chunk }})</dd>
+      </div>
+      {% if banner.memory.notice %}
+      <div>
+        <dt>{% trans %}This machine{% endtrans %}</dt>
+        <dd>{{ banner.memory.notice }}</dd>
+      </div>
+      {% endif %}
+    </dl>
+    {% endif %}
+    <div class="vx-banner__actions">
+      {% for action in banner.actions %}{{ _action(action) }}{% endfor %}
+    </div>
+  </div>
+</div>
+{% endmacro %}

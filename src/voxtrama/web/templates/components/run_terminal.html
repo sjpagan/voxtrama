@@ -1,0 +1,53 @@
+{#
+  The run page's live terminal panel: the run's run.log, tailed. `run.log_lines` is rendering.run_page.
+  RunPageView's first-paint tail (api.routes.run_page's
+  LOG_TAIL_LINES). Every line after that arrives over the same SSE
+  connection run_page.js already opens (the `log` event of
+  api.routes.run_events), appended by static/js/run_terminal.js. This
+  render never refreshes itself.
+
+  Titled «Activity», «Stop job» beside it. A job
+  that is over keeps its log, closed in a native <details>
+  with no button: nothing is left to stop or to follow.
+
+  "Stop run" is a plain <button>, not a <form>: POST /runs/{id}/cancel
+  answers JSON, not a redirect a browser could land on, so
+  static/js/run_terminal.js calls it with fetch() instead.
+#}
+{% from "components/icons.html" import icon_x %}
+
+{% macro _lines(lines) -%}
+{% for line in lines %}<span class="vx-terminal__line">{{ line }}</span>
+{% endfor %}
+{%- endmacro %}
+
+{% macro run_terminal(run) %}
+{% if run.is_final %}
+{% if run.log_lines %}
+<details class="vx-card vx-terminal" id="vx-run-log">
+  <summary class="vx-terminal__header vx-terminal__summary">
+    <h2 class="vx-terminal__title">{% trans %}Activity{% endtrans %}</h2>
+  </summary>
+  <div class="vx-terminal__scroll">
+    <pre class="vx-terminal__log">{{ _lines(run.log_lines) }}</pre>
+  </div>
+</details>
+{% endif %}
+{% else %}
+<div class="vx-card vx-terminal" id="vx-run-terminal" data-run-id="{{ run.id }}">
+  <div class="vx-terminal__header">
+    <h2 class="vx-terminal__title">{% trans %}Activity{% endtrans %}</h2>
+    <button type="button" class="vx-button vx-button--danger" id="vx-run-stop">
+      {{ icon_x() }}
+      {% trans %}Stop job{% endtrans %}
+    </button>
+  </div>
+  {# The outer box scrolls and keeps its bottom in view, first paint
+     included (components/_run_terminal.scss): the newest line is where a
+     reader looks, and static/js/run_terminal.js only scrolls on append. #}
+  <div class="vx-terminal__scroll">
+    <pre class="vx-terminal__log" id="vx-terminal-log">{{ _lines(run.log_lines) }}</pre>
+  </div>
+</div>
+{% endif %}
+{% endmacro %}

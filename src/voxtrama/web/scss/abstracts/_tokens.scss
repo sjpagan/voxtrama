@@ -1,0 +1,109 @@
+// The voxtrama palette, measured from the design. These maps are
+// the only place a hex value should appear: base/_theme
+// reads them to emit the --vx-* custom properties and, from the same data,
+// the --pico-* remap. Nothing downstream names its own colour.
+//
+// Two theme maps plus a shared one, because only some tokens change between
+// the dark and light design. Brand and status colours (success, warning,
+// accent, the speaker colours) are the same in both, so listing them once
+// keeps a light map and a dark map from drifting apart on values neither
+// should change.
+$dark: (
+  "bg": #050c1d,
+  "bg-elevated": #0d192c,
+  "surface": #101d33,
+  "border": #1e2c44,
+  "text": #e7eaef,
+  "text-muted": #98a0ad,
+  "primary": #1a7cfc,
+  "primary-hover": #3b93ff,
+  "glow-from": #0c245a,
+  "glow-to": #1e4278,
+  // The waveform's bars not yet heard:
+  // a muted blue-grey, brighter than "border" so the shape still reads.
+  "wave-rest": rgba(120, 140, 190, 0.35),
+);
+
+// The dark theme's background glow (#0c245a, #1e4278), painted by
+// base/_theme's vx-glow rule. Also declared in $light, because
+// test_every_token_is_defined_in_every_theme requires every --vx-* in all
+// four theme blocks. There it is "transparent": the light design
+// has no glow, so the token resolves to nothing.
+$light: (
+  "bg": #f6fbfe,
+  "bg-elevated": #ffffff,
+  "surface": #ffffff,
+  "border": #e3ecf5,
+  "text": #1b2a3d,
+  "text-muted": #5b6b7f,
+  "primary": #0c78fc,
+  "primary-hover": #0a63d4,
+  "glow-from": transparent,
+  "glow-to": transparent,
+  "wave-rest": rgba(90, 110, 150, 0.3),
+);
+
+$shared: (
+  "success": #2aa866,
+  "warning": #f6b430,
+  // The ring around a failed step.
+  "danger": #f6495a,
+  "accent": #7878fc,
+  // The design only shows two speakers (the interview it depicts has two
+  // voices), but assign.py's max_speakers defaults to 4. The other two are
+  // picked to stay distinct from each other and from the semantic colours
+  // above.
+  "speaker-1": #3cc0ea,
+  "speaker-2": #f6b430,
+  "speaker-3": #b478f6,
+  "speaker-4": #f6685a,
+);
+
+$gradient-primary: linear-gradient(135deg, #3b6df5, #0c8afc);
+
+// The spacing scale, measured against the design at its native 1586x992,
+// taken as 1:1 with browser px (16px root) like $vx-content-width. The
+// design is the reference, not the current product, which uses 1898px of
+// height for what the design draws in 992. A sidebar nav row has about 0.6rem of padding around
+// its label, a card's internal rhythm is about 0.75rem, the space between
+// sections about 2rem. Three different sizes, hence a scale and not a single
+// constant.
+$vx-space-3xs: 0.25rem;
+$vx-space-2xs: 0.4rem;
+$vx-space-xs: 0.6rem;
+$vx-space-sm: 0.75rem;
+$vx-space-md: 1rem;
+$vx-space-lg: 1.5rem;
+$vx-space-xl: 2rem;
+$vx-space-2xl: 3rem;
+
+// The type scale, same source. "h1" is a page title outside the hero
+// ("Team retro - 24 Sep"), measured at the same cap
+// height as .vx-hero__title's clamp ceiling (components/_home.scss's
+// "display" value below), so every page title has the same size, hero
+// included.
+$vx-text-xs: 0.75rem;
+$vx-text-sm: 0.85rem;
+$vx-text-base: 1rem;
+$vx-text-md: 1.1rem;
+$vx-text-lg: 1.25rem;
+$vx-text-xl: 1.75rem;
+$vx-text-h1: 2.5rem;
+$vx-text-display: 2.75rem;
+
+// Which --pico-* custom property each --vx-* token replaces. Kept as data,
+// not eleven repeated declarations, so a token renamed here stays in sync
+// across the three theme blocks in base/_theme that use it.
+$pico-remap: (
+  "background-color": "bg",
+  "card-background-color": "surface",
+  "color": "text",
+  "muted-color": "text-muted",
+  "muted-border-color": "border",
+  "primary": "primary",
+  "primary-hover": "primary-hover",
+  "primary-background": "primary",
+  "primary-hover-background": "primary-hover",
+  "form-element-background-color": "bg-elevated",
+  "form-element-border-color": "border",
+);

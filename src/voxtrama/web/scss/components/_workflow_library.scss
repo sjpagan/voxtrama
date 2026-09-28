@@ -1,0 +1,457 @@
+// GET /workflows: the cards, the card that
+// creates a custom workflow, the detail under the grid, and the custom
+// workflow's form. Cards get a coloured head with an icon, no photo and
+// no `Local` badge.
+@use "../abstracts" as tokens;
+
+.vx-wf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
+  gap: tokens.$vx-space-md;
+  margin-bottom: tokens.$vx-space-lg;
+}
+
+// The cards share five rows (head, title, text, checklist,
+// actions) through subgrid, so each part starts at the same height on
+// every card, however long the one beside it runs.
+.vx-wf-card,
+.vx-wf-create {
+  display: grid;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
+  row-gap: tokens.$vx-space-xs;
+  align-content: start;
+  margin: 0;
+  padding: tokens.$vx-space-sm;
+}
+
+// The selected card's blue ring, the one the detail below belongs to.
+.vx-wf-card--selected,
+.vx-workflow-card--selected {
+  border-color: var(--vx-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--vx-primary) 35%, transparent);
+}
+
+.vx-wf-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: tokens.$vx-space-sm;
+  border-radius: 0.75rem;
+}
+
+// Four tints, one per position: blue, violet, green, amber.
+@mixin head($colour) {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, $colour 70%, transparent),
+    color-mix(in srgb, $colour 15%, var(--vx-surface))
+  );
+}
+
+.vx-wf-head--0 {
+  @include head(var(--vx-primary));
+}
+
+.vx-wf-head--1 {
+  @include head(var(--vx-accent));
+}
+
+.vx-wf-head--2 {
+  @include head(var(--vx-success));
+}
+
+.vx-wf-head--3 {
+  @include head(var(--vx-warning));
+}
+
+.vx-wf-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  color: #fff;
+
+  // Inside a card head the head is the colour. Alone (the detail) it
+  // carries its own tint, the same one as its card.
+  &:not([class*="vx-wf-head--"]) {
+    background: color-mix(in srgb, #fff 18%, transparent);
+  }
+  font-size: 1.5rem;
+}
+
+.vx-wf-tag {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--vx-text) 35%, transparent);
+  border-radius: 999px;
+  color: var(--vx-text);
+  font-size: tokens.$vx-text-xs;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.vx-wf-card__title {
+  margin: tokens.$vx-space-3xs 0 0;
+  font-size: tokens.$vx-text-md;
+}
+
+.vx-wf-card__text {
+  margin: 0;
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+
+  strong {
+    color: var(--vx-text);
+    font-weight: 600;
+  }
+}
+
+// What the steps concretely do, one checked line each.
+.vx-wf-does {
+  display: grid;
+  align-content: start;
+  gap: tokens.$vx-space-2xs;
+  margin: 0;
+  padding: tokens.$vx-space-xs 0 0;
+  border-top: 1px solid var(--vx-border);
+  font-size: tokens.$vx-text-sm;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: tokens.$vx-space-2xs;
+    margin: 0;
+    list-style: none;
+  }
+}
+
+.vx-wf-does__check {
+  flex: 0 0 auto;
+  color: var(--vx-success);
+}
+
+// The foot of every card lines up, whatever the text above runs to.
+.vx-wf-card__actions {
+  display: flex;
+  grid-row: 5;
+  align-self: end;
+  gap: tokens.$vx-space-2xs;
+  padding-top: tokens.$vx-space-xs;
+
+  > * {
+    flex: 1 1 0;
+    margin: 0;
+  }
+
+  form {
+    flex: 0 0 auto;
+  }
+
+  .vx-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.45rem 0.6rem;
+    font-size: tokens.$vx-text-sm;
+  }
+}
+
+.vx-wf-duplicate {
+  border: 1px solid var(--vx-primary);
+  background: color-mix(in srgb, var(--vx-primary) 18%, transparent);
+  color: var(--vx-text);
+}
+
+// The creation card: dashed, the two ways to start as rows.
+.vx-wf-create {
+  border-style: dashed;
+  background: transparent;
+}
+
+.vx-wf-create__plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  background: var(--vx-bg-elevated);
+  font-size: 1.5rem;
+}
+
+.vx-wf-create__choice {
+  display: flex;
+  align-items: center;
+  gap: tokens.$vx-space-xs;
+  padding: tokens.$vx-space-xs tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+  color: var(--vx-text);
+  font-size: tokens.$vx-text-sm;
+  text-decoration: none;
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  // Pico draws its own chevron after every <summary>. This row has one.
+  &::after {
+    display: none;
+  }
+}
+
+.vx-wf-create__chevron {
+  margin-left: auto;
+}
+
+.vx-wf-create__from ul {
+  margin: tokens.$vx-space-2xs 0 0;
+  padding-left: tokens.$vx-space-lg;
+  font-size: tokens.$vx-text-sm;
+}
+
+.vx-wf-create .vx-notice {
+  margin: 0;
+  font-size: tokens.$vx-text-sm;
+}
+
+.vx-wf-create__choices {
+  display: grid;
+  align-content: start;
+  gap: tokens.$vx-space-xs;
+}
+
+.vx-wf-create__note {
+  grid-row: 5;
+  align-self: end;
+  margin: 0;
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-xs;
+  text-align: center;
+}
+
+// The detail under the grid.
+.vx-wf-detail {
+  border-color: color-mix(in srgb, var(--vx-primary) 55%, var(--vx-border));
+}
+
+.vx-wf-detail__head {
+  display: flex;
+  align-items: center;
+  gap: tokens.$vx-space-md;
+  margin-bottom: tokens.$vx-space-md;
+
+  h2 {
+    margin: 0;
+    font-size: tokens.$vx-text-lg;
+  }
+
+  p {
+    margin: tokens.$vx-space-3xs 0 0;
+    color: var(--vx-text-muted);
+  }
+}
+
+.vx-wf-detail__box {
+  padding: tokens.$vx-space-md;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.75rem;
+  background: var(--vx-bg-elevated);
+
+  h3 {
+    margin: 0 0 tokens.$vx-space-sm;
+    font-size: tokens.$vx-text-md;
+  }
+}
+
+.vx-wf-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: tokens.$vx-space-md;
+  margin: 0 0 tokens.$vx-space-md;
+  padding: 0;
+  list-style: none;
+}
+
+.vx-wf-step {
+  display: flex;
+  align-items: flex-start;
+  gap: tokens.$vx-space-xs;
+  margin: 0;
+
+  strong {
+    font-size: tokens.$vx-text-sm;
+  }
+
+  p {
+    margin: tokens.$vx-space-3xs 0 0;
+    color: var(--vx-text-muted);
+    font-size: tokens.$vx-text-xs;
+  }
+}
+
+.vx-wf-step__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--vx-primary);
+  border-radius: 50%;
+  font-size: tokens.$vx-text-sm;
+  font-weight: 600;
+}
+
+.vx-wf-advanced {
+  padding: tokens.$vx-space-xs tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: tokens.$vx-space-2xs;
+    cursor: pointer;
+    list-style: none;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  &[open] summary svg {
+    transform: rotate(90deg);
+  }
+}
+
+// The custom workflow's form.
+.vx-wf-form {
+  max-width: 44rem;
+}
+
+.vx-wf-steps--pick {
+  grid-template-columns: 1fr;
+  gap: tokens.$vx-space-xs;
+}
+
+.vx-wf-pick {
+  display: flex;
+  align-items: flex-start;
+  gap: tokens.$vx-space-sm;
+
+  > span {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// What each generative step asks the model. Read-only in the
+// detail, a textarea in the custom form. The placeholders the engine fills
+// in are marked.
+.vx-wf-instr-list {
+  display: grid;
+  gap: tokens.$vx-space-xs;
+  margin: tokens.$vx-space-md 0;
+
+  h3 {
+    margin: 0;
+    font-size: tokens.$vx-text-md;
+  }
+
+  .vx-help {
+    margin: 0;
+  }
+}
+
+.vx-wf-instr {
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: tokens.$vx-space-xs;
+    padding: tokens.$vx-space-xs tokens.$vx-space-sm;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker,
+    &::after {
+      display: none;
+    }
+  }
+
+  &[open] .vx-wf-instr__chevron svg {
+    transform: rotate(90deg);
+  }
+
+  textarea {
+    width: calc(100% - 2 * #{tokens.$vx-space-sm});
+    margin: 0 tokens.$vx-space-sm tokens.$vx-space-xs;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: tokens.$vx-text-sm;
+  }
+
+  > .vx-help {
+    margin: 0 tokens.$vx-space-sm tokens.$vx-space-sm;
+  }
+}
+
+.vx-wf-instr__chevron {
+  display: inline-flex;
+  color: var(--vx-text-muted);
+}
+
+.vx-wf-instr__returns {
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+}
+
+.vx-wf-instr__text {
+  margin: 0;
+  padding: tokens.$vx-space-sm;
+  border-top: 1px solid var(--vx-border);
+  color: var(--vx-text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: tokens.$vx-text-sm;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.vx-wf-slot {
+  padding: 0 0.25em;
+  border-radius: 0.3em;
+  background: color-mix(in srgb, var(--vx-primary) 25%, transparent);
+  color: var(--vx-text);
+}
+
+// A step left unticked sends nothing: its instructions go with it.
+.vx-wf-step:has(input[name="skill"]:not(:checked)) .vx-wf-instr--edit {
+  display: none;
+}
+
+// In the custom form a step's instructions open under its own row, full
+// width, indented to the text beside the checkbox.
+.vx-wf-steps--pick .vx-wf-step {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: tokens.$vx-space-2xs;
+}
+
+.vx-wf-instr--edit {
+  margin-left: 2.25rem;
+}
+
+.vx-wf-instr summary,
+.vx-wf-instr summary strong {
+  color: var(--vx-text);
+}

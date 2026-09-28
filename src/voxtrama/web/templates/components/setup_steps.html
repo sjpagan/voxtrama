@@ -1,0 +1,39 @@
+{#
+  The guided setup's four-step tracker (a filled, glowing marker for the
+  current step instead of a number inside a plain ring, and a line that
+  passes through each marker's centre). One marker per
+  rendering.SetupStepRow, in their fixed order: a done step shows
+  icon_check() in a solid circle, the current step a filled disc with its
+  ordinal, an upcoming step an empty ring. components/run_steps.html uses
+  the same three-state vocabulary for a run's chain, and both are now
+  drawn by the shared skeleton in components/step_chain.html instead of
+  each keeping its own `<ol>` and CSS.
+#}
+{% from "components/step_chain.html" import step_chain %}
+{% from "components/icons.html" import icon_check %}
+
+{% macro setup_steps(steps) %}
+{% set items = [] %}
+{% for step in steps %}
+  {% set marker %}
+    {%- if step.state == "done" -%}{{ icon_check() }}
+    {%- elif step.state == "current" -%}{{ loop.index }}
+    {%- endif -%}
+  {% endset %}
+  {% set name %}
+    {%- if step.key == "personal" -%}{% trans %}Personal settings{% endtrans %}
+    {%- elif step.key == "processing" -%}{% trans %}Local processing{% endtrans %}
+    {%- elif step.key == "models" -%}{% trans %}Model ready{% endtrans %}
+    {%- elif step.key == "storage" -%}{% trans %}Private storage{% endtrans %}
+    {%- endif -%}
+  {% endset %}
+  {% set _ = items.append({
+    "id": step.key,
+    "state": step.state,
+    "marker": marker,
+    "name": name,
+    "status": None,
+  }) %}
+{% endfor %}
+{{ step_chain(items) }}
+{% endmacro %}

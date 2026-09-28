@@ -1,0 +1,166 @@
+// The Workflow card of the new-job form: workflow picks, name and
+// context, `Advanced`, `Start job`, and the Recent jobs table below.
+@use "../abstracts" as tokens;
+
+.vx-workflow-picks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: tokens.$vx-space-sm;
+  margin-bottom: tokens.$vx-space-md;
+}
+
+.vx-workflow-pick {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-2xs;
+  margin: 0;
+  padding: tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.75rem;
+  background: var(--vx-surface);
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    top: tokens.$vx-space-sm;
+    right: tokens.$vx-space-sm;
+    margin: 0;
+  }
+
+  &:has(input:checked) {
+    border-color: var(--vx-primary);
+    box-shadow: 0 0 0 1px var(--vx-primary);
+  }
+}
+
+.vx-workflow-pick__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--vx-accent) 30%, transparent);
+  color: var(--vx-text);
+  font-size: 1.25rem;
+}
+
+.vx-workflow-pick__text {
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+}
+
+.vx-new-job__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: tokens.$vx-space-sm;
+
+  label {
+    margin: 0;
+    font-size: tokens.$vx-text-sm;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.vx-advanced {
+  margin: tokens.$vx-space-xs 0;
+  padding-top: tokens.$vx-space-sm;
+  border-top: 1px solid var(--vx-border);
+
+  summary {
+    font-weight: 600;
+  }
+}
+
+.vx-advanced__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: tokens.$vx-space-sm;
+  margin: tokens.$vx-space-sm 0;
+
+  select,
+  input {
+    margin: 0;
+  }
+}
+
+.vx-field__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: tokens.$vx-space-3xs;
+  font-size: tokens.$vx-text-sm;
+}
+
+.vx-tag {
+  padding: 0.1rem tokens.$vx-space-2xs;
+  border-radius: 999px;
+  background: var(--vx-border);
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-xs;
+}
+
+.vx-tag--changed {
+  background: color-mix(in srgb, var(--vx-accent) 35%, transparent);
+  color: var(--vx-text);
+}
+
+.vx-stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+
+  input {
+    border: 0;
+    text-align: center;
+  }
+}
+
+.vx-stepper__step {
+  display: flex;
+  width: auto;
+  margin: 0;
+  padding: tokens.$vx-space-2xs;
+  border: 0;
+  background: transparent;
+  color: var(--vx-text-muted);
+}
+
+.vx-range {
+  display: flex;
+  align-items: center;
+  gap: tokens.$vx-space-2xs;
+  min-height: 2.75rem;
+  font-size: tokens.$vx-text-sm;
+
+  input[type="range"] {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+.vx-range__value {
+  min-width: 2.5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.vx-help--warning {
+  color: var(--vx-warning);
+}
+
+.vx-new-job__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: tokens.$vx-space-sm;
+
+  .vx-button {
+    width: auto;
+    margin: 0;
+  }
+}

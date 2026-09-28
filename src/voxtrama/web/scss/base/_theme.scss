@@ -1,0 +1,67 @@
+// Voxtrama's --vx-* custom properties are the real palette. Pico's
+// --pico-* ones point back at them, not the other way round.
+//
+// If --vx-* aliased Pico instead, every native control this shell renders
+// (button, input, select, table, details/summary) would keep Pico's colours
+// on top of our background, and each would need repainting in a second place.
+// With --pico-* remapped, a control sits on our palette with no
+// voxtrama-specific styling.
+//
+// Dark is the default, not an equal option picked by media query.
+// There are four blocks, and each of the four states a reader can be in must
+// land on exactly one of them:
+//   1. `:root`: dark, unconditionally. This is the default:
+//      with no choice and no system preference the page renders dark.
+//   2. `prefers-color-scheme: light` on a root that has not chosen dark.
+//   3. data-theme="dark": dark again, and still needed. On a machine whose
+//      system says light, block 2 applies, and an explicit choice has to beat
+//      it. Same specificity, later in the cascade, so it wins.
+//   4. data-theme="light": light, the mirror of block 3. On a machine whose
+//      system says DARK, block 2 never runs, so without this block an
+//      explicit "light" would match nothing: every --vx-* would be undefined
+//      and the page would fall back to Pico's colours. A check on a light
+//      machine cannot see this state, which is how it survived the first
+//      pass.
+@use "sass:map";
+@use "../abstracts" as tokens;
+
+@mixin vx-palette($colors) {
+  @each $name, $value in map.merge($colors, tokens.$shared) {
+    --vx-#{$name}: #{$value};
+  }
+  --vx-gradient-primary: #{tokens.$gradient-primary};
+}
+
+@mixin vx-pico-remap {
+  @each $pico-name, $vx-name in tokens.$pico-remap {
+    --pico-#{$pico-name}: var(--vx-#{$vx-name});
+  }
+}
+
+// color-scheme names the theme that resolved, not the ones on offer.
+// `dark light` here would let scrollbars and native widgets follow the system
+// while the palette says otherwise: light chrome on a dark page whenever
+// someone picks dark on a light machine.
+@mixin vx-theme($colors, $scheme) {
+  color-scheme: $scheme;
+  @include vx-palette($colors);
+  @include vx-pico-remap;
+}
+
+:root {
+  @include vx-theme(tokens.$dark, dark);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    @include vx-theme(tokens.$light, light);
+  }
+}
+
+:root[data-theme="dark"] {
+  @include vx-theme(tokens.$dark, dark);
+}
+
+:root[data-theme="light"] {
+  @include vx-theme(tokens.$light, light);
+}

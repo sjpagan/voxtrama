@@ -1,0 +1,197 @@
+// The step chain's skeleton: pulled out of _run_page.scss, where it was
+// first built, once the guided setup (components/_setup.scss) needed the
+// same shape (a marker per step, a line through each marker's centre, the
+// name centred below) and was drawing it with its own, cruder rules. One
+// file, shared by components/run_steps.html and components/setup_steps.html
+// (components/step_chain.html is the one `<ol>` both call). A run's step
+// states (pending/running/succeeded/failed/skipped) and the wizard's three
+// (upcoming/current/done) are two sets of [data-step-state] values painted
+// onto the one skeleton below.
+
+.vx-chain {
+  display: flex;
+  align-items: flex-start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vx-chain__step {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.vx-chain__track {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+// Half the segment joining this step to the previous one, drawn from this
+// step's side so its colour comes straight from this step's
+// [data-step-state]. The connector "into" a step lights up as soon as that
+// step leaves the first, unreached state, with no knowledge of its neighbour.
+// --chain-line-color/-style are custom properties rather than a second set of
+// colour rules, so the media query below can rotate the line from border-top
+// to border-left without repeating which state means which colour.
+.vx-chain__track::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  width: 100%;
+  border-top-width: 2px;
+  border-top-style: var(--chain-line-style, solid);
+  border-top-color: var(--chain-line-color, var(--vx-border));
+  transform: translateY(-50%);
+}
+
+.vx-chain__step:first-child .vx-chain__track::before {
+  display: none;
+}
+
+.vx-chain__step[data-step-state="succeeded"],
+.vx-chain__step[data-step-state="skipped"],
+.vx-chain__step[data-step-state="done"] {
+  --chain-line-color: var(--vx-success);
+}
+
+.vx-chain__step[data-step-state="running"],
+.vx-chain__step[data-step-state="current"] {
+  --chain-line-color: var(--vx-primary);
+}
+
+.vx-chain__step[data-step-state="failed"] {
+  --chain-line-color: var(--vx-danger);
+}
+
+// Nothing past a failure was reached: the segment
+// leading to the step *after* a failed one stays dashed and muted, not just
+// unlit, so a run that stopped there reads as stopped, not as "still queued"
+// like an ordinary future step.
+.vx-chain__step[data-step-state="failed"] + .vx-chain__step {
+  --chain-line-color: var(--vx-border);
+  --chain-line-style: dashed;
+}
+
+// Shapes, not only colour, tell states apart: a hollow ring
+// waiting, a filled disc running, a check once done, a dash for a step its
+// condition skipped, an exclamation mark for a failure. A reader who cannot
+// tell --vx-primary from --vx-border still reads the state from the marker's
+// outline and icon, and the label underneath (components/run_labels.html, or
+// the wizard's step name) says it again in words.
+.vx-chain__marker {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--vx-border);
+  background: var(--vx-surface);
+  color: var(--vx-text-muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: transform 160ms, border-color 160ms, background 160ms;
+
+  svg {
+    width: 0.85em;
+    height: 0.85em;
+  }
+}
+
+[data-step-state="running"] .vx-chain__marker,
+[data-step-state="current"] .vx-chain__marker {
+  border-color: var(--vx-primary);
+  background: var(--vx-primary);
+  color: #fff;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--vx-primary) 25%, transparent);
+}
+
+[data-step-state="succeeded"] .vx-chain__marker,
+[data-step-state="skipped"] .vx-chain__marker,
+[data-step-state="done"] .vx-chain__marker {
+  border-color: var(--vx-success);
+  background: var(--vx-success);
+  color: var(--vx-bg);
+}
+
+[data-step-state="failed"] .vx-chain__marker {
+  border-color: var(--vx-danger);
+  color: var(--vx-danger);
+}
+
+.vx-chain__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.vx-chain__name {
+  font-weight: 600;
+}
+
+.vx-chain__status {
+  color: var(--vx-text-muted);
+  font-size: 0.8rem;
+}
+
+// The step's elapsed time ("2 min" under "Audio processed"): a third line,
+// same size and tone as .vx-chain__status above it, since it is a fact of the
+// same weight.
+.vx-chain__duration {
+  color: var(--vx-text-muted);
+  font-size: 0.8rem;
+}
+
+// A failed step's status also reads in --vx-danger (a red "Failed"), not
+// just its marker: the same colour carried one line down.
+[data-step-state="failed"] .vx-chain__status {
+  color: var(--vx-danger);
+}
+
+// Same shape, stacked: the chain becomes a vertical list, so
+// the connector rotates from a line above each marker to its left instead of
+// disappearing.
+@media (max-width: 46rem) {
+  .vx-chain {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  .vx-chain__step {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .vx-chain__track {
+    width: auto;
+  }
+
+  .vx-chain__track::before {
+    top: auto;
+    right: auto;
+    left: 50%;
+    bottom: 100%;
+    width: 0;
+    height: 1.5rem;
+    border-top-width: 0;
+    border-left-width: 2px;
+    border-left-style: var(--chain-line-style, solid);
+    border-left-color: var(--chain-line-color, var(--vx-border));
+    transform: translateX(-50%);
+  }
+}

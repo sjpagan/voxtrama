@@ -1,0 +1,60 @@
+// The breadcrumb: "where you are", above a page's title (.vx-page-nav,
+// components/_shell.scss).
+//
+// It first shipped at $vx-text-sm, muted, with the separator in --vx-border,
+// and read as a stray line of prose rather than navigation: at that size only
+// its paler colour set it apart from body text, and a separator in the border
+// colour was barely visible. Smaller and *firmer* marks it as a different
+// kind of row: $vx-text-xs, weight 600, a visible separator, and a heavier
+// last ring, since that ring answers "where am I". No uppercase: the last
+// ring can be data (a recording's filename, api.routes.run_page), and
+// uppercasing someone's filename changes it.
+@use "../abstracts" as tokens;
+
+.vx-breadcrumb {
+  font-size: tokens.$vx-text-xs;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--vx-text-muted);
+
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    // At phone width it wraps onto a second line instead of scrolling the
+    // page sideways. flex-wrap alone does it, no media query.
+    flex-wrap: wrap;
+    align-items: center;
+    gap: tokens.$vx-space-3xs;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: tokens.$vx-space-3xs;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    color: var(--vx-text-muted);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  // The last ring, current page: full text colour, heavier, never a link.
+  span[aria-current="page"] {
+    color: var(--vx-text);
+    font-weight: 700;
+  }
+}
+
+.vx-breadcrumb__sep {
+  // --vx-border is the colour of a hairline: as a glyph it disappeared.
+  color: var(--vx-text-muted);
+  opacity: 0.6;
+}

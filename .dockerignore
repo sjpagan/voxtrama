@@ -1,0 +1,42 @@
+# Version control and environment
+.git/
+.gitignore
+.env
+.env.*
+
+# Virtualenv and Python caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Tests: not needed to run the app. The one exception is the demo's audio:
+# `voxtrama demo` exists so nobody has to find a file before
+# seeing a first result, and the fixture the tests use is that file: one
+# file, two purposes, rather than the same seconds of audio committed twice.
+tests/
+!tests/fixtures/public-fixture.wav
+
+# Documentation: not needed at runtime
+docs/
+
+# The data directory, if a clone ever ends up next to one, and any
+# media. Never belongs inside the image
+data/
+*.wav
+*.mp3
+*.m4a
+*.opus
+*.flac
+*.ogg
+*.mp4
+*.mkv
+*.mov
+
+# Build and packaging outputs
+build/
+dist/
+*.egg-info/

@@ -1,0 +1,24 @@
+{#
+  One search, the same in the Transcript, Explore and Recap tabs: a field, «2 of 5», arrows to move between the matches,
+  and a button to clear. `scope` is the CSS selector of what is searched,
+  `texts` the selector of the elements inside it whose text is marked.
+  static/js/text_find.js does the rest, on the page's own text: the
+  server never sees what is typed. A match inside a line with a
+  `data-start` moves the player there («from the result, to the
+  audio»), without starting it.
+#}
+{% from "components/icons.html" import icon_search, icon_x, icon_chevron_down %}
+{% from "components/job_view_icons.html" import icon_chevron_up %}
+
+{% macro text_find(scope, texts, label) %}
+<div class="vx-find" data-find-scope="{{ scope }}" data-find-texts="{{ texts }}">
+  <div class="vx-find__field">
+    {{ icon_search() }}
+    <input type="text" class="vx-find__input" autocomplete="off" placeholder="{{ label }}..." aria-label="{{ label }}">
+    <button type="button" class="vx-find__clear" aria-label="{% trans %}Clear{% endtrans %}" hidden>{{ icon_x() }}</button>
+  </div>
+  <span class="vx-find__count" data-of="{% trans %}of{% endtrans %}" aria-live="polite"></span>
+  <button type="button" class="vx-find__step" data-step="-1" aria-label="{% trans %}Previous match{% endtrans %}" disabled>{{ icon_chevron_up() }}</button>
+  <button type="button" class="vx-find__step" data-step="1" aria-label="{% trans %}Next match{% endtrans %}" disabled>{{ icon_chevron_down() }}</button>
+</div>
+{% endmacro %}

@@ -1,0 +1,83 @@
+// The "Name speakers" panel: a native
+// <dialog>, styled like the kit's other surfaces instead of the browser's
+// unstyled default box. Pico still supplies the form controls inside it (the
+// text input, the two buttons). Only the dialog's shell is drawn here.
+.vx-speaker-naming {
+  width: min(32rem, calc(100vw - 2rem));
+  padding: 1.5rem;
+  border: 1px solid var(--vx-border);
+  border-radius: 1rem;
+  background: var(--vx-surface);
+  color: var(--vx-text);
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--vx-bg) 70%, transparent);
+  }
+}
+
+.vx-speaker-naming__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+}
+
+.vx-speaker-naming__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  max-height: 20rem;
+  overflow-y: auto;
+}
+
+.vx-speaker-naming__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+// Same four tokens and the same cycling rule as
+// components/_run_transcript.scss's .vx-transcript__speaker, applied to a
+// plain dot instead of a badge. The panel's dot is a rank marker, not a label
+// with text inside.
+.vx-speaker-naming__dot {
+  flex: 0 0 auto;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+
+  &[data-speaker-color="1"] { background: var(--vx-speaker-1); }
+  &[data-speaker-color="2"] { background: var(--vx-speaker-2); }
+  &[data-speaker-color="3"] { background: var(--vx-speaker-3); }
+  &[data-speaker-color="4"] { background: var(--vx-speaker-4); }
+}
+
+.vx-speaker-naming__meta {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.vx-speaker-naming__label {
+  font-weight: 700;
+}
+
+.vx-speaker-naming__row input[type="text"] {
+  flex: 1 1 12rem;
+  margin: 0;
+}
+
+.vx-speaker-naming__actions {
+  justify-content: flex-end;
+}

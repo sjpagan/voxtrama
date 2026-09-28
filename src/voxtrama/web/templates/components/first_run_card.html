@@ -1,0 +1,61 @@
+{#
+  The first-run card on the home page. `card` is
+  api.routes.home_first_run.FirstRunCard: shown while the machine's
+  proposal is in force, i.e. before the first job has written
+  voxtrama.toml. The proposal is applied and said:
+  what runs, why, and where it changes. The model download is offered here,
+  not behind the guided setup.
+#}
+{% from "components/icons.html" import icon_laptop, icon_download, icon_alert %}
+
+{% macro _profile(key) -%}
+  {%- if key == "low" -%}{% trans %}Low{% endtrans %}
+  {%- elif key == "high" -%}{% trans %}High{% endtrans %}
+  {%- else -%}{% trans %}Base{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro first_run_card(card) %}
+<div class="vx-card vx-first-run" id="vx-first-run">
+  <div class="vx-first-run__head">
+    <span class="vx-first-run__icon">{{ icon_laptop() }}</span>
+    <div>
+      <p class="vx-first-run__title">{% trans %}Proposed for this machine{% endtrans %}</p>
+      <p class="vx-first-run__line">
+        <strong>{{ _profile(card.hardware_profile) }}</strong> ({{ card.model_size }})
+        · {{ card.cores_per_chunk }} {% trans %}cores per chunk{% endtrans %}
+        · {{ card.parallel_chunks }} {% trans %}chunks in parallel{% endtrans %}
+      </p>
+      <p class="vx-help">
+        {% trans %}Voxtrama measured this machine and uses these values until you change them. The first job saves the values it used.{% endtrans %}
+        <a href="/setup/local-processing">{% trans %}Change them{% endtrans %}</a>
+      </p>
+    </div>
+  </div>
+
+  {% if card.downloading and card.download %}
+  <div class="vx-first-run__download" role="status">
+    {% if card.download.queued %}
+    <p>{% trans %}Waiting for the worker to start the download...{% endtrans %}</p>
+    {% else %}
+    <p>{% trans %}Downloading{% endtrans %} {{ card.download.model_label }} · {{ card.download.done_label }} / {{ card.download.total_label }}</p>
+    {% endif %}
+    <div class="vx-setup-storagebar">
+      <div class="vx-setup-storagebar__fill" style="width: {{ card.download.percent }}%"></div>
+    </div>
+  </div>
+  {% elif card.model_missing %}
+  {% if card.download and card.download.failed %}
+  <p class="vx-first-run__failed" role="alert">{{ icon_alert() }} {% trans %}The download failed:{% endtrans %} {{ card.download.message }}</p>
+  {% endif %}
+  <form method="post" action="/setup/local-processing" class="vx-first-run__action">
+    <input type="hidden" name="hardware_profile" value="{{ card.hardware_profile }}" />
+    <input type="hidden" name="cores_per_chunk" value="{{ card.cores_per_chunk }}" />
+    <input type="hidden" name="parallel_chunks" value="{{ card.parallel_chunks }}" />
+    <input type="hidden" name="return_to" value="/" />
+    <button type="submit" class="vx-button">{{ icon_download() }} {% trans %}Download the transcription model{% endtrans %} ({{ card.download_size }})</button>
+    <span class="vx-help">{% trans %}Once, to this machine. Then a job can start.{% endtrans %}</span>
+  </form>
+  {% endif %}
+</div>
+{% endmacro %}

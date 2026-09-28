@@ -1,0 +1,64 @@
+# Lint, stylesheet, documentation and tests on every pull request and on
+# the series branches. The same jobs as the project's own CI, on GitHub.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: ["[0-9]+.[0-9]+.x"]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install "$(grep '^ruff==' requirements-dev.lock)"
+      - run: ruff check .
+      - run: ruff format --check .
+
+  css:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: make sass-install
+      - run: make css
+      - run: git diff --exit-code src/voxtrama/web/static/css/voxtrama.min.css
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements-docs.lock
+      - run: mkdocs build --strict
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - run: pip install -r requirements-dev.lock
+      - run: pip install --no-deps .
+      - run: pytest -q -m "not slow"
+
+  test-eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - run: pip install "numpy>=2.1,<3" "scipy>=1.14,<2" "scikit-learn>=1.5,<2" "pyyaml>=6.0,<7" "pytest>=9.1,<10"
+      - run: pytest -q tools/eval/

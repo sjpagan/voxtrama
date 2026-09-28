@@ -1,0 +1,170 @@
+// The Speakers tab and the verified output's edit panel. The rows are one
+// grid, so the names, the buttons and the numbers line up from one speaker to
+// the next, whatever the length of a label or a name.
+@use "../abstracts" as tokens;
+
+.vx-speakers {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-md;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.vx-speakers__intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: tokens.$vx-space-md;
+}
+
+.vx-speakers__list {
+  display: grid;
+  grid-template-columns: auto minmax(7rem, 10rem) minmax(10rem, 1fr) auto minmax(9rem, auto);
+  gap: tokens.$vx-space-xs;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Each row takes the list's own columns (subgrid), so every field sits in
+// the same column on every row.
+.vx-speakers__row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
+  column-gap: tokens.$vx-space-md;
+  padding: tokens.$vx-space-sm tokens.$vx-space-md;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.8rem;
+  background: var(--vx-bg-elevated);
+
+  input[type="text"] {
+    margin: 0;
+  }
+}
+
+.vx-speakers__who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.vx-speakers__label {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.vx-speakers__stats {
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+}
+
+.vx-speakers__numbers {
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.vx-speakers__listen {
+  display: flex;
+  align-items: center;
+  gap: tokens.$vx-space-xs;
+  min-width: 13rem;
+
+  .vx-button {
+    width: auto;
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+
+.vx-speakers__wave {
+  width: 7.5rem;
+  height: 1.75rem;
+}
+
+.vx-speakers__add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$vx-space-sm;
+  margin: 0;
+
+  input[type="text"] {
+    flex: 1 1 16rem;
+    margin: 0;
+  }
+
+  .vx-button {
+    width: auto;
+    margin: 0;
+  }
+}
+
+.vx-speakers__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$vx-space-md;
+
+  .vx-help {
+    margin: 0;
+  }
+
+  .vx-button {
+    width: auto;
+    margin: 0;
+  }
+}
+
+// On a narrow screen a row stacks: dot and name on top, then the rest.
+@media (max-width: 52rem) {
+  .vx-speakers__list {
+    grid-template-columns: auto 1fr;
+  }
+
+  .vx-speakers__row > input,
+  .vx-speakers__listen,
+  .vx-speakers__numbers {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+.vx-output__edit {
+  margin-top: tokens.$vx-space-xs;
+
+  summary {
+    color: var(--vx-text-muted);
+    font-size: tokens.$vx-text-sm;
+    cursor: pointer;
+  }
+}
+
+.vx-output__edit-panel {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-2xs;
+  margin-top: tokens.$vx-space-xs;
+
+  textarea,
+  select {
+    margin: 0;
+  }
+}
+
+.vx-output__edit-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  .vx-button {
+    width: auto;
+    margin: 0;
+  }
+}

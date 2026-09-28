@@ -1,0 +1,26 @@
+{#
+  The "climb back to the page this one belongs to" link
+  ("← All runs"): a shell element any interior
+  page can ask for by passing `back_link` (rendering.nav.BackLink) into
+  its route context, instead of copying an <a> into every page/*.html
+  that needs one. base.html renders it once, right above
+  {% block content %}: above the page's
+  title, not inside it. The same two-value contract
+  (a `key` picking the label below, an `href` the route already knows)
+  is wired into steps 2-4 of the guided setup and into the
+  workflow-choice page.
+  A route that needs one only passes those two values, never markup.
+#}
+{% from "components/icons.html" import icon_arrow_left %}
+{% macro back_link_label(key) -%}
+  {%- if key == "all-runs" -%}{% trans %}All jobs{% endtrans %}
+  {%- elif key == "back" -%}{% trans %}Back{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro back_link(link) %}
+<a class="vx-back-link" href="{{ link.href }}">
+  <span aria-hidden="true">{{ icon_arrow_left() }}</span>
+  {{ back_link_label(link.key) }}
+</a>
+{% endmacro %}

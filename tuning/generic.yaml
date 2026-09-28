@@ -1,0 +1,50 @@
+# The fallback: no conditions declared, so it applies to every machine
+# (tuning.selector picks it whenever nothing more specific matches: a
+# Linux ARM server with no accelerator, an unrecognised architecture, a
+# machine that could not be read at all). Every number here already matches
+# what transcription.profiles.PROFILES ships today, so a machine that
+# would have gotten today's defaults keeps getting exactly them.
+name: generic
+description: >
+  No declared conditions: applies to any machine nothing more specific
+  matches.
+applies_to: {}
+
+asr:
+  device: cpu
+  profiles:
+    low:
+      model_size: small
+      compute_type: int8
+    base:
+      model_size: medium
+      compute_type: int8
+    high:
+      model_size: large-v3
+      compute_type: int8
+
+diarization:
+  device: cpu
+
+chunking:
+  # Conservative on purpose: an unrecognised machine gets no parallelism
+  # assumed rather than a guessed core count it might not have.
+  parallel_chunks: 1
+  cores_per_chunk: 1
+  memory:
+    recommended_gib: 16
+    warning: >-
+      running comfortably needs about {recommended_gib} GiB of RAM; this
+      machine reports {actual_gib} GiB
+
+generative:
+  memory:
+    recommended_gib: 16
+    warning: >-
+      a local generative model alongside transcription is comfortable with
+      about {recommended_gib} GiB of RAM; this machine reports {actual_gib} GiB
+  # A measured order of magnitude (33
+  # minutes of CPU for a 59-minute call, run with a 1800s ceiling per
+  # call). No platform-specific measurement exists yet, so every
+  # tuning/*.yaml file here carries the same number.
+  timeout_seconds: 1800

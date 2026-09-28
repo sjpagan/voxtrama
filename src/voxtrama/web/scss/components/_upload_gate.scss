@@ -1,0 +1,42 @@
+// The panel shown inside the upload box when the installation cannot yet
+// handle an import.
+//
+// It has its own file instead of living in _forms.scss with the rest of the
+// dropzone because it is a different thing: the dropzone is a control, this
+// is the reason that control is closed. It keeps the warning tone of the
+// non-green status pills (rendering.status_row uses "warning" for NOT_READY
+// and UNKNOWN), so the gate and the status row above say the same thing in
+// the same colour.
+
+.vx-gate {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  // The percentages come from an actual render, not a guess: at 40% border
+  // and 8% background the panel read as grey on the dark background, no
+  // different from a neutral note.
+  border: 1px solid color-mix(in srgb, var(--vx-warning) 65%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--vx-warning) 14%, transparent);
+  text-align: left;
+}
+
+.vx-gate__title {
+  margin: 0 0 0.5rem;
+  color: var(--vx-warning);
+  font-weight: 700;
+}
+
+.vx-gate__list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--vx-text-muted);
+  font-size: 0.9rem;
+
+  li + li {
+    margin-top: 0.35rem;
+  }
+
+  a {
+    margin-left: 0.35rem;
+  }
+}

@@ -1,0 +1,55 @@
+// The Files tab: each file the job produced, a row with what it is
+// and its downloads.
+@use "../abstracts" as tokens;
+
+.vx-files__title {
+  margin: 0 0 tokens.$vx-space-sm;
+  font-size: 1.05rem;
+}
+
+.vx-files__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vx-files__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$vx-space-sm;
+  padding: tokens.$vx-space-sm 0;
+  border-top: 1px solid var(--vx-border);
+
+  &:first-child {
+    border-top: 0;
+  }
+}
+
+.vx-files__icon {
+  display: inline-flex;
+  color: var(--vx-text-muted);
+}
+
+.vx-files__text {
+  display: flex;
+  flex: 1 1 16rem;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.vx-files__name {
+  font-weight: 600;
+}
+
+.vx-files__note {
+  color: var(--vx-text-muted);
+  font-size: 0.875rem;
+}
+
+.vx-files__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.$vx-space-2xs;
+}

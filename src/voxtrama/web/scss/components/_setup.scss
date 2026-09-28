@@ -1,0 +1,582 @@
+// The guided setup's pieces: the four-step tracker, the three profile
+// cards, the Fine-tune/Context-window panels, the model list and the storage
+// checks. One file because all four steps share the same narrow vocabulary (a
+// selectable card, an amber notice, a checked row), not because any of them
+// is small.
+@use "../abstracts" as tokens;
+
+// Same ceiling as .vx-run-page and .vx-hero (abstracts/_layout.scss): the
+// step tracker takes the same column as the page title, the four steps
+// sharing it equally. It is components/_step_chain.scss's .vx-chain, the same
+// one the run page uses.
+.vx-setup {
+  max-width: tokens.$vx-content-width;
+  margin-inline: auto;
+}
+
+// The tracker's markup and CSS moved to components/step_chain.html and
+// components/_step_chain.scss when it turned out to be drawn twice: the run page's
+// chain is the same shape with different states.
+
+// The measured machine, shown once at the top of step 2: a bordered pill
+// rather than a bare line of text. It is a measured fact this page builds
+// three profiles from, and reads as one.
+.vx-setup__machine {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.75rem;
+  background: var(--vx-surface);
+  color: var(--vx-text-muted);
+}
+
+// The private-storage step's data folder: the
+// same bordered pill as .vx-setup__machine, for the same reason, a verified
+// fact. A "Change..." button is left out: no route yet lets this
+// step act on a folder picked here, and a button that submits nothing is
+// worse than none (components/_buttons.scss's rule for a command nobody can
+// use yet).
+.vx-setup__path {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.75rem;
+  background: var(--vx-surface);
+  font-family: ui-monospace, monospace;
+}
+
+// A hollow ring, filled and marked once chosen (the circle on each profile
+// card and the dot on each model row). Both reuse this one
+// indicator: `--dot` swaps a card's checkmark for the plain filled dot of a
+// flat list of rows. A profile card is a choice among three named options, a
+// model row is one item picked from a list, and those two kinds of
+// "chosen" are drawn differently.
+.vx-radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--vx-border);
+  color: transparent;
+
+  svg {
+    width: 0.7em;
+    height: 0.7em;
+  }
+}
+
+.vx-radio--selected {
+  border-color: var(--vx-primary);
+  background: var(--vx-primary);
+  color: #fff;
+}
+
+.vx-radio--dot.vx-radio--selected::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #fff;
+}
+
+// The base look comes from .vx-card (components/_cards.scss), which the
+// markup carries: border, radius and surface belong to one component. Only
+// what a *choice* adds to a card belongs here: which one is taken, and which
+// cannot be taken at all. Redefining the base here is how two cards in the
+// same product drift apart.
+.vx-profile-card {
+  // The padding moves onto the link inside, so the whole card is the target
+  // and not just its text. A choice you can only hit by aiming at the words
+  // is harder than it needs to be.
+  padding: 0;
+  overflow: hidden;
+
+  &--selected {
+    border-color: var(--vx-primary);
+    // Two pixels: at one the ring looks like the hairline every card already
+    // has, and "which one did I pick" comes down to hue alone, which is
+    // not to be relied on.
+    box-shadow: 0 0 0 2px var(--vx-primary);
+  }
+
+  &--disabled {
+    opacity: 0.6;
+  }
+}
+
+// The whole card is the choice: header, model line and the two
+// figures below all sit inside one link (or one plain div when unavailable or
+// mid-download), instead of only the title taking the click.
+.vx-profile-card__pick {
+  display: block;
+  padding: tokens.$vx-space-lg;
+  border-radius: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.vx-profile-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+// The model line: an icon, the model's name,
+// and under it the one-line description a bare "whisper-small" never gave.
+.vx-profile-card__model {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--vx-border);
+}
+
+.vx-profile-card__model-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--vx-success) 16%, transparent);
+  color: var(--vx-success);
+  font-size: 1.2rem;
+}
+
+// The two figures, side by side, each with its own icon and label
+// instead of two bare lines of text: download size on the left, processing
+// speed on the right, split by a vertical rule.
+.vx-profile-card__stats {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--vx-border);
+}
+
+.vx-profile-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 0;
+  color: var(--vx-text-muted);
+
+  &:first-child {
+    padding-right: 1rem;
+    border-right: 1px solid var(--vx-border);
+  }
+
+  strong {
+    display: block;
+    color: var(--vx-text);
+  }
+}
+
+// The library command: "download this model" and "remove this model"
+// do not depend on which card is selected, so it sits outside
+// .vx-profile-card__pick (a <form> nested inside that <a> would be invalid
+// HTML) but inside the card, as its own row along the bottom.
+.vx-profile-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$vx-space-sm;
+  padding: tokens.$vx-space-sm tokens.$vx-space-lg;
+  border-top: 1px solid var(--vx-border);
+}
+
+.vx-profile-card__licence {
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-xs;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// The rhythm between a group's rows (a regression twice over).
+// `.vx-model-row` used to carry its own spacing, `& + & { margin-top: 0.6rem
+// }`. Fixing step 3's provider card moved that gap onto
+// `.vx-setup-provider`: right call, wrong scope. `/models` lists the
+// same `.vx-model-row` inside three plain `.vx-card` groups without the
+// flex/gap `.vx-setup-provider` has, so their rows sat flush: 0px measured
+// inside Transcription. The rhythm belongs to *any* container of
+// `.vx-model-row`, so one shared class is worn by both `.vx-setup-provider`
+// and each `/models` group card instead of copying the rule.
+.vx-row-stack {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-xs;
+}
+
+.vx-setup-provider {
+  // The state on the left, the action at the far right. `space-between`
+  // instead of a margin on the button: the gap belongs to the row, not to one
+  // of its children.
+  &__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: tokens.$vx-space-sm;
+    margin-bottom: tokens.$vx-space-2xs;
+  }
+}
+
+.vx-setup-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--vx-warning);
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--vx-warning) 12%, transparent);
+  color: var(--vx-warning);
+}
+
+// Wraps .vx-model-row and its licence disclosure: a <details> cannot
+// nest inside .vx-model-row, which is an <a>. Same reason
+// .vx-profile-card__foot sits outside .vx-profile-card__pick. A plain flex
+// column, so the row spacing (.vx-setup-provider's gap) applies to this
+// wrapper and not to the <a> directly.
+.vx-model-row-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.vx-model-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.7rem;
+  color: var(--vx-text);
+  text-decoration: none;
+
+  &--selected {
+    border-color: var(--vx-primary);
+  }
+}
+
+// An inert mark next to the model's name. The clickable
+// disclosure of what it means is .vx-licence-disclosure below, not this span
+// (it cannot be, nested inside .vx-model-row's <a>).
+.vx-licence-flag {
+  color: var(--vx-warning);
+  font-weight: 700;
+}
+
+.vx-licence-disclosure {
+  margin: 0 0.9rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--vx-warning);
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--vx-warning) 8%, transparent);
+  font-size: tokens.$vx-text-xs;
+
+  summary {
+    cursor: pointer;
+    color: var(--vx-warning);
+  }
+}
+
+// The text as the model declared it, scrolled rather than cut short: a licence
+// is never truncated.
+.vx-licence-text {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  max-height: 12rem;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  background: var(--vx-bg-elevated);
+  border-radius: 0.4rem;
+  color: var(--vx-text-muted);
+}
+
+.vx-setup-checks {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0;
+  }
+}
+
+.vx-setup-storagebar {
+  height: 0.6rem;
+  border-radius: 999px;
+  background: var(--vx-border);
+  overflow: hidden;
+}
+
+.vx-setup-storagebar__fill {
+  height: 100%;
+  background: var(--vx-success);
+}
+
+.vx-setup-downloadlog {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-md;
+  padding: tokens.$vx-space-lg;
+
+  form {
+    margin: 0;
+  }
+
+  .vx-help {
+    margin: 0;
+  }
+
+  // Stop (bordered) and Continue (filled) at the same height on one row.
+  .vx-button {
+    display: inline-flex;
+    align-items: center;
+    gap: tokens.$vx-space-2xs;
+    height: 2.75rem;
+    margin: 0;
+    padding-block: 0;
+  }
+}
+
+.vx-setup-log {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+  color: var(--vx-text-muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+}
+
+.vx-setup-summary dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 1.5rem;
+  margin: 1rem 0;
+
+  div {
+    display: contents;
+  }
+
+  dt {
+    color: var(--vx-text-muted);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+// Settings › Data & privacy: rooms, servers, and where each step's
+// content goes, green when it stays, amber when it leaves.
+.vx-privacy-areas {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 1.5rem;
+  margin: 0;
+
+  div {
+    display: contents;
+  }
+
+  dt {
+    color: var(--vx-text-muted);
+  }
+
+  dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.vx-privacy-servers {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+}
+
+.vx-privacy-workflow {
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.75rem;
+
+  summary {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--vx-text);
+    cursor: pointer;
+  }
+
+  ul {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: 1rem;
+    margin: 0;
+  }
+}
+
+.vx-privacy-where {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--vx-text-muted);
+
+  &--here svg {
+    color: var(--vx-success);
+  }
+
+  &--out {
+    color: var(--vx-warning);
+  }
+
+  &--kept svg {
+    color: var(--vx-primary);
+  }
+}
+
+// Settings › Data & privacy: a real write in every folder, and the
+// fix next to the one that refuses it.
+.vx-privacy-writes {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    list-style: none;
+    border: 1px solid var(--vx-border);
+    border-radius: 0.6rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+.vx-privacy-write__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.vx-privacy-write--ok .vx-privacy-write__head svg {
+  color: var(--vx-success);
+}
+
+.vx-privacy-write--fail {
+  border-color: var(--vx-warning);
+
+  .vx-privacy-write__head svg {
+    color: var(--vx-warning);
+  }
+}
+
+.vx-privacy-write__fix {
+  margin-top: 0.5rem;
+  color: var(--vx-text-muted);
+
+  p {
+    margin: 0.35rem 0;
+  }
+
+  pre {
+    margin: 0.35rem 0;
+    overflow-x: auto;
+  }
+}
+
+// The home page's first-run card: the proposal in force, said, and
+// the one download a first job needs.
+.vx-first-run {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.vx-first-run__head {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+
+  p {
+    margin: 0 0 0.25rem;
+  }
+}
+
+.vx-first-run__icon svg {
+  color: var(--vx-primary);
+}
+
+.vx-first-run__title {
+  font-weight: 600;
+  color: var(--vx-text);
+}
+
+.vx-first-run__line {
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-first-run__action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+
+  .vx-button {
+    width: auto;
+  }
+}
+
+.vx-first-run__download p,
+.vx-first-run__failed {
+  margin: 0 0 0.4rem;
+}
+
+.vx-first-run__failed {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--vx-danger);
+}

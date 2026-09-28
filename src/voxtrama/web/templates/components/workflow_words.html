@@ -1,0 +1,48 @@
+{#
+  The Workflows page's own words and icons.
+
+  A skill has no text of its own for a person to read (workflow.skill:
+  schemas and model classes only), so its title and one-line purpose live
+  here, translatable, and a skill this file does not know shows
+  its own name. Shared by the library and the custom-workflow form.
+#}
+{% macro skill_title(skill) -%}
+  {%- if skill == "transcribe" -%}{% trans %}Transcribe{% endtrans %}
+  {%- elif skill == "diarize" -%}{% trans %}Identify speakers{% endtrans %}
+  {%- elif skill == "summarize" -%}{% trans %}Recap{% endtrans %}
+  {%- elif skill == "extract_decisions" -%}{% trans %}Extract decisions{% endtrans %}
+  {%- elif skill == "extract_themes" -%}{% trans %}Find themes{% endtrans %}
+  {%- elif skill == "extract_concepts" -%}{% trans %}Extract concepts{% endtrans %}
+  {%- else -%}{{ skill }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro skill_text(skill) -%}
+  {%- if skill == "transcribe" -%}{% trans %}Convert audio to text with timestamps.{% endtrans %}
+  {%- elif skill == "diarize" -%}{% trans %}Detect and label the different speakers.{% endtrans %}
+  {%- elif skill == "summarize" -%}{% trans %}Generate a concise summary with key points.{% endtrans %}
+  {%- elif skill == "extract_decisions" -%}{% trans %}Find decisions, owners and next steps.{% endtrans %}
+  {%- elif skill == "extract_themes" -%}{% trans %}Group what was said into themes and insights.{% endtrans %}
+  {%- elif skill == "extract_concepts" -%}{% trans %}Pick out key concepts and their definitions.{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{# What each step concretely does, one short line of the card's checklist. #}
+{% macro skill_does(skill) -%}
+  {%- if skill == "transcribe" -%}{% trans %}Transcribes every word{% endtrans %}
+  {%- elif skill == "diarize" -%}{% trans %}Tells the speakers apart{% endtrans %}
+  {%- elif skill == "summarize" -%}{% trans %}Writes a short recap{% endtrans %}
+  {%- elif skill == "extract_decisions" -%}{% trans %}Lists decisions and owners{% endtrans %}
+  {%- elif skill == "extract_themes" -%}{% trans %}Groups ideas into themes{% endtrans %}
+  {%- elif skill == "extract_concepts" -%}{% trans %}Defines the key concepts{% endtrans %}
+  {%- else -%}{{ skill }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro icon_copy() %}
+<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+{% endmacro %}
+
+{% macro icon_pencil() %}
+<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>
+{% endmacro %}

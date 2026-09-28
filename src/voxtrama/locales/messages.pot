@@ -1,0 +1,2149 @@
+# Translations template for voxtrama.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the voxtrama project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: voxtrama 0.1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-09-28 12:32+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: src/voxtrama/api/routes/job_recap_export.py:42
+#: src/voxtrama/web/templates/components/job_recap.html:20
+msgid "Key points"
+msgstr ""
+
+#: src/voxtrama/api/routes/job_recap_export.py:43
+#: src/voxtrama/web/templates/components/job_recap.html:21
+msgid "Decisions"
+msgstr ""
+
+#: src/voxtrama/api/routes/job_recap_export.py:44
+#: src/voxtrama/web/templates/components/job_recap.html:22
+msgid "Concepts"
+msgstr ""
+
+#: src/voxtrama/api/routes/job_recap_export.py:45
+#: src/voxtrama/web/templates/components/job_recap.html:23
+msgid "Themes"
+msgstr ""
+
+#: src/voxtrama/api/routes/job_recap_export.py:46
+#: src/voxtrama/web/templates/components/job_recap.html:57
+#: src/voxtrama/web/templates/components/run_output.html:116
+msgid "Needs review"
+msgstr ""
+
+#: src/voxtrama/api/routes/job_recap_export.py:80
+#: src/voxtrama/web/templates/components/job_view.html:22
+msgid "Detail"
+msgstr ""
+
+#: src/voxtrama/api/routes/job_recap_export.py:80
+#: src/voxtrama/web/templates/components/job_view.html:23
+msgid "cores"
+msgstr ""
+
+#: src/voxtrama/web/templates/base.html:69
+msgid "Primary"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/back_link.html:16
+msgid "All jobs"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/back_link.html:17
+msgid "Back"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/breadcrumb.html:16
+#: src/voxtrama/web/templates/components/sidebar.html:37
+#: src/voxtrama/web/templates/pages/jobs.html:32
+#: src/voxtrama/web/templates/pages/jobs.html:37
+msgid "Jobs"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/breadcrumb.html:17
+#: src/voxtrama/web/templates/components/header.html:69
+#: src/voxtrama/web/templates/components/sidebar.html:41
+#: src/voxtrama/web/templates/components/sidebar.html:42
+#: src/voxtrama/web/templates/pages/setup_settings.html:27
+#: src/voxtrama/web/templates/pages/setup_settings.html:32
+msgid "Settings"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/breadcrumb.html:18
+#: src/voxtrama/web/templates/components/setup_steps.html:24
+#: src/voxtrama/web/templates/components/sidebar.html:45
+#: src/voxtrama/web/templates/pages/profile.html:25
+msgid "Personal settings"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/breadcrumb.html:19
+#: src/voxtrama/web/templates/components/job_fields.html:120
+#: src/voxtrama/web/templates/components/setup_steps.html:25
+#: src/voxtrama/web/templates/components/sidebar.html:46
+msgid "Local processing"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/breadcrumb.html:20
+#: src/voxtrama/web/templates/components/setup_steps.html:26
+#: src/voxtrama/web/templates/components/sidebar.html:47
+msgid "Model ready"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/breadcrumb.html:21
+#: src/voxtrama/web/templates/components/job_fields.html:122
+#: src/voxtrama/web/templates/components/setup_steps.html:27
+#: src/voxtrama/web/templates/components/sidebar.html:48
+msgid "Private storage"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/breadcrumb.html:22
+#: src/voxtrama/web/templates/components/runs_list.html:71
+msgid "Choose workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/breadcrumb.html:23
+#: src/voxtrama/web/templates/components/job_view.html:40
+#: src/voxtrama/web/templates/components/new_job_form.html:71
+#: src/voxtrama/web/templates/components/runs_list.html:51
+#: src/voxtrama/web/templates/components/sidebar.html:38
+#: src/voxtrama/web/templates/pages/jobs.html:55
+msgid "Workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:12
+msgid "Low"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:13
+msgid "High"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:14
+msgid "Base"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:23
+msgid "Proposed for this machine"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:26
+msgid "cores per chunk"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:27
+msgid "chunks in parallel"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:30
+msgid ""
+"Voxtrama measured this machine and uses these values until you change "
+"them. The first job saves the values it used."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:31
+msgid "Change them"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:39
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:89
+msgid "Waiting for the worker to start the download..."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:41
+#: src/voxtrama/web/templates/pages/models.html:40
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:85
+msgid "Downloading"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:49
+#: src/voxtrama/web/templates/pages/models.html:111
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:58
+msgid "The download failed:"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:56
+msgid "Download the transcription model"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/first_run_card.html:57
+msgid "Once, to this machine. Then a job can start."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:28
+msgid "Voxtrama, home"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:43
+msgid "Your account"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:54
+#: src/voxtrama/web/templates/pages/profile.html:25
+#: src/voxtrama/web/templates/pages/profile.html:39
+msgid "Your profile"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:59
+msgid "Add your name"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:88
+msgid "Search transcripts and jobs..."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:89
+msgid "Search transcripts and jobs"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:95
+#: src/voxtrama/web/templates/components/header.html:97
+msgid "Clear the search"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:99
+#: src/voxtrama/web/templates/pages/search.html:10
+#: src/voxtrama/web/templates/pages/search.html:16
+msgid "Search"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:105
+msgid "Ollama not responding"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:106
+msgid "Summary model missing"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:107
+msgid "Transcription model missing"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:108
+msgid "Data folder unusable"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:113
+msgid "The summary model can't be reached."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:114
+msgid "No summary model is chosen, or Ollama does not have it."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:115
+msgid "The transcription model has not been downloaded yet."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:116
+msgid "The data folder is full or cannot be written."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:132
+msgid "All systems ready"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/header.html:143
+#: src/voxtrama/web/templates/components/run_failure_banner.html:46
+msgid "Open settings"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:15
+#: src/voxtrama/web/templates/components/new_job_form.html:107
+msgid "Default"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:20
+msgid "Less"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:22
+#: src/voxtrama/web/templates/components/run_result.html:119
+msgid "More"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:31
+#: src/voxtrama/web/templates/pages/workflow_library.html:171
+msgid "Advanced"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:34
+msgid "Transcription model"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:42
+msgid ""
+"Another transcription model transcribes the audio again: the new job will"
+" not keep this transcript, nor the speakers fixed sentence by sentence."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:46
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:214
+#: src/voxtrama/web/templates/pages/setup_settings.html:130
+msgid "Parallel chunks"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:50
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:208
+#: src/voxtrama/web/templates/pages/setup_settings.html:126
+msgid "Cores per chunk"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:55
+msgid "Summary model"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:60
+#: src/voxtrama/web/templates/components/run_failure_banner.html:22
+msgid "No summary model configured"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:65
+msgid "Summary detail"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:71
+msgid "Recap language"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:76
+msgid "Same as the audio"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:83
+msgid "Model server"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:86
+msgid "local"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:86
+msgid "remote"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:95
+msgid "Delete after"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:97
+#: src/voxtrama/web/templates/components/job_fields.html:99
+#: src/voxtrama/web/templates/components/job_view.html:28
+#: src/voxtrama/web/templates/pages/setup_privacy.html:150
+msgid "days"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:97
+#: src/voxtrama/web/templates/pages/setup_privacy.html:148
+msgid "Never"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:104
+msgid "Pause merge"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:113
+msgid "Transcription only, no summary"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:121
+msgid "Models ready"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:123
+#: src/voxtrama/web/templates/pages/setup_privacy.html:19
+msgid "Database"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:129
+msgid "A job cannot start yet"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_fields.html:134
+msgid "Set it up"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:29
+#: src/voxtrama/web/templates/components/run_result.html:43
+msgid "Files"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:31
+msgid "Everything"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:32
+msgid ""
+"One ZIP: the manifest, the transcript, and the recording in parts of "
+"about ten minutes, each part's audio next to its text"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:34
+#: src/voxtrama/web/templates/components/run_output.html:33
+#: src/voxtrama/web/templates/components/run_result.html:40
+#: src/voxtrama/web/templates/pages/jobs.html:101
+msgid "Transcript"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:35
+msgid "The whole transcript, with times and speakers"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:38
+#: src/voxtrama/web/templates/components/run_result.html:44
+#: src/voxtrama/web/templates/components/workflow_words.html:12
+#: src/voxtrama/web/templates/pages/jobs.html:102
+msgid "Recap"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:39
+msgid "The recap as the Recap tab shows it"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:42
+msgid "Manifest"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:43
+#: src/voxtrama/web/templates/components/job_recap.html:36
+msgid "What the job ran with, without the context you wrote"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:46
+msgid "Recording"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:47
+msgid "The audio as it was uploaded"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_files.html:48
+#: src/voxtrama/web/templates/components/new_job_form.html:37
+#: src/voxtrama/web/templates/pages/jobs.html:100
+msgid "Audio"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_recap.html:29
+msgid "Search recap"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_recap.html:31
+msgid "Export"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_recap.html:36
+msgid "Manifest (JSON)"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_recap.html:58
+#: src/voxtrama/web/templates/components/run_output.html:118
+msgid "Corrected by hand"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_recap.html:58
+#: src/voxtrama/web/templates/components/run_output.html:118
+#: src/voxtrama/web/templates/pages/workflow_custom.html:57
+#: src/voxtrama/web/templates/pages/workflow_library.html:158
+msgid "Edited"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_recap.html:67
+msgid "This job produced a transcript only, with no recap."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_turns.html:29
+msgid "Merge pauses under"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_turns.html:32
+msgid "Apply"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_turns.html:43
+msgid "Speaker names are assigned automatically and may occasionally be wrong."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_turns.html:47
+#: src/voxtrama/web/templates/components/run_transcript.html:32
+msgid "Search transcript"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_turns.html:58
+msgid "Original segments"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_turns.html:71
+#: src/voxtrama/web/templates/components/run_transcript.html:60
+msgid "No transcript yet."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:24
+#: src/voxtrama/web/templates/components/job_view.html:48
+#: src/voxtrama/web/templates/components/new_job_form.html:87
+msgid "Context"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:25
+msgid "Context deduced"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:25
+msgid ""
+"Nobody wrote a context for this job: the engine deduced this from the "
+"transcript, and the transcript wins where they differ."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:26
+msgid "The transcript was long, so it was read in parts and the results joined"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:26
+msgid "windows of ~12k characters"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:28
+msgid ""
+"Retention: the audio, transcript and recap are deleted then; a record of "
+"the deletion stays"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:28
+msgid "Deleted on"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:28
+msgid "Kept"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:35
+#: src/voxtrama/web/templates/components/job_view.html:61
+msgid "Regenerate job"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:51
+msgid ""
+"A new context changes the recap and the extractions, not the transcript "
+"already made."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:58
+msgid "Run every step again"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/job_view.html:60
+msgid ""
+"Without it, steps whose settings do not change are reused from this job, "
+"not run again."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/model_licence.html:25
+msgid "licence not recognised"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/model_licence.html:27
+msgid "licence unknown"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/model_licence.html:33
+msgid "Could not be read from Ollama."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/model_licence.html:47
+msgid ""
+"not a licence Voxtrama recognises as permissive. Open it to read the text"
+" exactly as the model declares it"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:27
+msgid "Capture decisions, action items and follow-ups."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:28
+msgid "Turn lectures into structured notes and study aids."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:29
+msgid "Extract evidence, themes and interview insights."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:40
+msgid "Drop audio files or"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:40
+msgid "choose from disk"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:41
+msgid "Choose files"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:46
+msgid "Group 1"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:53
+msgid "How are these files related?"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:55
+msgid "One after another"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:55
+msgid "they continue from each other, like segments of one long recording"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:57
+msgid "At the same time"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:57
+msgid "separate microphones or channels recorded together"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:65
+#: src/voxtrama/web/templates/pages/models.html:56
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:150
+msgid "Remove"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:84
+msgid "Job name"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:85
+msgid "Named after the first file"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:88
+msgid "Names, acronyms and topics help the transcription"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:90
+msgid ""
+"Read by the transcription and the summary models, and kept in the job's "
+"record. With a remote provider it leaves this machine."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:98
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:155
+msgid "Start job"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:106
+msgid "Changed"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:108
+#, python-brace-format
+msgid "{count} parts"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:109
+msgid "1 part"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:110
+#, python-brace-format
+msgid "≈ {cores} cores"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:111
+#, python-brace-format
+msgid "≈ {cores} of {total} cores"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/new_job_form.html:112
+msgid "Only audio files can be added."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_activity.html:17
+#, python-brace-format
+msgid "{done} of {total} parts read"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_activity.html:30
+#, python-brace-format
+msgid "Elapsed {time}"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_activity.html:31
+#, python-brace-format
+msgid "about {time} left"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:23
+msgid "No summary model reachable"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:24
+msgid "This job ran out of time"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:25
+msgid "This step ran out of memory"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:26
+msgid "The worker stopped responding"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:32
+msgid ""
+"The transcript is done. The recap needs a local summary model: choose one"
+" in Settings."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:34
+msgid "The transcript is done. The recap needs Ollama, which did not answer."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:36
+msgid "Every step that finished is saved. Retrying runs only what is left."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:38
+msgid "This step used more memory than this machine could give it."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:40
+msgid ""
+"The process running this step stopped answering before it could finish, "
+"often the same thing as running out of memory."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:49
+msgid "Retry this step"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:58
+msgid "This job failed"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:64
+msgid "Parallel chunks used"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:65
+#: src/voxtrama/web/templates/components/run_failure_banner.html:69
+msgid "recommended"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:68
+msgid "Cores per chunk used"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_failure_banner.html:73
+#: src/voxtrama/web/templates/pages/setup_privacy.html:85
+msgid "This machine"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:14
+msgid "Waiting"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:15
+msgid "In progress"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:16
+msgid "Done"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:17
+#: src/voxtrama/web/templates/components/run_labels.html:39
+#: src/voxtrama/web/templates/components/runs_list.html:35
+#: src/voxtrama/web/templates/pages/jobs.html:27
+msgid "Failed"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:18
+msgid "Skipped"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:25
+msgid "Transcript ready"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:26
+msgid "Speakers identified"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:27
+msgid "Recap ready"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:28
+msgid "Decisions ready"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:29
+msgid "Themes ready"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:30
+msgid "Concepts ready"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:36
+msgid "Pending"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:37
+#: src/voxtrama/web/templates/components/runs_list.html:33
+#: src/voxtrama/web/templates/pages/jobs.html:25
+msgid "Running"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:38
+msgid "Succeeded"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:40
+#: src/voxtrama/web/templates/components/runs_list.html:36
+#: src/voxtrama/web/templates/pages/jobs.html:28
+msgid "Cancelled"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_labels.html:41
+#: src/voxtrama/web/templates/components/runs_list.html:37
+#: src/voxtrama/web/templates/pages/jobs.html:29
+msgid "Interrupted"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:29
+msgid "Decision"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:30
+msgid "Concept"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:31
+#: src/voxtrama/web/templates/components/theme_control.html:28
+msgid "Theme"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:32
+msgid "Key point"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:34
+#: src/voxtrama/web/templates/components/run_result.html:42
+#: src/voxtrama/web/templates/components/speakers_tab.html:24
+#: src/voxtrama/web/templates/pages/models.html:121
+msgid "Speakers"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:55
+msgid "Edit or link to another turn"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:58
+msgid "Text"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:61
+#: src/voxtrama/web/templates/components/run_output.html:111
+msgid "Evidence"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:63
+msgid "As it is"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:63
+msgid "No turn"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:69
+msgid ""
+"A point you change is marked Edited, here and in the recap. The model's "
+"own text stays in the job's record."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:71
+#: src/voxtrama/web/templates/components/speaker_fix.html:28
+#: src/voxtrama/web/templates/pages/profile.html:108
+#: src/voxtrama/web/templates/pages/setup_privacy.html:154
+#: src/voxtrama/web/templates/pages/setup_settings.html:115
+#: src/voxtrama/web/templates/pages/setup_settings.html:133
+#: src/voxtrama/web/templates/pages/setup_settings.html:178
+msgid "Save"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:80
+msgid "Verified output"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:88
+msgid "results come from the passage you selected."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:111
+msgid "at"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:113
+msgid "No evidence"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_output.html:126
+msgid "This workflow produced a transcript only, with no extracted results."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_produced.html:21
+msgid "What this job did produce"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_produced.html:22
+msgid "View transcript"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_produced.html:25
+msgid ""
+"The audio was ingested and transcribed successfully. Your transcript is "
+"saved and can be viewed at any time."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_produced.html:51
+msgid "Showing the first lines only."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:41
+msgid "Explore"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:80
+msgid "Back 60 seconds"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:81
+msgid "Back 10 seconds"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:88
+#: src/voxtrama/web/templates/components/run_result.html:90
+msgid "Play"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:89
+msgid "Pause"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:96
+msgid "Forward 10 seconds"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:97
+msgid "Forward 60 seconds"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:102
+msgid "Playback position"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:109
+msgid "No waveform for this recording. Playback works as usual."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:114
+msgid "Volume"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_result.html:121
+msgid "Download audio"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_steps.html:36
+msgid "Reused"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_steps.html:37
+#: src/voxtrama/web/templates/components/run_steps.html:38
+msgid "min"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_terminal.html:29
+#: src/voxtrama/web/templates/components/run_terminal.html:39
+msgid "Activity"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_terminal.html:42
+msgid "Stop job"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_transcript.html:34
+#: src/voxtrama/web/templates/components/speaker_fix.html:18
+msgid "Speaker"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/run_transcript.html:35
+msgid "All speakers"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:32
+#: src/voxtrama/web/templates/pages/jobs.html:24
+msgid "Queued"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:34
+#: src/voxtrama/web/templates/pages/jobs.html:26
+msgid "Completed"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:38
+msgid "Not started"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:44
+msgid "Recent jobs"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:45
+msgid "View all"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:50
+#: src/voxtrama/web/templates/pages/jobs.html:54
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:59
+#: src/voxtrama/web/templates/pages/workflow_custom.html:30
+msgid "Name"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:52
+#: src/voxtrama/web/templates/pages/jobs.html:58
+msgid "Status"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:53
+#: src/voxtrama/web/templates/components/runs_list.html:68
+#: src/voxtrama/web/templates/pages/jobs.html:59
+#: src/voxtrama/web/templates/pages/jobs.html:75
+msgid "Actions"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:58
+msgid "No recording"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:73
+msgid "View"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:75
+#: src/voxtrama/web/templates/pages/jobs.html:82
+msgid "Delete..."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/runs_list.html:84
+msgid "No jobs yet. The first one starts from the form above."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/sidebar.html:36
+msgid "Home"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/sidebar.html:39
+#: src/voxtrama/web/templates/pages/models.html:28
+#: src/voxtrama/web/templates/pages/models.html:82
+#: src/voxtrama/web/templates/pages/setup_privacy.html:18
+msgid "Models"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/sidebar.html:40
+#: src/voxtrama/web/templates/pages/workflow_library.html:35
+msgid "System"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/sidebar.html:43
+msgid "Overview"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/sidebar.html:44
+msgid "Data &amp; privacy"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speaker_fix.html:12
+msgid "Change the speaker of this sentence"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speaker_fix.html:16
+msgid "Who is speaking here?"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speaker_fix.html:19
+msgid "The detected speaker"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speaker_fix.html:26
+msgid "Or a new name"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speaker_fix.html:26
+msgid "New speaker name"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speaker_fix.html:27
+msgid ""
+"Only this sentence changes. To rename a voice everywhere, use the "
+"Speakers tab."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:25
+msgid ""
+"Name each voice once: the name follows it in the transcript, in Explore "
+"and in the recap. To give one turn to someone else, use Explore."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:27
+msgid "Speakers are told apart automatically and can be wrong."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:37
+msgid "Added"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:38
+msgid "Added by hand"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:38
+msgid "Detected"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:41
+msgid "Name this voice"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:42
+msgid "Name for"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:47
+#: src/voxtrama/web/templates/components/speakers_tab.html:48
+msgid "Listen"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:47
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:177
+msgid "Stop"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:48
+msgid "Listen to"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:52
+msgid "turn"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:52
+msgid "turns"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:57
+msgid "This transcript has no speakers told apart."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:63
+msgid "Someone the detection missed"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:63
+msgid "Name of the speaker to add"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:64
+msgid "Add speaker"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:67
+msgid ""
+"Listen plays the first turns of that voice, one minute at most. Names "
+"belong to the recording: they stay if it is processed again."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/speakers_tab.html:68
+msgid "Save names"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/text_find.html:18
+msgid "Clear"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/text_find.html:20
+#: src/voxtrama/web/templates/pages/jobs.html:71
+#: src/voxtrama/web/templates/pages/run.html:98
+msgid "of"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/text_find.html:21
+msgid "Previous match"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/text_find.html:22
+msgid "Next match"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/theme_control.html:39
+msgid "Light"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/theme_control.html:40
+msgid "Dark"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/theme_control.html:41
+msgid "Auto (follows your system)"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:73
+msgid "Already run"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:78
+msgid "Produces:"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:86
+msgid "View result"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:97
+msgid "Job options"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:100
+msgid "Hardware profile"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:103
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:118
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:141
+msgid "As configured"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:113
+#: src/voxtrama/web/templates/pages/models.html:93
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:62
+#: src/voxtrama/web/templates/pages/setup_settings.html:68
+msgid "Generative model"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:120
+msgid "As configured (each step's own default)"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:129
+msgid ""
+"No generative model satisfies every step of this workflow; it runs with "
+"each step's own default."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:138
+#: src/voxtrama/web/templates/pages/workflow_library.html:177
+msgid "Skill for step"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_choice_panel.html:151
+msgid "This job will use options different from the installation's own settings."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:10
+msgid "Transcribe"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:11
+msgid "Identify speakers"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:13
+msgid "Extract decisions"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:14
+msgid "Find themes"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:15
+msgid "Extract concepts"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:21
+msgid "Convert audio to text with timestamps."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:22
+msgid "Detect and label the different speakers."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:23
+msgid "Generate a concise summary with key points."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:24
+msgid "Find decisions, owners and next steps."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:25
+msgid "Group what was said into themes and insights."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:26
+msgid "Pick out key concepts and their definitions."
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:32
+msgid "Transcribes every word"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:33
+msgid "Tells the speakers apart"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:34
+msgid "Writes a short recap"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:35
+msgid "Lists decisions and owners"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:36
+msgid "Groups ideas into themes"
+msgstr ""
+
+#: src/voxtrama/web/templates/components/workflow_words.html:37
+msgid "Defines the key concepts"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/choose_workflow.html:33
+msgid "Choose a workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/choose_workflow.html:41
+msgid "Transcribed"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/choose_workflow.html:42
+msgid "speaker"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/choose_workflow.html:43
+msgid "speakers"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/choose_workflow.html:48
+msgid "Your original recording and transcript stay unchanged."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/choose_workflow.html:54
+msgid ""
+"Choosing a workflow here starts a brand-new job on this recording: "
+"nothing already produced is reused, and processing, transcription "
+"included, begins again from the start."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/home.html:12
+#: src/voxtrama/web/templates/pages/home.html:21
+#: src/voxtrama/web/templates/pages/jobs.html:41
+msgid "New job"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/home.html:22
+msgid "Upload audio, choose what to produce, start."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:39
+msgid ""
+"Removes failed, cancelled and interrupted jobs older than a week, and "
+"files no job uses"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:39
+msgid "Clean up"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:46
+msgid "Leftovers removed:"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:46
+msgid "Nothing to clean up."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:56
+msgid "Audio length"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:57
+msgid "Date"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:77
+msgid "Open"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:79
+msgid "Regenerate"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:90
+msgid "No jobs yet."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:90
+msgid "Create the first one"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:98
+msgid "Delete"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:99
+msgid "Choose what to delete. Anything you leave unchecked stays."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:103
+msgid "All three removes the job itself."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:105
+#: src/voxtrama/web/templates/pages/workflow_custom.html:70
+msgid "Cancel"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/jobs.html:106
+msgid "Delete selected"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:39
+#: src/voxtrama/web/templates/pages/models.html:140
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:96
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:73
+#: src/voxtrama/web/templates/pages/setup_settings.html:158
+msgid "Installed"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:49
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:142
+msgid "licence"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:60
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:154
+msgid "Download"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:74
+msgid "Removing this downloads it again the next time it is needed."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:84
+msgid ""
+"What is downloaded, what it costs, and what this installation actually "
+"uses."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:91
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:60
+#: src/voxtrama/web/templates/pages/setup_settings.html:50
+#: src/voxtrama/web/templates/pages/setup_settings.html:106
+msgid "Profile"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:92
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:61
+#: src/voxtrama/web/templates/pages/setup_settings.html:59
+msgid "Parallelism"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:94
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:93
+msgid "Context window"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:98
+#: src/voxtrama/web/templates/pages/setup_settings.html:41
+msgid "This installation has not been set up yet."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:99
+#: src/voxtrama/web/templates/pages/setup_settings.html:42
+msgid "Go to setup"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:106
+msgid "A download is already in progress. Try again once it finishes."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:116
+msgid "Transcription"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:126
+msgid "Generative"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:128
+#: src/voxtrama/web/templates/pages/setup_settings.html:140
+msgid "Ollama is not configured: no generative model is offered."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:130
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:36
+#: src/voxtrama/web/templates/pages/setup_settings.html:143
+msgid "Ollama is not reachable at"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/models.html:145
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:78
+#: src/voxtrama/web/templates/pages/setup_settings.html:163
+msgid "Ollama has no models installed yet."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:34
+msgid "Who is using this install?"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:36
+msgid ""
+"Your name appears on the recordings and jobs you create. It never leaves "
+"this machine."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:45
+msgid ""
+"Your name is what Voxtrama shows on the recordings and jobs you create. "
+"In the Community Edition it is the only thing there is to set here."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:53
+msgid "Saved."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:57
+msgid "Saved. With no name set, the circle at the top right is hidden."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:66
+msgid "First name"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:76
+msgid "Last name"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:92
+msgid "This is how you'll appear, top right."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:100
+msgid "You can skip this and set later in Settings."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/profile.html:103
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:183
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:229
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:127
+msgid "Continue"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/run.html:108
+msgid "Connection lost, retrying..."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/run.html:115
+msgid "Worker not responding"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/run.html:132
+msgid ""
+"Nothing changed, so every step was reused from the previous job. To run "
+"them again, open «Regenerate job» and tick «Run every step again»."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/search.html:16
+msgid "Results for"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/search.html:19
+msgid "matches in"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/search.html:19
+msgid "jobs"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/search.html:24
+msgid "Type at least two characters."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/search.html:26
+msgid "The search produced no results."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/search.html:36
+msgid "Open job"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/search.html:51
+msgid "Found in the job's name."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:24
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:37
+msgid "Preparing local processing"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:24
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:42
+msgid "Tune local processing"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:39
+msgid "Downloading the selected transcription model to this machine."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:44
+msgid ""
+"Voxtrama measured this machine and prepared three private, on-device "
+"profiles."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:53
+msgid "That profile no longer fits. Pick another."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:111
+msgid "On disk"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:113
+msgid "Download size"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:121
+msgid "per hour of audio"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:182
+msgid "Available when the model is ready."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:202
+msgid "Fine-tune"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:204
+msgid "Adjust how many CPU cores and parallel chunks to use for transcription."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:231
+msgid "Download selected model"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:237
+msgid "Skip setup, use the proposal"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_local_processing.html:244
+msgid "Downloads in the background; this page updates itself until it is ready."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:18
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:26
+msgid "Add a local generative model"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:28
+msgid ""
+"Transcription works without one. Summaries, decisions and extraction need"
+" it."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:34
+msgid "Ollama is not configured: no generative model will be offered."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:37
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:50
+#: src/voxtrama/web/templates/pages/setup_settings.html:144
+msgid "Recheck"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:48
+msgid "Connected"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:101
+msgid "Maximum for this model:"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:101
+msgid "tokens"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:104
+#: src/voxtrama/web/templates/pages/setup_settings.html:174
+msgid "Use at most:"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:112
+msgid ""
+"Lowering this costs time, not completeness: a transcript longer than this"
+" is processed in more passes, never cut short. Raising it past the "
+"model's own maximum gains nothing."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:116
+msgid "This model's own maximum could not be read; no ceiling will be stored."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:123
+#: src/voxtrama/web/templates/pages/setup_model_ready.html:138
+msgid "Skip (no generative model)"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:13
+#: src/voxtrama/web/templates/pages/setup_privacy.html:64
+msgid "Data & privacy"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:16
+msgid "Recordings"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:17
+msgid "Jobs (results and manifests)"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:24
+msgid "Inside Voxtrama"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:25
+msgid "Model server on this machine"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:26
+msgid "Leaves this machine"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:27
+msgid "Kept here: a job on"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:27
+msgid "is refused"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:28
+msgid "No model server configured"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:33
+#: src/voxtrama/web/templates/pages/setup_privacy.html:116
+msgid "Not known"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:39
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:63
+msgid "Data folder"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:46
+msgid ""
+"The folder does not exist. Create it, or point VOXTRAMA_DATA_DIR at one "
+"that does."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:48
+msgid ""
+"The folder is mounted read-only. Mount it read-write (no :ro in "
+"compose.yaml) and restart the services."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:50
+msgid "The folder belongs to"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:50
+msgid "Voxtrama writes as"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:50
+msgid "Write in .env, then restart the services:"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:53
+msgid "Or give the folder to the identity Voxtrama writes as:"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:55
+msgid "Its own owner is not allowed to write here. Give the owner write access:"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:65
+msgid ""
+"Where your files are, how much room they take, and what leaves this "
+"machine."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:69
+msgid "Where your data lives"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:70
+msgid "Everything Voxtrama keeps is in one folder:"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:79
+msgid "Model servers"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:85
+msgid "Remote"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:86
+msgid "used unless a job chooses another"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:91
+msgid ""
+"No model server is configured: recaps and extractions cannot run, and "
+"nothing leaves this machine."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:96
+msgid "What each workflow does with the content"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:97
+msgid ""
+"With the server used by default. A job that picks another server is "
+"checked again before it starts."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:101
+msgid "Part leaves this machine"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:101
+msgid "Stays on this machine"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:114
+msgid "Who writes the files"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:116
+msgid "Operating system user"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:117
+msgid "Data folder owner"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:118
+msgid "Voxtrama runs as"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:119
+msgid "Not set: follows the data folder's owner"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:120
+msgid "Not set: follows the data folder's group"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:122
+msgid "The two variables live in .env and take effect when the services restart."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:129
+msgid "Write test passed"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:129
+msgid "Cannot write"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:140
+msgid "Data retention"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:142
+msgid ""
+"A finished job older than this loses its audio, transcript and recap; "
+"only a record of the deletion stays. A workflow or a single job can ask "
+"for less, never for more."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_privacy.html:146
+msgid "Delete finished jobs after"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:13
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:19
+msgid "Where your recordings live"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:21
+msgid ""
+"Recordings, transcripts and generated outputs are written here. Nothing "
+"is uploaded."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:30
+msgid "Folder exists"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:35
+msgid "Writable: test file created and removed"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:42
+msgid "Free space could not be read"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:56
+msgid "Ready to start"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:57
+msgid "Review what you decided before Voxtrama saves this setup."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:66
+msgid "Saved to"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:67
+msgid "readable, editable, copyable to another machine."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_private_storage.html:80
+msgid "Finish setup"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:34
+msgid ""
+"What this installation is running with now, and what to change without "
+"redoing the whole setup."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:54
+#: src/voxtrama/web/templates/pages/setup_settings.html:63
+#: src/voxtrama/web/templates/pages/setup_settings.html:72
+#: src/voxtrama/web/templates/pages/setup_settings.html:81
+msgid "from environment"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:77
+msgid "Provider address"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:90
+msgid ""
+"A value marked \"from environment\" is overridden by a VOXTRAMA_* "
+"variable; saving it below has no effect until that variable changes or is"
+" removed."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:94
+msgid "Read from"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:99
+msgid "Change profile"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:120
+msgid "Change parallelism"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:138
+msgid "Change generative model"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:185
+msgid "Restart the guided setup"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:187
+msgid ""
+"Runs the whole tuning again from the first step: this machine is measured"
+" again, nothing here is kept as a starting point."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/setup_settings.html:189
+msgid "Restart setup"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:17
+msgid "Custom workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:22
+msgid "Edit custom workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:22
+#: src/voxtrama/web/templates/pages/workflow_library.html:73
+msgid "Create custom workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:23
+msgid "Compose it from the skills Voxtrama already has."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:34
+msgid "Description"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:36
+msgid "One line: what this workflow turns a recording into."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:40
+msgid "Steps"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:48
+msgid "Always on: every other step reads the transcript."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:57
+msgid "Instructions"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:60
+#, python-brace-format
+msgid ""
+"Starts from the system instructions. Keep {transcript} where the "
+"transcript goes; {language} and {detail} are filled in too. The answer "
+"must keep the same fields."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_custom.html:69
+msgid "Save workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:32
+#: src/voxtrama/web/templates/pages/workflow_library.html:103
+msgid "Workflows"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:35
+msgid "Custom"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:48
+msgid "What it does"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:55
+msgid "Details"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:58
+msgid "Duplicate"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:61
+msgid "Edit"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:63
+msgid "Delete this workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:74
+msgid "Build a workflow tailored to your needs."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:78
+msgid "Start from scratch"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:83
+msgid "Duplicate a system workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:94
+msgid ""
+"The custom workflow allowed is already in use: edit it, or delete it to "
+"create another."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:96
+msgid "Community Edition:"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:96
+msgid "custom workflow"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:105
+msgid "system workflows"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:106
+msgid "custom slot available"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:107
+msgid "custom workflow in use"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:133
+msgid "Workflow steps"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:151
+msgid "What each step asks the model"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:164
+msgid ""
+"Highlighted parts are filled in for each job: the transcript, the recap "
+"language and the detail level."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:165
+msgid ""
+"A system workflow's instructions are read-only: duplicate it to write "
+"your own."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:165
+msgid "Edit the workflow to change them."
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:180
+msgid "current"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:188
+msgid "Save changes"
+msgstr ""
+
+#: src/voxtrama/web/templates/pages/workflow_library.html:192
+msgid "This workflow declares no alternative skill for any step."
+msgstr ""
+

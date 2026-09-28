@@ -1,0 +1,52 @@
+{#
+  The Files tab of a concluded job: every file the job produced,
+  one row each. First
+  the whole package (api.routes.job_package): manifest, transcript and
+  the recording in parts of about ten minutes, audio and text side by
+  side. Then each file on its own. Plain links, no script.
+#}
+{% from "components/icons.html" import icon_download %}
+{% from "components/job_view_icons.html" import icon_file %}
+
+{% macro file_row(name, note, links) %}
+<li class="vx-files__row">
+  <span class="vx-files__icon" aria-hidden="true">{{ icon_file() }}</span>
+  <span class="vx-files__text">
+    <span class="vx-files__name">{{ name }}</span>
+    <span class="vx-files__note">{{ note }}</span>
+  </span>
+  <span class="vx-files__links">
+    {% for label, href in links %}
+    <a class="vx-button vx-button--secondary vx-button--small" href="{{ href }}" download>{{ icon_download() }} {{ label }}</a>
+    {% endfor %}
+  </span>
+</li>
+{% endmacro %}
+
+{% macro job_files(result, run_id) %}
+{% set base = "/runs/" ~ run_id %}
+<div class="vx-card vx-files">
+  <h2 class="vx-files__title">{% trans %}Files{% endtrans %}</h2>
+  <ul class="vx-files__list">
+    {{ file_row(gettext("Everything"),
+                gettext("One ZIP: the manifest, the transcript, and the recording in parts of about ten minutes, each part's audio next to its text"),
+                [("ZIP", base ~ "/package.zip")]) }}
+    {{ file_row(gettext("Transcript"),
+                gettext("The whole transcript, with times and speakers"),
+                [("TXT", base ~ "/transcript.txt"), ("Markdown", base ~ "/transcript.md"), ("JSON", base ~ "/transcript.json"), ("JSONL", base ~ "/transcript.jsonl")]) }}
+    {% if result.recap %}
+    {{ file_row(gettext("Recap"),
+                gettext("The recap as the Recap tab shows it"),
+                [("PDF", base ~ "/recap.pdf"), ("HTML", base ~ "/recap.html"), ("DOCX", base ~ "/recap.docx")]) }}
+    {% endif %}
+    {{ file_row(gettext("Manifest"),
+                gettext("What the job ran with, without the context you wrote"),
+                [("JSON", base ~ "/manifest.json")]) }}
+    {% if result.audio_src %}
+    {{ file_row(gettext("Recording"),
+                gettext("The audio as it was uploaded"),
+                [(gettext("Audio"), result.audio_src)]) }}
+    {% endif %}
+  </ul>
+</div>
+{% endmacro %}

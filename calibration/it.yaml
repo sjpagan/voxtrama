@@ -1,0 +1,16 @@
+language: it
+version: 1.0.0
+passages:
+  - id: scripted
+    kind: scripted
+    text: |
+      Buongiorno, sto tarando il riconoscimento vocale.
+      Leggo a voce normale, senza affrettarmi.
+      La riunione del 14 marzo 2026 è iniziata alle 9:45 ed è durata 52 minuti.
+      Nel verbale si citano il GDPR e la norma ISO 27001.
+      Erano presenti Giulia Ferrari e un collega di Lubiana.
+      Ho finito.
+  - id: unpredictable
+    kind: unpredictable
+    text: |
+      Sette, quattro, nove, due, otto. Codice: A come Ancona, R come Roma, zeta quattordici. Lampada, treno, quarzo, salice, ottanta. Nordström, Vasquez, Iwuchukwu.

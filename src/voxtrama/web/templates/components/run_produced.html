@@ -1,0 +1,54 @@
+{#
+  "What this run did produce": a preview of
+  the Transcript a failed run still left behind, built by
+  rendering.run_produced.produced_view from Segment rows the route already
+  queried. Nothing here reads the database.
+
+  `produced.view_transcript_href` leads back into this page's
+  "#vx-run-produced" section rather than a dedicated transcript page.
+  The "concluded run" page is where the whole transcript (and every
+  other kind of output) gets a page of its own, and this section stops
+  at the preview.
+
+  The preview is drawn as the job view's
+  bubbles (components/job_turns.html): `produced.turns`, built by the
+  route from the same rows. Each sentence keeps the anchor a search result
+  links to.
+#}
+{% macro run_produced(produced) %}
+<div class="vx-card vx-produced" id="vx-run-produced">
+  <div class="vx-card__header">
+    <h3>{% trans %}What this job did produce{% endtrans %}</h3>
+    <a href="{{ produced.view_transcript_href }}">{% trans %}View transcript{% endtrans %}</a>
+  </div>
+  <p class="vx-produced__lead">
+    {% trans %}The audio was ingested and transcribed successfully. Your transcript is saved and can be viewed at any time.{% endtrans %}
+  </p>
+  {% if produced.turns %}
+  <ol class="vx-turns vx-produced__turns">
+    {% for turn in produced.turns %}
+    <li class="vx-turn vx-turn--{{ turn.side }}" data-start="{{ turn.start }}" data-end="{{ turn.end }}">
+      <span class="vx-turn__time">{{ turn.time }}</span>
+      <div class="vx-turn__bubble" data-speaker-color="{{ turn.speaker_color }}">
+        {% if turn.speaker %}<span class="vx-badge vx-transcript__speaker" data-speaker-color="{{ turn.speaker_color }}">{{ turn.speaker }}</span>{% endif %}
+        <p class="vx-turn__text">{% for segment in turn.segments %}<span{% if segment.id %} id="vx-transcript-row-{{ segment.id }}"{% endif %}>{{ segment.text }}</span> {% endfor %}</p>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <table class="vx-produced__table">
+    {% for line in produced.lines %}
+    <tr{% if line.id %} id="vx-transcript-row-{{ line.id }}"{% endif %}>
+      <td class="vx-produced__time">{{ line.time }}</td>
+      <td class="vx-produced__speaker">{{ line.speaker }}</td>
+      <td class="vx-produced__text">{{ line.text }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+  {% if produced.truncated %}
+  <p class="vx-help">{% trans %}Showing the first lines only.{% endtrans %}</p>
+  {% endif %}
+</div>
+{% endmacro %}

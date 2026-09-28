@@ -1,0 +1,177 @@
+// The shell: a persistent header wrapping every page's content block
+// (base.html), plus the sidebar+main layout a page opts into by passing
+// nav_items. .vx-app and .vx-layout are the kit's names (from the design).
+// Later pages build inside this wrapper, so matching now avoids renaming
+// under them later.
+@use "../abstracts" as tokens;
+//
+// The spacing scale (abstracts/_tokens.scss) drives every gap and padding
+// below, one value shared with the rest of the shell instead of a bare rem
+// picked for one rule.
+//
+// The background glow: the dark theme's rise from
+// the flat bg colour toward --vx-glow-from/--vx-glow-to
+// (abstracts/_tokens.scss). Layered as background-image over background-color
+// instead of folded into the --vx-bg token, so the light theme, whose glow
+// tokens both resolve to transparent, falls back to the flat colour without a
+// rule of its own.
+.vx-app {
+  min-height: 100vh;
+  background-color: var(--vx-bg);
+  background-image: radial-gradient(
+    ellipse 90% 60% at 50% 0%,
+    var(--vx-glow-to) 0%,
+    var(--vx-glow-from) 45%,
+    transparent 75%
+  );
+  background-repeat: no-repeat;
+}
+
+.vx-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$vx-space-md;
+  padding: tokens.$vx-space-md var(--pico-spacing, 1rem);
+  border-bottom: 1px solid var(--vx-border);
+  background: var(--vx-bg-elevated);
+}
+
+// Replaces Pico's own .container: the home page's hero needs a narrower
+// reading width than a full-bleed table does, and that is .vx-hero's
+// call to make (components/_home.scss), not this wrapper's.
+.vx-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: tokens.$vx-space-xl;
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 0 var(--pico-spacing, 1rem);
+}
+
+// Fixed width, not a flex-grow share: a five-item nav does not need to
+// grow with the viewport the way .vx-main's content does.
+.vx-sidebar {
+  flex: 0 0 12rem;
+}
+
+// An interior section's shell: the sidebar
+// runs the full height beside the header instead of above it. See base.html's
+// comment on why this differs from the home page's plain .vx-app, which has
+// no sidebar to make room for.
+.vx-app--section {
+  display: flex;
+  flex-direction: column;
+}
+
+// The navbar spans the full width, and
+// the sidebar and the page sit side by side underneath it.
+.vx-shell-body {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: stretch;
+  min-height: 0;
+}
+
+.vx-app--section .vx-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-lg;
+  padding: tokens.$vx-space-md;
+  border-right: 1px solid var(--vx-border);
+  background: var(--vx-bg-elevated);
+}
+
+// The header row and the main content, stacked, taking whatever width the
+// sidebar leaves. Same min-width: 0 reasoning as .vx-main below.
+.vx-section-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.vx-main {
+  flex: 1 1 auto;
+  // Without this a table wider than the remaining space pushes the sidebar
+  // off-screen instead of scrolling: flexbox's default min-width is auto,
+  // sized to the content, not to the space available.
+  min-width: 0;
+  // Under the full-width navbar a page title sat flush against its
+  // bottom border. The design keeps a gap of the scale's section size.
+  padding-top: tokens.$vx-space-xl;
+}
+
+// The home page's grid: the three status cards today,
+// and whatever the workflow form needs from the same 12-column scale
+// tomorrow: the kit's vx-col-4/vx-col-8 split.
+.vx-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: tokens.$vx-space-md;
+}
+
+.vx-col-4 {
+  grid-column: span 4;
+}
+
+.vx-col-8 {
+  grid-column: span 8;
+}
+
+.vx-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.$vx-space-sm;
+
+  // Pico gives every <button> in a form `width: 100%`: right for a button on
+  // its own row, wrong for two side by side, which stretch until only the gap
+  // between them is left and they read as one slab. The upload row already
+  // had this fix. Here it is made once for every group of buttons.
+  .vx-button,
+  form {
+    flex: 0 0 auto;
+    width: auto;
+    margin: 0;
+  }
+}
+
+.vx-stack {
+  display: grid;
+  gap: tokens.$vx-space-md;
+}
+
+// The content column, declared ONCE here instead of on each thing in it. Four
+// selectors in components/_home.scss carried the same max-width one by one
+// (.vx-hero, .vx-upload, .vx-status-row, .vx-runs), so the Recordings card
+// added later never got it. Measured on the home page, that card started
+// 186px to the left of everything else and ran 372px wider, the only element
+// on the page out of line. A width repeated per element will be missing from
+// whatever is written next.
+.vx-section {
+  margin-bottom: tokens.$vx-space-xl;
+  max-width: tokens.$vx-content-width;
+  margin-inline: auto;
+
+  // The rhythm between blocks belongs here too, for the same reason as the
+  // width. It used to live on .vx-upload, .vx-demo and .vx-status-row one at
+  // a time, so a plain .vx-card had none and the Recordings and Recent runs
+  // cards sat flush against each other: 0px of gap measured, where everything
+  // above them had 24 to 32. A gap on the column spaces whatever it holds,
+  // including what gets written next.
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-lg;
+}
+
+@media (max-width: 46rem) {
+  .vx-layout {
+    flex-direction: column;
+  }
+
+  .vx-col-4,
+  .vx-col-8 {
+    grid-column: 1 / -1;
+  }
+}

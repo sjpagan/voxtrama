@@ -1,0 +1,236 @@
+{
+  "$defs": {
+    "AcceleratorCondition": {
+      "description": "The three values diagnostics.accelerator.detect_accelerator can produce.\n\n\"none\" is not the same as leaving `accelerator` unset on\nTuningConditions: unset means the file does not care, \"none\" means the\nfile requires a machine that reports no accelerator at all.",
+      "enum": [
+        "cuda",
+        "mps",
+        "none"
+      ],
+      "title": "AcceleratorCondition",
+      "type": "string"
+    },
+    "AsrProfiles": {
+      "additionalProperties": false,
+      "description": "One ModelTuning per hardware profile: low/base/high, never a fourth.",
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/ModelTuning"
+        },
+        "high": {
+          "$ref": "#/$defs/ModelTuning"
+        },
+        "low": {
+          "$ref": "#/$defs/ModelTuning"
+        }
+      },
+      "required": [
+        "low",
+        "base",
+        "high"
+      ],
+      "title": "AsrProfiles",
+      "type": "object"
+    },
+    "AsrTuning": {
+      "additionalProperties": false,
+      "description": "What transcription.asr would need beyond the profile table it hardcodes today.",
+      "properties": {
+        "device": {
+          "title": "Device",
+          "type": "string"
+        },
+        "profiles": {
+          "$ref": "#/$defs/AsrProfiles"
+        }
+      },
+      "required": [
+        "device",
+        "profiles"
+      ],
+      "title": "AsrTuning",
+      "type": "object"
+    },
+    "ChunkTuning": {
+      "additionalProperties": false,
+      "description": "How this platform class splits a recording into parallel chunks.",
+      "properties": {
+        "cores_per_chunk": {
+          "minimum": 1,
+          "title": "Cores Per Chunk",
+          "type": "integer"
+        },
+        "memory": {
+          "$ref": "#/$defs/MemoryThreshold"
+        },
+        "parallel_chunks": {
+          "minimum": 1,
+          "title": "Parallel Chunks",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "parallel_chunks",
+        "cores_per_chunk",
+        "memory"
+      ],
+      "title": "ChunkTuning",
+      "type": "object"
+    },
+    "DiarizationTuning": {
+      "additionalProperties": false,
+      "description": "The device diarization.encoder should ask torch for, in place of its hardcoded \"cpu\".",
+      "properties": {
+        "device": {
+          "title": "Device",
+          "type": "string"
+        }
+      },
+      "required": [
+        "device"
+      ],
+      "title": "DiarizationTuning",
+      "type": "object"
+    },
+    "GenerativeTuning": {
+      "additionalProperties": false,
+      "description": "Whether a local generative model fits alongside transcription here.\n\nNo device field: generative models always run through\nOllama, local or remote, which manages its own device. There is\nnothing here for Voxtrama to hand it.",
+      "properties": {
+        "memory": {
+          "$ref": "#/$defs/MemoryThreshold"
+        },
+        "timeout_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "memory",
+        "timeout_seconds"
+      ],
+      "title": "GenerativeTuning",
+      "type": "object"
+    },
+    "MemoryThreshold": {
+      "additionalProperties": false,
+      "description": "A recommended amount of memory, and the sentence for a machine short of it.\n\nThe interface that shows this never computes it: the\nsentence is already whole here, missing only the one number a live\nMachineReport supplies: `warning.format(recommended_gib=...,\nactual_gib=...)`.",
+      "properties": {
+        "recommended_gib": {
+          "title": "Recommended Gib",
+          "type": "number"
+        },
+        "warning": {
+          "title": "Warning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "recommended_gib",
+        "warning"
+      ],
+      "title": "MemoryThreshold",
+      "type": "object"
+    },
+    "ModelTuning": {
+      "additionalProperties": false,
+      "description": "faster-whisper's own two knobs for one hardware profile.",
+      "properties": {
+        "compute_type": {
+          "title": "Compute Type",
+          "type": "string"
+        },
+        "model_size": {
+          "title": "Model Size",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model_size",
+        "compute_type"
+      ],
+      "title": "ModelTuning",
+      "type": "object"
+    },
+    "TuningConditions": {
+      "additionalProperties": false,
+      "description": "Which machines a tuning file applies to, in the machine reading's own vocabulary.\n\nEvery field left unset is a condition the file does not declare.\ntuning.selector turns \"declared and satisfied\" into a specificity\nscore, and an unset field never counts against or for a machine.",
+      "properties": {
+        "accelerator": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AcceleratorCondition"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "architecture": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Architecture"
+        },
+        "unified_memory": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unified Memory"
+        }
+      },
+      "title": "TuningConditions",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One tuning/*.yaml: the execution parameters picked instead of hand-coding.\n\nSee tuning/__init__.py for why deducing this file is not guessing the\nhardware profile, which is never done.",
+  "properties": {
+    "applies_to": {
+      "$ref": "#/$defs/TuningConditions"
+    },
+    "asr": {
+      "$ref": "#/$defs/AsrTuning"
+    },
+    "chunking": {
+      "$ref": "#/$defs/ChunkTuning"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "diarization": {
+      "$ref": "#/$defs/DiarizationTuning"
+    },
+    "generative": {
+      "$ref": "#/$defs/GenerativeTuning"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "asr",
+    "chunking",
+    "diarization",
+    "generative"
+  ],
+  "title": "TuningFile",
+  "type": "object"
+}

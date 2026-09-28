@@ -1,0 +1,4 @@
+# The documentation site: MkDocs with the Material theme.
+# Not part of the app or its image. `make lock` compiles this into
+# requirements-docs.lock, which CI and `make docs` install.
+mkdocs-material>=9.7,<10

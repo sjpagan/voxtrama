@@ -1,0 +1,99 @@
+// The one search of the job view: Transcript,
+// Explore and Recap share the field, «2 of 5», the arrows and the marks.
+@use "../abstracts" as tokens;
+
+.vx-find {
+  display: flex;
+  flex: 1 1 22rem;
+  align-items: center;
+  gap: tokens.$vx-space-sm;
+}
+
+.vx-find__field {
+  flex: 0 1 34rem;
+  display: flex;
+  align-items: center;
+  gap: tokens.$vx-space-xs;
+  padding: tokens.$vx-space-2xs tokens.$vx-space-sm;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+  color: var(--vx-text-muted);
+
+  &:focus-within {
+    border-color: var(--vx-primary);
+  }
+}
+
+.vx-find__field .vx-find__input {
+  flex: 1 1 auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--vx-text);
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.vx-find__clear svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.vx-find__clear,
+.vx-find__step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  margin: 0;
+  padding: tokens.$vx-space-3xs;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--vx-text-muted);
+}
+
+.vx-find__step {
+  padding: tokens.$vx-space-2xs;
+  border-color: var(--vx-border);
+  background: var(--vx-bg-elevated);
+
+  &:disabled {
+    opacity: 0.4;
+  }
+}
+
+.vx-find__count {
+  min-width: 3.5rem;
+  color: var(--vx-text-muted);
+  font-size: tokens.$vx-text-sm;
+  white-space: nowrap;
+}
+
+// A match, and the one the arrows are on.
+.vx-recap__text,
+.vx-turn__text,
+.vx-transcript__text {
+  mark {
+    background: color-mix(in srgb, var(--vx-warning) 55%, transparent);
+    color: inherit;
+    border-radius: 0.2rem;
+  }
+
+  mark.vx-mark--current {
+    background: var(--vx-warning);
+    color: var(--vx-bg);
+  }
+}
+
+// In the Transcript tab it sits on its own line, above the bubbles.
+.vx-turns-card > .vx-find {
+  margin-bottom: tokens.$vx-space-md;
+}

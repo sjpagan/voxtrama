@@ -1,0 +1,132 @@
+// The succeeded-run page's right column, "Verified output".
+// Split out of _run_result.scss once the
+// coloured icon+title added enough rules to push that file past this
+// project's file-length limit, the same split components/_run_player.scss and
+// _run_transcript.scss went through for the other two pieces of the page.
+@use "../abstracts" as tokens;
+
+.vx-output__card {
+  padding: 1rem;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// One of four colours, by `item.kind_color` (rendering.run_output's fixed
+// mapping, not the order cards render in). These are the same four
+// --vx-speaker-* tokens that components/_run_transcript.scss's transcript
+// badges cycle through, reused instead of a second palette for card types
+// (icon and title coloured by type).
+// The card derived from the passage chosen in the transcript. It uses
+// the same signal as .vx-transcript__row--active in the other column,
+// because it is the same relation read from the opposite end. Two different
+// visual languages for the two directions would say they are two things.
+.vx-output__card--active {
+  border-color: var(--vx-primary);
+  background: color-mix(in srgb, var(--vx-primary) 10%, transparent);
+}
+
+// The line saying how many fields derive from the passage: even when hidden
+// it keeps the minimum space in the flow, so appearing does not make the list
+// below it jump.
+.vx-output__linked {
+  margin: 0 0 0.75rem;
+  color: var(--vx-text-muted);
+  font-size: 0.85rem;
+}
+
+// The whole card wears its kind's colour, faintly.
+@each $n in 1, 2, 3, 4 {
+  .vx-output__card[data-kind-color="#{$n}"] {
+    border-color: color-mix(in srgb, var(--vx-speaker-#{$n}) 45%, transparent);
+    background: color-mix(in srgb, var(--vx-speaker-#{$n}) 7%, transparent);
+  }
+}
+
+// After the kind colours, so the card a chosen passage fed still stands out.
+.vx-output__card.vx-output__card--active {
+  outline: 2px solid var(--vx-primary);
+  outline-offset: -2px;
+}
+
+.vx-output__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.vx-output__kind {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+}
+
+.vx-output__kind-icon {
+  display: flex;
+  font-size: 1.1rem;
+}
+
+.vx-output__card[data-kind-color="1"] .vx-output__kind { color: var(--vx-speaker-1); }
+.vx-output__card[data-kind-color="2"] .vx-output__kind { color: var(--vx-speaker-2); }
+.vx-output__card[data-kind-color="3"] .vx-output__kind { color: var(--vx-speaker-3); }
+.vx-output__card[data-kind-color="4"] .vx-output__kind { color: var(--vx-speaker-4); }
+
+.vx-output__heading {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+}
+
+.vx-output__text {
+  margin: 0 0 0.5rem;
+}
+
+// A plain <button> styled as an underlined "Evidence · mm:ss-mm:ss"
+// link. A <button>, not an <a>, because clicking it runs
+// static/js/run_result.js's seek-and-highlight instead of navigating
+// (components/run_output.html's docstring says why).
+.vx-output__time {
+  color: var(--vx-text-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+// Evidence (who spoke, and when) or «No evidence», with «Needs review»
+// at the right: the foot of every card.
+.vx-output__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--vx-border);
+}
+
+.vx-output__evidence {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--vx-text-muted);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--vx-text);
+    text-decoration: underline;
+  }
+}
+
+.vx-output__no-evidence {
+  color: var(--vx-text-muted);
+  font-size: 0.85rem;
+}

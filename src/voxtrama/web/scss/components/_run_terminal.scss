@@ -1,0 +1,96 @@
+// The run page's terminal panel: a
+// dark, monospace scrollback of the run's run.log, kept apart from
+// _run_page.scss (which already holds the header, the chain and the live
+// activity bar) so neither file grows past the file-length limit.
+@use "../abstracts" as tokens;
+
+.vx-terminal {
+  margin-bottom: 1.5rem;
+}
+
+.vx-terminal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.vx-terminal__title {
+  margin: 0;
+  font-size: tokens.$vx-text-lg;
+}
+
+// A job that is over: the same card, closed, its own
+// header the <summary> that opens it.
+.vx-terminal__summary {
+  margin-bottom: 0;
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::after {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid var(--vx-text-muted);
+    border-bottom: 2px solid var(--vx-text-muted);
+    transform: rotate(45deg);
+  }
+}
+
+details[open] > .vx-terminal__summary {
+  margin-bottom: 0.75rem;
+
+  &::after {
+    transform: rotate(-135deg);
+  }
+}
+
+// column-reverse anchors the scroll at the bottom: the log opens on its
+// newest line, and stays there as lines arrive, without a script.
+.vx-terminal__scroll {
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 22rem;
+  overflow-y: auto;
+  border: 1px solid var(--vx-border);
+  border-radius: 0.6rem;
+  background: var(--vx-bg-elevated);
+}
+
+.vx-terminal__log {
+  flex-shrink: 0;
+  overflow: visible;
+  margin: 0;
+  padding: 0.5rem;
+  background: none;
+  color: var(--vx-text-muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  // Each line is its own block (below). The newlines between them are
+  // only there for a copy-paste, and would otherwise read as blank lines.
+  white-space: normal;
+}
+
+.vx-terminal__line {
+  display: block;
+  padding: 0 0.5rem;
+  white-space: pre-wrap;
+  border-radius: 0.35rem;
+}
+
+// The last line is brighter and bold: besides the
+// count changing, it is the one visible sign that a line just arrived.
+// :last-of-type does it, so static/js/run_terminal.js does not have to move a
+// class off the previous line on every append. The design marks it with
+// the primary colour behind it.
+.vx-terminal__line:last-of-type {
+  color: var(--vx-text);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--vx-primary) 28%, transparent);
+}

@@ -1,0 +1,49 @@
+# x86_64 with no accelerator torch can see: CPU everywhere. Two conditions
+# declared, same count as x86-cuda's but never both satisfied by the same
+# machine: a real machine's accelerator is either "cuda", "mps" or None,
+# never two of them at once.
+name: x86-no-accelerator
+description: >
+  x86_64 machine with no accelerator torch can see.
+applies_to:
+  architecture: x86_64
+  accelerator: none
+
+asr:
+  device: cpu
+  # The hardware profiles' CPU column, same as transcription.profiles.PROFILES today.
+  profiles:
+    low:
+      model_size: small
+      compute_type: int8
+    base:
+      model_size: medium
+      compute_type: int8
+    high:
+      model_size: large-v3
+      compute_type: int8
+
+diarization:
+  device: cpu
+
+chunking:
+  # ESTIMATE: with everything on CPU, this is the same conservative split
+  # as the generic file's CPU-only case, not a measurement of any specific
+  # x86 machine.
+  parallel_chunks: 2
+  cores_per_chunk: 4
+  memory:
+    recommended_gib: 16
+    warning: >-
+      running {parallel_chunks} chunks in parallel is comfortable with about
+      {recommended_gib} GiB of RAM; this machine reports {actual_gib} GiB
+
+generative:
+  memory:
+    recommended_gib: 16
+    warning: >-
+      a local generative model alongside transcription is comfortable with
+      about {recommended_gib} GiB of RAM; this machine reports {actual_gib} GiB
+  # See tuning/generic.yaml's own comment: no
+  # x86-no-accelerator-specific measurement exists yet either.
+  timeout_seconds: 1800

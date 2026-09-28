@@ -1,0 +1,39 @@
+// The commands that conclude a step: components/step_actions.html is
+// the macro, this is its skeleton. It takes the content column by inheritance
+// from .vx-section/.vx-stack (no width of its own to repeat here), with a
+// separator line above and the primary always at the bottom right.
+@use "../abstracts" as tokens;
+
+.vx-step-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: tokens.$vx-space-sm;
+  padding-top: tokens.$vx-space-md;
+  border-top: 1px solid var(--vx-border);
+}
+
+.vx-step-actions__start,
+.vx-step-actions__primary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: tokens.$vx-space-sm;
+
+  // The same fix as .vx-cluster (layout/_index.scss): Pico gives width: 100%
+  // to every <button> inside a <form>. Right when it is the only row, wrong
+  // here, where another command can sit beside it.
+  .vx-button,
+  form {
+    flex: 0 0 auto;
+    width: auto;
+    margin: 0;
+  }
+}
+
+// At phone width the two sides already wrap (flex-wrap above). When the left
+// side is empty it is still a flex child, since the markup keeps it
+// (components/step_actions.html), so justify-content: space-between pushes
+// the primary to the right even when alone, instead of leaving it alone on
+// the left.

@@ -1,0 +1,178 @@
+// The sidebar, split out of _shell.scss (the 150-line file cap): one
+// icon-led row per components/sidebar.html item, sized against the spacing
+// scale for the design's proportions, with a filled, rounded block for
+// the active section. It is hierarchical: Setup's four steps indent underneath
+// it, styled further down.
+@use "../abstracts" as tokens;
+
+// list-style and padding are reset here, not left to Pico's own <ul>,
+// because a nav list reads as navigation, not as prose.
+.vx-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-3xs;
+
+  // Pico pads every <li> of a list, which is prose spacing. On a nav row it
+  // adds 20px around a link that already has its own padding, making these
+  // rows half again as tall as the design draws them.
+  li {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+// One row, icon plus label, sized the way the design draws every sidebar
+// item, with padding from the spacing scale instead of a value picked for
+// this row alone.
+//
+// The step between rows is height + gap, not height alone. The previous
+// calculation compared the 56px height with the target ~54px step and ended
+// up 6px over the target: measured in the DOM, 60px (56 for the row plus the
+// 4 of $vx-space-3xs that .vx-nav-list puts between items).
+//
+// With $vx-space-md (16px per side) the height is 2*16 + 24 (line-height 1.5
+// on 1rem) = 56, step 60. With $vx-space-sm (12px) it is 2*12 + 24 = 48, step
+// 52: the smallest miss this scale allows against 54, and on the other side
+// of the target instead of above it. Horizontal padding is unchanged: the
+// design asks for no more room at the sides, only between rows.
+.vx-nav-list a {
+  display: flex;
+  align-items: center;
+  gap: tokens.$vx-space-sm;
+  padding: tokens.$vx-space-sm;
+  border-radius: tokens.$vx-space-xs;
+  // Inactive items dim to the secondary text colour. Near-white
+  // (--vx-text) made every row equally loud instead of letting only the
+  // active one stand out.
+  color: var(--vx-text-muted);
+  text-decoration: none;
+}
+
+.vx-nav-list a:hover {
+  background: var(--vx-bg);
+}
+
+// A neutral highlight, not an accent tint. The text colour at very low opacity
+// over the column background, with the color-mix technique already used in
+// this sheet. Only the icon turns to the accent. The solid blue tint that was
+// here before is gone.
+.vx-nav-list a[aria-current="page"] {
+  // --vx-text, not `white`: the invariant is **contrast with the
+  // background**, not "lighter than the background". On the dark theme
+  // --vx-text is near-white and lifts the row. On the light theme it is
+  // near-black and darkens it. Either way the row stands out. `white` would
+  // only work on dark and would vanish on light, which is half the users
+  // expected.
+  background: color-mix(in srgb, var(--vx-text) 8%, transparent);
+  // Same reason as the background: #fff here would be white text on a light
+  // background in the light theme, unreadable. --vx-text is already the
+  // colour that contrasts with the background in both themes.
+  color: var(--vx-text);
+  font-weight: 600;
+
+  .vx-nav-icon {
+    color: var(--vx-primary);
+  }
+}
+
+.vx-nav-icon {
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+}
+
+// The parent that merely *contains* the current page: only the deepest
+// match gets the filled block above (a[aria-current="page"]). This one gets
+// no fill, only bolder text and its icon in the accent colour, so "you're in
+// here" reads differently from "this is where you are".
+.vx-nav-list a.vx-nav-current-ancestor {
+  // The list's base colour moved to the dimmed text, but "you are
+  // inside this section" is not the same state as "inactive section". The
+  // label stays at full text colour, just bolder, as before.
+  color: var(--vx-text);
+  font-weight: 600;
+
+  .vx-nav-icon {
+    color: var(--vx-primary);
+  }
+}
+
+// "Setup has steps", shown whenever they are (components/sidebar.html's
+// `item.children and item.active`), pushed to the row's far edge instead of
+// sized or coloured for its own sake.
+.vx-nav-caret {
+  display: flex;
+  flex: 0 0 auto;
+  margin-left: auto;
+  font-size: 0.9rem;
+}
+
+// Setup's four steps: indented under their parent, with no icon
+// (components/sidebar.html's comment says why), rendered only while Setup is
+// the active section, so this list is never empty when it exists.
+.vx-nav-sublist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  // 32px (tokens.$vx-space-xl) left only 127px of usable width in a 192px
+  // bar: "Personal settings" and "Local processing" wrapped, 54px tall
+  // against 33 for the other two, taller than the parent (43px). Corrected to
+  // 14px (measured in page): no token on the scale matches, so the value
+  // stays literal. The same column also carries the vertical line. The
+  // indent does not change, the line is added inside it.
+  padding-left: 0.875rem;
+  border-left: 1px solid var(--vx-border);
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$vx-space-3xs;
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    display: block;
+    // Horizontal padding from 12px (tokens.$vx-space-sm) to 8px, together
+    // with the indent above: no token on the scale is 8px, so this value also
+    // stays literal (measured in page).
+    padding: tokens.$vx-space-2xs 0.5rem;
+    border-radius: tokens.$vx-space-xs;
+    color: var(--vx-text-muted);
+    font-size: tokens.$vx-text-sm;
+    text-decoration: none;
+    // The four labels must not touch: at 145px of usable width they
+    // are kept on one line, not broken at random.
+    white-space: nowrap;
+  }
+
+  a:hover {
+    color: var(--vx-text);
+  }
+
+  // The current step: the same neutral highlight as the
+  // top-level item, but lighter because the row is smaller, and without the
+  // blue tint (the 16% color-mix on the accent is gone). A child row has no
+  // icon (see the nav_icon comment), so nothing turns to the accent here:
+  // only the label goes from dimmed text to full text.
+  a[aria-current="page"] {
+    background: color-mix(in srgb, var(--vx-text) 6%, transparent);
+    color: var(--vx-text);
+    font-weight: 600;
+  }
+}
+
+// The line above the footer group (Settings), only rendered when that
+// group is not empty (components/sidebar.html).
+.vx-nav-separator {
+  padding: tokens.$vx-space-2xs 0;
+
+  hr {
+    margin: 0;
+    border: none;
+    border-top: 1px solid var(--vx-border);
+  }
+}

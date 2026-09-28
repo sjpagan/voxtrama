@@ -1,0 +1,119 @@
+# Local call data and generated outputs
+input/
+output/
+**/input/
+**/output/
+
+# Dependencies
+vendor/
+**/vendor/
+node_modules/
+venv/
+.venv/
+# Any virtualenv, whatever it is called: agents working in a worktree build
+# their own (.venv312 and friends), and one `git add -A` away that is five
+# million lines of torch headers in a branch. Happened on 2026-09-24.
+.venv*/
+*venv/
+env/
+.env/
+
+# The one exception to **/vendor/ above: Pico is committed source, not a
+# dependency fetched at install time (see its PROVENANCE.md). Both the
+# directory and its contents need re-including: git will not look inside
+# an ignored directory for a deeper negation on its own.
+!src/voxtrama/web/static/vendor/
+!src/voxtrama/web/static/vendor/**
+
+# dart-sass, downloaded by `make sass-install` (Makefile). A binary tool,
+# not a source file: unlike Pico above, this one has nothing to commit.
+.tools/
+
+# Python caches and test artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Build and packaging outputs
+build/
+dist/
+*.egg-info/
+*.egg
+site/
+
+# DDEV generated/runtime files
+.ddev/.dbimageBuild/
+.ddev/.webimageBuild/
+.ddev/.homeadditions/
+.ddev/db_snapshots/
+.ddev/mutagen/
+.ddev/tmp*/
+.ddev/xhprof/
+
+# Logs, local env, and OS/editor noise
+*.log
+.env
+.env.local
+.env.*.local
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.playwright-cli/
+
+# Runtime data (Docker volumes, generato a runtime)
+data/
+
+# Users store (contiene password hashate, gestito a runtime)
+users.json
+
+# Screenshots
+Screenshot*.png
+Screenshot*.jpg
+
+# Media e dati di valutazione: non entrano MAI nel repository.
+# Le registrazioni reali contengono voci di persone identificabili, e sotto
+# licenza MIT pubblicarle sarebbe irreversibile: chiunque potrebbe
+# ridistribuirle per sempre. L'insieme di valutazione vive fuori dal
+# repository, puntato da VOXTRAMA_EVAL_DIR.
+*.wav
+*.mp3
+*.m4a
+*.opus
+*.flac
+*.ogg
+*.mp4
+*.mkv
+*.mov
+*.rttm
+/eval/
+/input/
+/output/
+
+# L'unica eccezione: la fixture breve e con licenza libera usata dai test,
+# aggiunta esplicitamente con `git add -f`. Il suo .rttm entra con lei: senza
+# la verita' di riferimento accanto, il file audio non verifica niente.
+!tests/fixtures/*.wav
+!tests/fixtures/*.rttm
+
+# Worktree e file di lavoro degli agenti. Non e' materiale del progetto:
+# ogni agente che lavora in parallelo ne crea uno qui, e senza questa riga
+# comparivano come modifiche non tracciate sul checkout principale, con due
+# conseguenze gia' viste. Il cancello sui media (test_no_tracked_media_files)
+# scandiva anche gli alberi degli agenti, trovandoci dentro file che il
+# progetto non ha; e un `git add -A` dato in buona fede ha inglobato dieci
+# repository annidati.
+.claude/
+
+# Local databases and Redis dumps
+*.db
+dump.rdb
+
+# The built documentation site: `make docs` writes it, CI publishes it.
+/site/

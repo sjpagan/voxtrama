@@ -1,0 +1,152 @@
+// The Jobs section and the search results.
+@use "../abstracts" as tokens;
+
+.vx-pagehead--actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$vx-space-md;
+
+  // «Clean up» and «New job» sit together on the right.
+  h1 {
+    margin-right: auto;
+  }
+}
+
+.vx-pagehead__form {
+  margin: 0;
+}
+
+.vx-button--inline {
+  width: auto;
+  margin: 0;
+}
+
+.vx-jobs-table--full .vx-jobs-table__head,
+.vx-jobs-table--full .vx-run-row {
+  grid-template-columns:
+    minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 0.8fr) minmax(0, 1fr)
+    minmax(0, 1.2fr) 2.5rem;
+}
+
+.vx-jobs-table .vx-run-row a.vx-run-row__name {
+  color: var(--vx-text);
+  text-decoration: none;
+}
+
+.vx-run-row--selected {
+  background: color-mix(in srgb, var(--vx-primary) 10%, transparent);
+}
+
+.vx-row-menu__list .vx-row-menu__danger {
+  color: var(--vx-danger);
+}
+
+// The deletion dialog, rendered open by the server: Pico's own modal
+// (<dialog open><article>), which already draws the backdrop and the card.
+.vx-dialog article {
+  width: min(26rem, 92vw);
+
+  h2 {
+    margin: 0 0 tokens.$vx-space-2xs;
+    font-size: tokens.$vx-text-lg;
+  }
+
+  .vx-check {
+    margin-bottom: tokens.$vx-space-2xs;
+  }
+}
+
+.vx-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: tokens.$vx-space-sm;
+
+  .vx-button {
+    width: auto;
+    margin: 0;
+  }
+}
+
+.vx-search-group {
+  margin-bottom: tokens.$vx-space-md;
+}
+
+// Pico paints an <article>'s own <header> as a band. This page does not.
+.vx-search-group .vx-search-group__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+
+  .vx-link {
+    text-decoration: none;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: tokens.$vx-text-lg;
+  }
+
+  h2 a {
+    color: var(--vx-text);
+    text-decoration: none;
+  }
+}
+
+.vx-search-hits {
+  margin: tokens.$vx-space-sm 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    list-style: none;
+    border-top: 1px solid var(--vx-border);
+  }
+}
+
+.vx-search-hit {
+  display: grid;
+  grid-template-columns: 4rem 6rem minmax(0, 1fr);
+  align-items: center;
+  gap: tokens.$vx-space-sm;
+  padding: tokens.$vx-space-2xs 0;
+  color: var(--vx-text);
+  text-decoration: none;
+
+  mark {
+    padding: 0 0.2rem;
+    border-radius: 0.3rem;
+    background: var(--vx-warning);
+    color: var(--vx-bg);
+  }
+}
+
+.vx-search-hit__time {
+  color: var(--vx-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-speaker-chip {
+  justify-self: start;
+  padding: 0.1rem tokens.$vx-space-sm;
+  border: 1px solid var(--vx-primary);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--vx-primary) 20%, transparent);
+  font-size: tokens.$vx-text-sm;
+}
+
+// The line a search result pointed at: ringed like an evidence link.
+.vx-transcript__row--target {
+  border-color: var(--vx-warning);
+  background: color-mix(in srgb, var(--vx-warning) 10%, transparent);
+}
+
+// On a job that did not finish, a search result lands on its preview row.
+.vx-produced__table tr:target {
+  outline: 1px solid var(--vx-warning);
+  background: color-mix(in srgb, var(--vx-warning) 10%, transparent);
+}

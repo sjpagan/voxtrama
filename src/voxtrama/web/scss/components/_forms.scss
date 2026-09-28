@@ -1,0 +1,89 @@
+// Form-adjacent primitives the kit's vocabulary names (for the home
+// page): the dropzone, its helper text, and a visually-hidden native
+// input for the "Choose file" label to trigger without any JavaScript.
+.vx-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.vx-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1.5rem;
+  border: 1.5px dashed var(--vx-border);
+  border-radius: 1.25rem;
+  background: var(--vx-bg-elevated);
+  text-align: center;
+
+  &:focus-within {
+    border-color: var(--vx-primary);
+  }
+
+  // Dragging is visible while it happens, and a file that cannot be
+  // accepted says so BEFORE the drop. Afterwards it would be a reproach, not
+  // help. Two separate states because they are two different answers: one
+  // invites the drop, the other warns that dropping will not work.
+  &--over {
+    border-style: solid;
+    border-color: var(--vx-primary);
+    background: color-mix(in srgb, var(--vx-primary) 8%, var(--vx-bg-elevated));
+  }
+}
+
+.vx-dropzone__feedback {
+  margin: 0;
+  min-height: 1.25rem;
+  color: var(--vx-text-muted);
+  font-size: 0.9rem;
+}
+
+.vx-dropzone__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--vx-primary) 14%, transparent);
+  color: var(--vx-primary);
+  font-size: 1.5rem;
+}
+
+.vx-help {
+  margin: 0;
+  color: var(--vx-text-muted);
+  font-size: 0.85rem;
+}
+
+// The workflow-choice panel: a run that leaves every select on its
+// blank ("As configured") option submits nothing for that field (RunChoices'
+// None), so the notice next to Start must only show once one of them holds
+// something else. No script computes that: :has() reads the live
+// selection state the browser already tracks on <option>, which :checked
+// exposes for a <select> as it does for a checkbox.
+//
+// This is the only way to make the notice conditional without breaking the
+// ban on JavaScript, and the fix is incomplete. A change in `display`
+// fires no event, and content hidden with `display: none` never enters the
+// accessibility tree, so a screen reader user who overrides an option never
+// hears this line appear. They still have a way to know: what a run chose is
+// also written onto the Run itself (Run.choices, and from there the run's
+// manifest), the one place an override made inside this closed
+// <details> survives past the click. Showing it there, on the run page, would
+// close the gap. run_page.html does not do that yet.
+.vx-run-choices__notice {
+  display: none;
+}
+
+.vx-run-choices:has(select option:not([value=""]):checked) .vx-run-choices__notice {
+  display: block;
+}

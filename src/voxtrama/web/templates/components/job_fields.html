@@ -1,0 +1,139 @@
+{#
+  The `Advanced` part of the new-job form, and its small pieces.
+
+  Every field starts at this installation's own value (api.routes.
+  job_defaults) and carries `data-default` so static/js/new_job.js can turn
+  its tag from `Default` to `Changed` the moment it moves. Closed by
+  default.
+  «Transcription only, no summary» is the option that used to be the
+  `Transcribe only` workflow.
+#}
+{% from "components/job_icons.html" import icon_plus %}
+{% from "components/icons.html" import icon_minus %}
+
+{% macro tag() -%}
+<span class="vx-tag" data-tag>{% trans %}Default{% endtrans %}</span>
+{%- endmacro %}
+
+{% macro stepper(name, value, label_id) %}
+<span class="vx-stepper">
+  <button type="button" class="vx-stepper__step" data-step="-1" aria-label="{% trans %}Less{% endtrans %}">{{ icon_minus() }}</button>
+  <input type="number" name="{{ name }}" value="{{ value }}" min="1" max="64" data-default="{{ value }}" aria-labelledby="{{ label_id }}" />
+  <button type="button" class="vx-stepper__step" data-step="1" aria-label="{% trans %}More{% endtrans %}">{{ icon_plus() }}</button>
+</span>
+{% endmacro %}
+
+{# `regenerate`: the same fields in the «Regenerate job» panel,
+   open, starting from the job's own values, without «Transcription only»
+   (the panel's workflow list names transcribe-only itself). #}
+{% macro advanced(defaults, whisper_models, llm_models, regenerate=false) %}
+<details class="vx-advanced"{% if regenerate %} open{% endif %}>
+  <summary>{% trans %}Advanced{% endtrans %}</summary>
+  <div class="vx-advanced__grid">
+    <div class="vx-field">
+      <span class="vx-field__head"><span id="vx-f-whisper">{% trans %}Transcription model{% endtrans %}</span>{{ tag() }}</span>
+      <select name="hardware_profile" data-default="{{ defaults.hardware_profile }}" aria-labelledby="vx-f-whisper">
+        {% for profile, size in whisper_models %}
+        <option value="{{ profile }}" {% if profile == defaults.hardware_profile %}selected{% if regenerate %} data-current{% endif %}{% endif %}>Whisper {{ size }}</option>
+        {% endfor %}
+      </select>
+      {% if regenerate %}
+      {# Shown by CSS alone (components/_job_view.scss) once another model is picked. #}
+      <small class="vx-regenerate__warn" role="note">{% trans %}Another transcription model transcribes the audio again: the new job will not keep this transcript, nor the speakers fixed sentence by sentence.{% endtrans %}</small>
+      {% endif %}
+    </div>
+    <div class="vx-field">
+      <span class="vx-field__head"><span id="vx-f-chunks">{% trans %}Parallel chunks{% endtrans %}</span>{{ tag() }}</span>
+      {{ stepper("parallel_chunks", defaults.parallel_chunks, "vx-f-chunks") }}
+    </div>
+    <div class="vx-field">
+      <span class="vx-field__head"><span id="vx-f-cores">{% trans %}Cores per chunk{% endtrans %}</span>{{ tag() }}</span>
+      {{ stepper("cores_per_chunk", defaults.cores_per_chunk, "vx-f-cores") }}
+      <small class="vx-help" id="vx-cost" data-total="{{ defaults.machine_cores or '' }}"></small>
+    </div>
+    <div class="vx-field">
+      <span class="vx-field__head"><span id="vx-f-llm">{% trans %}Summary model{% endtrans %}</span>{{ tag() }}</span>
+      <select name="generative_model" data-default="{{ defaults.generative_model or '' }}" aria-labelledby="vx-f-llm">
+        {% for model in llm_models %}
+        <option value="{{ model }}" {% if model == defaults.generative_model %}selected{% endif %}>{{ model }}</option>
+        {% else %}
+        <option value="">{% trans %}No summary model configured{% endtrans %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="vx-field">
+      <span class="vx-field__head"><span id="vx-f-detail">{% trans %}Summary detail{% endtrans %}</span>{{ tag() }}</span>
+      <span class="vx-range">1
+        <input type="range" name="summary_detail" min="1" max="5" step="1" value="{{ defaults.summary_detail }}" data-default="{{ defaults.summary_detail }}" aria-labelledby="vx-f-detail" />
+        5 <output class="vx-range__value">{{ defaults.summary_detail }}</output></span>
+    </div>
+    <div class="vx-field">
+      <span class="vx-field__head"><span id="vx-f-lang">{% trans %}Recap language{% endtrans %}</span>{{ tag() }}</span>
+      <select name="output_language" data-default="{{ defaults.output_language }}" aria-labelledby="vx-f-lang">
+        {% for code, names in output_languages.items() %}
+        <option value="{{ code }}" {% if code == defaults.output_language %}selected{% endif %}>{{ names[0] }}</option>
+        {% endfor %}
+        <option value="" {% if not defaults.output_language %}selected{% endif %}>{% trans %}Same as the audio{% endtrans %}</option>
+      </select>
+    </div>
+    {# A job names one of the configured providers; shown only when
+       there is more than one to choose from. #}
+    {% if defaults.providers|length > 1 %}
+    <div class="vx-field">
+      <span class="vx-field__head"><span id="vx-f-provider">{% trans %}Model server{% endtrans %}</span>{{ tag() }}</span>
+      <select name="provider" data-default="{{ defaults.provider }}" aria-labelledby="vx-f-provider">
+        {% for name, locality in defaults.providers %}
+        <option value="{{ name }}" {% if name == defaults.provider %}selected{% endif %}>{{ name }} ({% if locality == "local" %}{% trans %}local{% endtrans %}{% else %}{% trans %}remote{% endtrans %}{% endif %})</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    {# The job can shorten how long its data stays, never lengthen it
+       past the installation's own limit, so only shorter choices show. #}
+    {% set limit = defaults.installation_retention_days %}
+    <div class="vx-field">
+      <span class="vx-field__head"><span id="vx-f-keep">{% trans %}Delete after{% endtrans %}</span>{{ tag() }}</span>
+      <select name="retention_days" data-default="{{ defaults.retention_days }}" aria-labelledby="vx-f-keep">
+        <option value="" {% if not defaults.retention_days %}selected{% endif %}>{% if limit %}{{ limit }} {% trans %}days{% endtrans %}{% else %}{% trans %}Never{% endtrans %}{% endif %}</option>
+        {% for days in (7, 30, 90, 365) if not limit or days < limit %}
+        <option value="{{ days }}" {% if defaults.retention_days == days|string %}selected{% endif %}>{{ days }} {% trans %}days{% endtrans %}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="vx-field">
+      <span class="vx-field__head"><span id="vx-f-pause">{% trans %}Pause merge{% endtrans %}</span>{{ tag() }}</span>
+      <span class="vx-range">
+        <input type="range" name="pause_merge_seconds" min="0.5" max="5" step="0.1" value="{{ defaults.pause_merge_seconds }}" data-default="{{ defaults.pause_merge_seconds }}" data-unit="s" aria-labelledby="vx-f-pause" />
+        <output class="vx-range__value">{{ defaults.pause_merge_seconds }} s</output></span>
+    </div>
+  </div>
+  {% if not regenerate %}
+  <label class="vx-check">
+    <input type="checkbox" name="transcribe_only" value="true" />
+    {% trans %}Transcription only, no summary{% endtrans %}
+  </label>
+  {% endif %}
+</details>
+{% endmacro %}
+
+{% macro _gate_label(key) -%}
+  {%- if key == "local_processing" -%}{% trans %}Local processing{% endtrans %}
+  {%- elif key == "models_ready" -%}{% trans %}Models ready{% endtrans %}
+  {%- elif key == "private_storage" -%}{% trans %}Private storage{% endtrans %}
+  {%- else -%}{% trans %}Database{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro gate_notice(gate) %}
+<div class="vx-gate" role="status">
+  <p class="vx-gate__title">{% trans %}A job cannot start yet{% endtrans %}</p>
+  <ul class="vx-gate__list">
+    {% for blocker in gate.blockers %}
+    <li>
+      <strong>{{ _gate_label(blocker.key) }}</strong>: {{ blocker.reason }}
+      {% if blocker.fix_href %}<a href="{{ blocker.fix_href }}">{% trans %}Set it up{% endtrans %}</a>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endmacro %}

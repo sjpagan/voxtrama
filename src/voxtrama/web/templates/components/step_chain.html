@@ -1,0 +1,53 @@
+{#
+  The step chain both the run page and the guided
+  setup draw: one marker per step, a line joining
+  them through their centres, lit up to how far things got, the name
+  centred below (the run's chain and the setup's are the same shape
+  with two different state vocabularies painted onto it: five states with an outcome for a run's steps, three states
+  with an ordinal for the wizard's four). They were once written
+  twice, components/run_steps.html and components/setup_steps.html each
+  drawing their own `<ol>`. This is the one skeleton both now call, with
+  `item.marker` and `item.status` supplied by whichever caller knows what
+  its states mean, never decided in here.
+
+  `items` is a list of plain objects/dicts, each carrying:
+  - `id`: this step's identifier, for `data-step-id`;
+  - `state`: this step's state, exactly as the caller's CSS names it
+    ([data-step-state="..."] in components/_step_chain.scss);
+  - `marker`: already-rendered content for the marker itself (an icon_*()
+    call, a bare ordinal, or nothing at all for a step not yet reached);
+  - `name`: the step's readable label;
+  - `status`: a second line under `name`, or None when a step has nothing
+    more to say about itself than its name (the wizard's case);
+  - `duration`: a third line under `status` (a failed run's
+    "2 min" under "Audio processed"), or None. The run page's
+    live chain passes None throughout, since a step still going has
+    nothing finished to time yet (components/run_steps.html's docstring).
+
+  `data-step-badge` and `data-step-label-text` are static/js/run_page.js's
+  contract (moved here verbatim from components/run_steps.html's previous
+  docstring): the one descendant it swaps an icon into, and the one it
+  writes a translated status word into, on every SSE update. The wizard's
+  render never touches either (nothing runs live there), so leaving
+  the attributes in costs it nothing.
+#}
+{% macro step_chain(items, id=None) %}
+<ol class="vx-chain"{% if id %} id="{{ id }}"{% endif %}>
+  {% for item in items %}
+  <li class="vx-chain__step" data-step-id="{{ item.id }}" data-step-state="{{ item.state }}">
+    <span class="vx-chain__track">
+      <span class="vx-chain__marker" data-step-badge aria-hidden="true">{{ item.marker }}</span>
+    </span>
+    <span class="vx-chain__body">
+      <span class="vx-chain__name">{{ item.name }}</span>
+      {% if item.status %}
+      <span class="vx-chain__status" data-step-label-text>{{ item.status }}</span>
+      {% endif %}
+      {% if item.duration %}
+      <span class="vx-chain__duration">{{ item.duration }}</span>
+      {% endif %}
+    </span>
+  </li>
+  {% endfor %}
+</ol>
+{% endmacro %}

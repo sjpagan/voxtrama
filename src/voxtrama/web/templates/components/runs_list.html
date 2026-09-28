@@ -1,0 +1,87 @@
+{#
+  The Recent jobs table under the new-job form (columns:
+  Name · Workflow · Status · ⋮, the last five), replacing an earlier card
+  and a separate Recordings card. `runs` is rendering.recent_activity_rows'
+  output: one merged, newest-first list of RunRow instead of two lists with
+  no state or action of their own. Already formatted for the request's
+  locale, so this macro only lays it out.
+
+  A row's name is the file someone recognises (rendering.runs'
+  docstring), not the workflow every run of it shares. filename is None
+  only when the run has no Recording at all, and says so plainly rather
+  than rendering nothing.
+
+  `row.kind == "recording"` is a Recording with no Run started on it yet:
+  its only action is "Choose workflow", not "View". There is
+  nothing finished to view.
+
+  `View all ›` leads to the Jobs section, the whole list.
+
+  Empty is not a blank card: a reader who has never run anything needs to
+  be told there is nothing yet, and where the first job starts.
+
+  `Delete...` sits in the ⋮ menu for a finished job only (one
+  still `pending`/`running` is stopped from its view first). It opens the
+  Jobs page's dialog (GET /jobs?delete=<id>), where the boxes Audio ·
+  Transcript · Recap say what goes.
+#}
+{% from "components/icons.html" import icon_chevron_right, icon_trash %}
+{% from "components/job_icons.html" import icon_more %}
+
+{% set _state_labels = {
+  "pending": gettext("Queued"),
+  "running": gettext("Running"),
+  "succeeded": gettext("Completed"),
+  "failed": gettext("Failed"),
+  "cancelled": gettext("Cancelled"),
+  "interrupted": gettext("Interrupted"),
+  "not_started": gettext("Not started"),
+} %}
+
+{% macro runs_list(runs, workflow_titles={}) %}
+<div class="vx-card vx-runs">
+  <div class="vx-card__header">
+    <h2 class="vx-new-job__title">{% trans %}Recent jobs{% endtrans %}</h2>
+    <a class="vx-link" href="/jobs">{% trans %}View all{% endtrans %} {{ icon_chevron_right() }}</a>
+  </div>
+  {% if runs %}
+  <div class="vx-jobs-table" role="table">
+    <div class="vx-jobs-table__head" role="row">
+      <span role="columnheader">{% trans %}Name{% endtrans %}</span>
+      <span role="columnheader">{% trans %}Workflow{% endtrans %}</span>
+      <span role="columnheader">{% trans %}Status{% endtrans %}</span>
+      <span role="columnheader"><span class="vx-sr-only">{% trans %}Actions{% endtrans %}</span></span>
+    </div>
+    {% for run in runs %}
+    <div class="vx-run-row" role="row">
+      <span class="vx-run-row__name" role="cell">
+        {% if run.label %}{{ run.label }}{% elif run.filename %}{{ run.filename }}{% else %}{% trans %}No recording{% endtrans %}{% endif %}
+      </span>
+      <span class="vx-run-row__workflow" role="cell">{{ workflow_titles.get(run.workflow_name, run.workflow_name) }}</span>
+      <span role="cell">
+        <span class="vx-badge{% if run.state_tone %} vx-badge--{{ run.state_tone }}{% endif %}">
+          <span class="vx-dot" aria-hidden="true"></span>
+          {{ _state_labels.get(run.state, run.state) }}
+        </span>
+      </span>
+      <details class="vx-row-menu" role="cell">
+        <summary aria-label="{% trans %}Actions{% endtrans %}">{{ icon_more() }}</summary>
+        <div class="vx-row-menu__list">
+          {% if run.kind == "recording" %}
+          <a href="{{ run.href }}">{% trans %}Choose workflow{% endtrans %}</a>
+          {% else %}
+          <a href="{{ run.href or ('/runs/' ~ run.id ~ '/view') }}">{% trans %}View{% endtrans %}</a>
+          {% if run.state not in ("pending", "running") %}
+          <a class="vx-row-menu__danger" href="/jobs?delete={{ run.id }}">{{ icon_trash() }} {% trans %}Delete...{% endtrans %}</a>
+          {% endif %}
+          {% endif %}
+        </div>
+      </details>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="vx-help">{% trans %}No jobs yet. The first one starts from the form above.{% endtrans %}</p>
+  {% endif %}
+</div>
+{% endmacro %}

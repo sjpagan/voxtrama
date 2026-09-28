@@ -1,0 +1,199 @@
+{#
+  GET /workflows: the three system workflows
+  as cards, the custom one the edition allows or the card that creates
+  it, and the detail of the selected workflow under the grid.
+
+  `cards` are rendering.workflow_library.WorkflowCard, `detail` its
+  WorkflowDetail (None when nothing loaded), `slots` the edition's custom
+  workflows. Kept against the older designs:
+  the detail is a card under the grid, not a side panel; the cards carry
+  a coloured head with an icon, no photo and no `Local` badge; there is
+  no search on the page (the navbar's search is the one).
+
+  Each card lists the steps of its own workflow, never the same chips
+  on every card: a nine-word
+  description, then a checklist of what the steps concretely do; the
+  cards share their rows (subgrid), so every part lines up across them.
+  The steps of the detail are the
+  workflow's own, read from its file (no decorative step). Headings
+  read `offer.title`; the file's own name still travels in every
+  link and form.
+
+  A system workflow is duplicated, never edited or deleted; the custom
+  one is edited and deleted. When the edition has no
+  custom workflow left, the creation card stays and says so instead of
+  disappearing.
+#}
+{% extends "base.html" %}
+{% from "components/job_icons.html" import icon_document, icon_plus, workflow_icon %}
+{% from "components/icons.html" import icon_check, icon_chevron_right, icon_trash %}
+{% from "components/workflow_words.html" import skill_title, skill_text, skill_does, icon_copy, icon_pencil with context %}
+
+{% block title %}{% trans %}Workflows{% endtrans %} | Voxtrama{% endblock %}
+
+{% macro _tag(system) -%}
+<span class="vx-wf-tag">{% if system %}{% trans %}System{% endtrans %}{% else %}{% trans %}Custom{% endtrans %}{% endif %}</span>
+{%- endmacro %}
+
+{% macro _card(card, variant, selected, slots) %}
+{% set offer = card.offer %}
+<article class="vx-card vx-wf-card{% if selected %} vx-wf-card--selected{% endif %}">
+  <div class="vx-wf-card__head vx-wf-head--{{ variant }}">
+    <span class="vx-wf-icon" aria-hidden="true">{{ workflow_icon(offer.name) }}</span>
+    {{ _tag(card.system) }}
+  </div>
+  <h3 class="vx-wf-card__title">{{ offer.title }}</h3>
+  {% if offer.available %}
+  <p class="vx-wf-card__text">{{ offer.description }}</p>
+  <ul class="vx-wf-does" aria-label="{% trans %}What it does{% endtrans %}">
+    {% for skill in card.skills %}<li><span class="vx-wf-does__check" aria-hidden="true">{{ icon_check() }}</span>{{ skill_does(skill) }}</li>{% endfor %}
+  </ul>
+  {% else %}
+  <p class="vx-notice">{{ offer.unavailable_reason }}</p>
+  {% endif %}
+  <div class="vx-wf-card__actions">
+    <a class="vx-button vx-button--secondary" href="{{ origin }}?workflow={{ offer.name }}#vx-workflow-detail">{% trans %}Details{% endtrans %}</a>
+    {% if card.system %}
+    {% if slots.free %}
+    <a class="vx-button vx-wf-duplicate" href="{{ origin }}/new?source={{ offer.name }}">{{ icon_copy() }} {% trans %}Duplicate{% endtrans %}</a>
+    {% endif %}
+    {% else %}
+    <a class="vx-button vx-wf-duplicate" href="{{ origin }}/new?edit={{ offer.name }}">{{ icon_pencil() }} {% trans %}Edit{% endtrans %}</a>
+    <form method="post" action="{{ origin }}/{{ offer.name }}/delete">
+      <button type="submit" class="vx-button vx-button--secondary vx-wf-delete" aria-label="{% trans %}Delete this workflow{% endtrans %}">{{ icon_trash() }}</button>
+    </form>
+    {% endif %}
+  </div>
+</article>
+{% endmacro %}
+
+{% macro _create_card(slots, system_names, cards) %}
+<article class="vx-card vx-wf-create">
+  <span class="vx-wf-create__plus" aria-hidden="true">{{ icon_plus() }}</span>
+  <h3 class="vx-wf-card__title">{% trans %}Create custom workflow{% endtrans %}</h3>
+  <p class="vx-wf-card__text">{% trans %}Build a workflow tailored to your needs.{% endtrans %}</p>
+  {% if slots.free %}
+  <div class="vx-wf-create__choices">
+  <a class="vx-wf-create__choice" href="{{ origin }}/new">
+    <span aria-hidden="true">{{ icon_document() }}</span> {% trans %}Start from scratch{% endtrans %}
+    <span class="vx-wf-create__chevron" aria-hidden="true">{{ icon_chevron_right() }}</span>
+  </a>
+  <details class="vx-wf-create__from">
+    <summary class="vx-wf-create__choice">
+      <span aria-hidden="true">{{ icon_copy() }}</span> {% trans %}Duplicate a system workflow{% endtrans %}
+      <span class="vx-wf-create__chevron" aria-hidden="true">{{ icon_chevron_right() }}</span>
+    </summary>
+    <ul>
+      {% for card in cards if card.system %}
+      <li><a href="{{ origin }}/new?source={{ card.offer.name }}">{{ card.offer.title }}</a></li>
+      {% endfor %}
+    </ul>
+  </details>
+  </div>
+  {% else %}
+  <p class="vx-notice">{% trans %}The custom workflow allowed is already in use: edit it, or delete it to create another.{% endtrans %}</p>
+  {% endif %}
+  <p class="vx-wf-create__note">{% trans %}Community Edition:{% endtrans %} {{ slots.allowed }} {% trans %}custom workflow{% endtrans %}</p>
+</article>
+{% endmacro %}
+
+{% block content %}
+<section class="vx-section vx-workflows">
+  <header class="vx-pagehead">
+    <h1>{% trans %}Workflows{% endtrans %}</h1>
+    <p class="vx-pagehead__note">
+      {{ system_names|length }} {% trans %}system workflows{% endtrans %}
+      {% if slots.free %} · {{ slots.free }} {% trans %}custom slot available{% endtrans %}
+      {% elif slots.allowed %} · {{ slots.used }} {% trans %}custom workflow in use{% endtrans %}{% endif %}
+    </p>
+  </header>
+
+  <div class="vx-wf-grid">
+    {% set ns = namespace(variant=0) %}
+    {% for card in cards %}
+    {% set variant = loop.index0 % 4 %}
+    {% if card.offer.name == selected %}{% set ns.variant = variant %}{% endif %}
+    {{ _card(card, variant, card.offer.name == selected, slots) }}
+    {% endfor %}
+    {% if slots.allowed %}{{ _create_card(slots, system_names, cards) }}{% endif %}
+  </div>
+
+  {% if detail %}
+  {% set offer = detail.card.offer %}
+  <section class="vx-card vx-wf-detail" id="vx-workflow-detail">
+    <header class="vx-wf-detail__head">
+      <span class="vx-wf-icon vx-wf-head--{{ ns.variant }}" aria-hidden="true">{{ workflow_icon(offer.name) }}</span>
+      <div>
+        <h2>{{ offer.title }} {{ _tag(detail.card.system) }}</h2>
+        <p>{{ offer.description }}</p>
+      </div>
+    </header>
+
+    <div class="vx-wf-detail__box">
+      <h3>{% trans %}Workflow steps{% endtrans %}</h3>
+      <ol class="vx-wf-steps">
+        {% for step in detail.steps %}
+        <li class="vx-wf-step">
+          <span class="vx-wf-step__number" aria-hidden="true">{{ loop.index }}</span>
+          <div>
+            <strong>{{ skill_title(step.skill) }}</strong>
+            <p>{{ skill_text(step.skill) }}</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+
+      {# What each generative step asks the model, read-only here;
+         a custom workflow writes its own in its form. #}
+      {% set told = detail.steps | selectattr("instructions") | list %}
+      {% if told %}
+      <div class="vx-wf-instr-list">
+        <h3>{% trans %}What each step asks the model{% endtrans %}</h3>
+        {% for step in told %}
+        <details class="vx-wf-instr">
+          <summary>
+            <span class="vx-wf-instr__chevron" aria-hidden="true">{{ icon_chevron_right() }}</span>
+            <strong>{{ skill_title(step.skill) }}</strong>
+            <span class="vx-wf-instr__returns">{{ step.instructions.returns | join(" · ") }}</span>
+            {% if step.instructions.edited %}<span class="vx-wf-tag">{% trans %}Edited{% endtrans %}</span>{% endif %}
+          </summary>
+          <pre class="vx-wf-instr__text">{% for piece, slot in step.instructions.parts %}{% if slot %}<mark class="vx-wf-slot">{{ piece }}</mark>{% else %}{{ piece }}{% endif %}{% endfor %}</pre>
+        </details>
+        {% endfor %}
+        <p class="vx-help">
+          {% trans %}Highlighted parts are filled in for each job: the transcript, the recap language and the detail level.{% endtrans %}
+          {% if detail.card.system %}{% trans %}A system workflow's instructions are read-only: duplicate it to write your own.{% endtrans %}{% else %}{% trans %}Edit the workflow to change them.{% endtrans %}{% endif %}
+        </p>
+      </div>
+      {% endif %}
+
+      <details class="vx-wf-advanced">
+        <summary>{{ icon_chevron_right() }} {% trans %}Advanced{% endtrans %}</summary>
+        {% if detail.editable_steps %}
+        <form method="post" action="/workflows/{{ offer.name }}/steps" class="vx-stack">
+          {% for step in detail.editable_steps %}
+          <div class="vx-field">
+            <label for="vx-edit-{{ step.step_id }}">
+              {% trans %}Skill for step{% endtrans %} {{ step.step_id }}
+            </label>
+            <select id="vx-edit-{{ step.step_id }}" name="step_skill__{{ step.step_id }}">
+              <option value="">{{ step.default_label }} ({% trans %}current{% endtrans %})</option>
+              {% for option in step.options %}
+              <option value="{{ option.value }}">{{ option.label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endfor %}
+          <div class="vx-cluster">
+            <button type="submit" class="vx-button vx-button--small">{% trans %}Save changes{% endtrans %}</button>
+          </div>
+        </form>
+        {% else %}
+        <p class="vx-help">{% trans %}This workflow declares no alternative skill for any step.{% endtrans %}</p>
+        {% endif %}
+      </details>
+    </div>
+  </section>
+  {% endif %}
+</section>
+{% endblock %}

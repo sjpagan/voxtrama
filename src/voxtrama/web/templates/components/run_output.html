@@ -1,0 +1,130 @@
+{#
+  The result panel's right column: one card per claim a
+  generative step produced, rendering.run_output.OutputItemView. That
+  module's docstring says where `item.kind` comes from and why it is
+  not a Decision/Action item/Open question split.
+
+  `output_kind_label` translates `kind` the same way components/run_labels.
+  html's `step_label` translates a step's state: server-side,
+  behind `{% trans %}`, from a stable identifier this render chose, never
+  English baked into rendering.run_output. Two of its six
+  branches, `transcript` and `speakers`, exist only for the "Produces:"
+  line of pages/workflow_library.html and components/workflow_choice_panel.
+  html. This run's items never carry either kind, since
+  rendering.run_output only reads `_CLAIM_KINDS`' four.
+
+  An evidence link renders only when the claim anchored.
+  engine.anchoring never writes an interval for a claim it also marked
+  `needs_review`, so the two are already mutually exclusive by the time
+  this template sees them.
+
+  The cards sit beside the bubbles of the Transcript
+  tab. Each shows where its evidence starts, and at the foot either the
+  evidence (who spoke, and when) or «No evidence». The provenance moved to
+  the Recap tab, one line per section, and there is no kind filter.
+#}
+{% from "components/icons.html" import icon_check, icon_concept, icon_theme, icon_key_point %}
+
+{% macro output_kind_label(kind) -%}
+  {%- if kind == "decision" -%}{% trans %}Decision{% endtrans %}
+  {%- elif kind == "concept" -%}{% trans %}Concept{% endtrans %}
+  {%- elif kind == "theme" -%}{% trans %}Theme{% endtrans %}
+  {%- elif kind == "key_point" -%}{% trans %}Key point{% endtrans %}
+  {%- elif kind == "transcript" -%}{% trans %}Transcript{% endtrans %}
+  {%- elif kind == "speakers" -%}{% trans %}Speakers{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro output_kind_icon(kind) -%}
+  {%- if kind == "decision" -%}{{ icon_check() }}
+  {%- elif kind == "concept" -%}{{ icon_concept() }}
+  {%- elif kind == "theme" -%}{{ icon_theme() }}
+  {%- elif kind == "key_point" -%}{{ icon_key_point() }}
+  {%- endif -%}
+{%- endmacro %}
+
+{#
+  Under each card, «Edit or link to
+  another turn», a native <details> with the point's text and the turn it
+  rests on, posted to POST /runs/{id}/output/edit (api.routes.
+  run_output_edit). `turns` are the Transcript tab's own bubbles, so the
+  list reads the way the column beside it does.
+#}
+{% macro edit_panel(item, run_id, turns) %}
+<details class="vx-output__edit">
+  <summary>{% trans %}Edit or link to another turn{% endtrans %}</summary>
+  <form method="post" action="/runs/{{ run_id }}/output/edit" class="vx-output__edit-panel">
+    <input type="hidden" name="ref" value="{{ item.ref }}">
+    <label class="vx-help">{% trans %}Text{% endtrans %}
+      <textarea name="text" rows="3" maxlength="4000" required>{{ item.text }}</textarea>
+    </label>
+    <label class="vx-help">{% trans %}Evidence{% endtrans %}
+      <select name="turn">
+        <option value="">{% if item.evidence_label %}{% trans %}As it is{% endtrans %}: {{ item.evidence_label }}{% else %}{% trans %}No turn{% endtrans %}{% endif %}</option>
+        {% for turn in turns %}
+        <option value="{{ turn.start }}:{{ turn.end }}">{{ turn.time }} · {{ turn.speaker or "" }} · {{ turn.text|truncate(60) }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <p class="vx-help">{% trans %}A point you change is marked Edited, here and in the recap. The model's own text stays in the job's record.{% endtrans %}</p>
+    <div class="vx-output__edit-actions">
+      <button type="submit" class="vx-button vx-button--small">{% trans %}Save{% endtrans %}</button>
+    </div>
+  </form>
+</details>
+{% endmacro %}
+
+{% macro run_output(items, run_id="", turns=()) %}
+<div class="vx-card vx-output" id="vx-run-output">
+  <div class="vx-card__header">
+    <h3>{% trans %}Verified output{% endtrans %}</h3>
+  </div>
+  {# How many fields derive from the passage just picked in the
+     transcript. static/js/run_evidence.js writes the number. The sentence
+     sits here already translated, so no script contains English.
+     Hidden until a passage has been picked. #}
+  <p class="vx-output__linked" id="vx-output-linked" hidden>
+    <span id="vx-output-linked-count"></span>
+    {% trans %}results come from the passage you selected.{% endtrans %}
+  </p>
+  {% if items %}
+  <ul class="vx-output__list" id="vx-output-list">
+    {% for item in items %}
+    <li class="vx-output__card" data-kind="{{ item.kind }}" data-kind-color="{{ item.kind_color }}"
+      {% if item.evidence_label %}data-evidence-start="{{ item.evidence_start }}" data-evidence-end="{{ item.evidence_end }}"{% endif %}>
+      <div class="vx-output__card-header">
+        <span class="vx-output__kind">
+          <span class="vx-output__kind-icon" aria-hidden="true">{{ output_kind_icon(item.kind) }}</span>
+          {{ output_kind_label(item.kind) }}
+        </span>
+        {% if item.evidence_time %}<span class="vx-output__time">{{ item.evidence_time }}</span>{% endif %}
+      </div>
+      {% if item.heading %}<p class="vx-output__heading">{{ item.heading }}</p>{% endif %}
+      <p class="vx-output__text">{{ item.text }}</p>
+      <div class="vx-output__footer">
+        {% if item.evidence_label %}
+        <button
+          type="button"
+          class="vx-output__evidence"
+          data-evidence-start="{{ item.evidence_start }}"
+          data-evidence-end="{{ item.evidence_end }}"
+        >{% trans %}Evidence{% endtrans %}: {% if item.evidence_speaker %}{{ item.evidence_speaker }} {% trans %}at{% endtrans %} {% endif %}{{ item.evidence_label }}</button>
+        {% else %}
+        <span class="vx-output__no-evidence">{% trans %}No evidence{% endtrans %}</span>
+        {% endif %}
+        {% if item.needs_review %}
+        <span class="vx-badge vx-badge--warning">{% trans %}Needs review{% endtrans %}</span>
+        {% endif %}
+        {% if item.edited %}<span class="vx-badge" title="{% trans %}Corrected by hand{% endtrans %}">{% trans %}Edited{% endtrans %}</span>{% endif %}
+      </div>
+      {% if run_id and item.ref %}{{ edit_panel(item, run_id, turns) }}{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="vx-help">
+    {% trans %}This workflow produced a transcript only, with no extracted results.{% endtrans %}
+  </p>
+  {% endif %}
+</div>
+{% endmacro %}

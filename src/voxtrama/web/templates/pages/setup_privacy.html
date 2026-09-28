@@ -1,0 +1,159 @@
+{#
+  GET /setup/privacy: Settings › Data & privacy.
+  `view` is rendering.data_privacy.PrivacyView: the data directory and the
+  room each part takes, the model servers, and for every workflow what
+  each step does with the content. It shows; retention, the provider
+  choice and `local_only` are where the rules are applied.
+  The retention card moved here from the overview.
+#}
+{% extends "base.html" %}
+{% from "components/workflow_words.html" import skill_title with context %}
+{% from "components/icons.html" import icon_laptop, icon_lock, icon_alert, icon_check %}
+
+{% block title %}{% trans %}Data & privacy{% endtrans %} | Voxtrama{% endblock %}
+
+{% macro area_label(key) -%}
+  {%- if key == "recordings" -%}{% trans %}Recordings{% endtrans %}
+  {%- elif key == "runs" -%}{% trans %}Jobs (results and manifests){% endtrans %}
+  {%- elif key == "models" -%}{% trans %}Models{% endtrans %}
+  {%- elif key == "database" -%}{% trans %}Database{% endtrans %}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro where(step) -%}
+  {%- if step.where == "in_app" -%}<span class="vx-privacy-where vx-privacy-where--here">{{ icon_laptop() }} {% trans %}Inside Voxtrama{% endtrans %}</span>
+  {%- elif step.where == "local" -%}<span class="vx-privacy-where vx-privacy-where--here">{{ icon_laptop() }} {% trans %}Model server on this machine{% endtrans %} · {{ step.server }}</span>
+  {%- elif step.where == "leaves" -%}<span class="vx-privacy-where vx-privacy-where--out">{{ icon_alert() }} {% trans %}Leaves this machine{% endtrans %} · {{ step.server }}</span>
+  {%- elif step.where == "refused" -%}<span class="vx-privacy-where vx-privacy-where--kept">{{ icon_lock() }} {% trans %}Kept here: a job on{% endtrans %} {{ step.server }} {% trans %}is refused{% endtrans %}</span>
+  {%- else -%}<span class="vx-privacy-where">{% trans %}No model server configured{% endtrans %}</span>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro account(a) -%}
+  {%- if a.uid is none -%}{% trans %}Not known{% endtrans %}
+  {%- else -%}{% if a.name %}<strong>{{ a.name }}</strong> {% endif %}<code>{{ a.uid }}:{{ a.gid }}</code>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro folder_label(key) -%}
+  {%- if key == "data" -%}{% trans %}Data folder{% endtrans %}
+  {%- else -%}{{ area_label(key) }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro fix(folder, access) -%}
+  {%- if folder.cause == "missing" -%}
+  <p>{% trans %}The folder does not exist. Create it, or point VOXTRAMA_DATA_DIR at one that does.{% endtrans %}</p>
+  {%- elif folder.cause == "read_only" -%}
+  <p>{% trans %}The folder is mounted read-only. Mount it read-write (no :ro in compose.yaml) and restart the services.{% endtrans %}</p>
+  {%- elif folder.cause == "owner" -%}
+  <p>{% trans %}The folder belongs to{% endtrans %} {{ account(folder.owner) }}, {% trans %}Voxtrama writes as{% endtrans %} {{ account(access.runs_as) }}. {% trans %}Write in .env, then restart the services:{% endtrans %}</p>
+  <pre><code>VOXTRAMA_RUN_AS_UID={{ folder.owner.uid }}
+VOXTRAMA_RUN_AS_GID={{ folder.owner.gid }}</code></pre>
+  <p>{% trans %}Or give the folder to the identity Voxtrama writes as:{% endtrans %} <code>chown -R {{ access.runs_as.uid }}:{{ access.runs_as.gid }} {{ folder.path }}</code></p>
+  {%- elif folder.cause == "permissions" -%}
+  <p>{% trans %}Its own owner is not allowed to write here. Give the owner write access:{% endtrans %} <code>chmod u+w {{ folder.path }}</code></p>
+  {%- else -%}
+  <p>{{ folder.detail }}</p>
+  {%- endif -%}
+{%- endmacro %}
+
+{% block content %}
+<section class="vx-section vx-privacy">
+  <header class="vx-pagehead">
+    <h1>{% trans %}Data & privacy{% endtrans %}</h1>
+    <p class="vx-pagehead__note">{% trans %}Where your files are, how much room they take, and what leaves this machine.{% endtrans %}</p>
+  </header>
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}Where your data lives{% endtrans %}</h2>
+    <p class="vx-help">{% trans %}Everything Voxtrama keeps is in one folder:{% endtrans %} <code>{{ view.data_dir }}</code></p>
+    <dl class="vx-privacy-areas">
+      {% for area in view.areas %}
+      <div><dt>{{ area_label(area.key) }}</dt><dd>{{ area.label }}</dd></div>
+      {% endfor %}
+    </dl>
+  </div>
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}Model servers{% endtrans %}</h2>
+    {% if view.servers %}
+    <ul class="vx-privacy-servers">
+      {% for server in view.servers %}
+      <li>
+        <strong>{{ server.name }}</strong> <code>{{ server.host }}</code>
+        <span class="vx-badge {% if server.locality == 'local' %}vx-badge--success{% else %}vx-badge--warning{% endif %}">{% if server.locality == "local" %}{% trans %}This machine{% endtrans %}{% else %}{% trans %}Remote{% endtrans %}{% endif %}</span>
+        {% if server.default %}<span class="vx-help">{% trans %}used unless a job chooses another{% endtrans %}</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vx-help">{% trans %}No model server is configured: recaps and extractions cannot run, and nothing leaves this machine.{% endtrans %}</p>
+    {% endif %}
+  </div>
+
+  <div class="vx-card vx-row-stack">
+    <h2>{% trans %}What each workflow does with the content{% endtrans %}</h2>
+    <p class="vx-help">{% trans %}With the server used by default. A job that picks another server is checked again before it starts.{% endtrans %}</p>
+    {% for workflow in view.workflows %}
+    <details class="vx-privacy-workflow">
+      <summary><strong>{{ workflow.title }}</strong>
+        {% if workflow.steps | selectattr("where", "equalto", "leaves") | list %}<span class="vx-badge vx-badge--warning">{% trans %}Part leaves this machine{% endtrans %}</span>{% else %}<span class="vx-badge vx-badge--success">{% trans %}Stays on this machine{% endtrans %}</span>{% endif %}
+      </summary>
+      <ul>
+        {% for step in workflow.steps %}
+        <li><span>{{ skill_title(step.skill) }}</span>{{ where(step) }}</li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endfor %}
+  </div>
+
+  {# Who writes the files, and a real write in every folder. #}
+  <div class="vx-card vx-row-stack" id="vx-write-access">
+    <h2>{% trans %}Who writes the files{% endtrans %}</h2>
+    <dl class="vx-privacy-areas">
+      <div><dt>{% trans %}Operating system user{% endtrans %}</dt><dd>{% if access.os_user %}<strong>{{ access.os_user }}</strong>{% else %}{% trans %}Not known{% endtrans %}{% endif %}</dd></div>
+      <div><dt>{% trans %}Data folder owner{% endtrans %}</dt><dd>{{ account(access.folders[0].owner) }}</dd></div>
+      <div><dt>{% trans %}Voxtrama runs as{% endtrans %}</dt><dd>{{ account(access.runs_as) }}</dd></div>
+      <div><dt>VOXTRAMA_RUN_AS_UID</dt><dd>{% if access.run_as_uid %}<code>{{ access.run_as_uid }}</code>{% else %}{% trans %}Not set: follows the data folder's owner{% endtrans %}{% endif %}</dd></div>
+      <div><dt>VOXTRAMA_RUN_AS_GID</dt><dd>{% if access.run_as_gid %}<code>{{ access.run_as_gid }}</code>{% else %}{% trans %}Not set: follows the data folder's group{% endtrans %}{% endif %}</dd></div>
+    </dl>
+    <p class="vx-help">{% trans %}The two variables live in .env and take effect when the services restart.{% endtrans %}</p>
+    <ul class="vx-privacy-writes">
+      {% for folder in access.folders %}
+      <li class="{% if folder.ok %}vx-privacy-write--ok{% else %}vx-privacy-write--fail{% endif %}">
+        <div class="vx-privacy-write__head">
+          {% if folder.ok %}{{ icon_check() }}{% else %}{{ icon_alert() }}{% endif %}
+          <strong>{{ folder_label(folder.key) }}</strong> <code>{{ folder.path }}</code>
+          <span class="vx-badge {% if folder.ok %}vx-badge--success{% else %}vx-badge--warning{% endif %}">{% if folder.ok %}{% trans %}Write test passed{% endtrans %}{% else %}{% trans %}Cannot write{% endtrans %}{% endif %}</span>
+        </div>
+        {% if not folder.ok %}<div class="vx-privacy-write__fix">{{ fix(folder, access) }}</div>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {# How long a finished job's data stays; «Never» is the default. #}
+  {% if config %}
+  <div class="vx-card vx-row-stack" id="vx-retention">
+    <h2>{% trans %}Data retention{% endtrans %}</h2>
+    <p class="vx-help">
+      {% trans %}A finished job older than this loses its audio, transcript and recap; only a record of the deletion stays. A workflow or a single job can ask for less, never for more.{% endtrans %}
+    </p>
+    <form method="post" action="/setup/retention" class="vx-cluster">
+      <div class="vx-field">
+        <label for="vx-retention-days">{% trans %}Delete finished jobs after{% endtrans %}</label>
+        <select id="vx-retention-days" name="retention_days">
+          <option value="" {% if not config.retention_days %}selected{% endif %}>{% trans %}Never{% endtrans %}</option>
+          {% for days in (7, 30, 90, 365) %}
+          <option value="{{ days }}" {% if config.retention_days == days %}selected{% endif %}>{{ days }} {% trans %}days{% endtrans %}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="vx-button vx-button--small">{% trans %}Save{% endtrans %}</button>
+    </form>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
