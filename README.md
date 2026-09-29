@@ -10,8 +10,8 @@ decisions, themes or key concepts. Every point it writes carries a quote
 from the recording and the time it was said, so you can play the passage
 and check it. It runs on your own machine, in Docker.
 
-This is the first alpha, `0.1.0-alpha1`: the whole path works on one
-machine, and what is still missing is listed under [Status](#status).
+This is an alpha, `0.1.0-alpha2`: the whole path works on one machine,
+and what is still missing is listed under [Status](#status).
 
 ## Contents
 

@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.1.0-alpha2
+
+Four corrections on top of the first alpha, all found by running it on
+real recordings.
+
+### Fixed
+
+- Transcription decoded on a fraction of the cores it was given. The two
+  numbers the settings show, cores per chunk and parallel chunks, reached
+  Whisper as a thread count and a worker count. Nothing splits a recording
+  into chunks, so the second worker was allocated and never ran, while the
+  cores it had claimed stayed idle. On a machine reporting twenty
+  processors, a job set to four cores and two chunks decoded on four
+  threads. The whole declared budget now goes to the single call that
+  exists.
+- Saving a summary model erased the context ceiling measured for every
+  other one. Picking one of those again fell back to a small default,
+  silently, which is enough to truncate a transcript of forty minutes.
+  Every measured ceiling is kept now, and each form on the settings page
+  carries the ceiling of the model it names.
+- A request that failed while the browser was on a page answered with a
+  JSON document, so a person read a machine format instead of a message.
+  A request that asks for a page now gets one, with the same message and
+  the same status. A client that asks for JSON still receives exactly what
+  it received before.
+- Times were shown in the timezone of the machine running Voxtrama rather
+  than of the person reading the screen. Two hours out in western Europe
+  in summer, and a job started after midnight appeared under the day
+  before. The log on disk stays in UTC, which is what makes two machines
+  comparable, and the page converts it.
+
 ## 0.1.0-alpha1 (first alpha)
 
 The first version meant to be installed by someone other than its author.

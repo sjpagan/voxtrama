@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "voxtrama"
-version = "0.1.0a1"
+version = "0.1.0a2"
 description = "Local-first audio intelligence workflows."
 readme = "README.md"
 requires-python = ">=3.11"
