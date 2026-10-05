@@ -104,7 +104,7 @@ The accepted containers are WAV, W64, RF64, MP3, FLAC, Ogg, MOV, MP4, M4A, Matro
 
 Voxtrama transcribes on the processor. The Docker image is CPU only, and Docker on macOS gives containers no access to the graphics card. Transcription speed therefore depends on the processor, on the transcription profile and on how many cores the job uses.
 
-Measured in September 2026 with Voxtrama 0.1.0 on one machine, an Intel Xeon W-2150B with 64 GB of RAM, with the `high` profile (Whisper large-v3, 4 cores per chunk, 2 chunks in parallel): 21 minutes of audio took 7 minutes 30 seconds to transcribe and 2 minutes 38 seconds to separate the speakers. Yours may be faster or slower.
+Measured in September 2026 with Voxtrama 0.1.0 on one machine, an Intel Xeon W-2150B with 64 GB of RAM, with the `high` profile (Whisper large-v3, 4 cores per chunk, 2 chunks in parallel): 21 minutes of audio took 7 minutes 30 seconds to transcribe and 2 minutes 38 seconds to separate the speakers.
 
 - Choose a smaller profile in **Settings** under **Change profile**: **Efficient** is Whisper small, **Balanced** is Whisper medium.
 - Check **Cores per chunk** and **Parallel chunks** in **Change parallelism**. The values are limited by the cores of the machine, and the transcription of a short clip carries a fixed cost for loading the model.

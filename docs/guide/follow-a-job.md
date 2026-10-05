@@ -76,7 +76,7 @@ Measured times, as an example:
 
 On this machine, transcription took about 0.35 to 0.57 times the length of the audio. The recap part varies a lot with the transcript and the model: for the second recording the recap took four times as long as for the first. The 16 second clip takes about 30 seconds to transcribe because loading the model costs a fixed time. The regenerated job shows how much reuse saves: the transcript and the speakers were not computed again.
 
-Measured in September 2026 with Voxtrama 0.1.0 on one machine, an Intel Xeon W-2150B with 64 GB of RAM, running Voxtrama 0.1.0 in Docker on the CPU only with the `high` profile (Whisper large-v3, 2 chunks in parallel, 4 threads per chunk) and the summary model `qwen3:4b` on the host's Ollama; yours may be faster or slower.
+Measured in September 2026 with Voxtrama 0.1.0 on one machine, an Intel Xeon W-2150B with 64 GB of RAM, running Voxtrama 0.1.0 in Docker on the CPU only with the `high` profile (Whisper large-v3, 2 chunks in parallel, 4 threads per chunk) and the summary model `qwen3:4b` on the host's Ollama.
 
 A model running on the processor writes a few words per second; the same model on a graphics card, on another machine, is many times faster. [Summary models and servers](model-servers.md) explains how to choose a model server.
 

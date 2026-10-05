@@ -114,7 +114,7 @@ The **Summary model** list holds the model configured in the installation, plus 
 | 4 | about 12 points covering every topic discussed, a short paragraph each |
 | 5 | every theme: one point per minute of recording, from 15 to 40, each a paragraph of four to six sentences, with a quote for each point |
 
-A long transcript is read in windows of about 12,000 characters, and each window is asked for its share of the points, so the whole recap keeps about the length the level promises. A window that does not fit in the summary model's context makes the step fail; [Summary models and servers](model-servers.md) explains the limit.
+A long transcript is read in windows of about 12 000 characters, and each window is asked for its share of the points, so the whole recap keeps about the length the level promises. A window that does not fit in the summary model's context makes the step fail; [Summary models and servers](model-servers.md) explains the limit.
 
 ### Recap language and language detection
 

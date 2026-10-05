@@ -17,7 +17,7 @@ Voxtrama takes a recording you already have (a meeting, a lesson, an interview) 
 
 ## What Voxtrama does not do, on purpose
 
-- **It does not remember voices.** Speakers are told apart inside one recording. No voice print is kept to recognise a person in the next recording, so you name speakers by hand. This keeps biometric data out of the installation, which matters under the GDPR.
+- **It does not remember voices.** Speakers are told apart inside one recording. No voice print is kept to recognise a person in the next recording, so you name speakers by hand. This keeps biometric data, a special category of personal data under GDPR Article 9, out of the installation.
 - **It does not download audio from other sites.** It works on files you already have.
 - **It does not use a graphics card for transcription.** The Voxtrama image is CPU only. A summary model can use a graphics card if the Ollama server it runs on has one.
 - **It does not transcribe in real time.** It processes finished recordings, not a live microphone.

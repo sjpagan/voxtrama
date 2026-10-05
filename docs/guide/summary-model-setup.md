@@ -67,7 +67,7 @@ To change the model later, without redoing the setup, open **Settings** and use 
 
 ### Ollama on Linux
 
-A native Ollama on Linux listens on `127.0.0.1` by default. The web server and the worker reach the host as `host.docker.internal`: `compose.yaml` maps that name to the host with `extra_hosts: host.docker.internal:host-gateway`, which Docker Engine on Linux needs and Docker Desktop provides by itself. The container connects through the Docker bridge, not through `127.0.0.1`, so it reaches Ollama only if Ollama listens on an address the bridge can reach. The `OLLAMA_HOST` environment variable sets that address; the [Ollama FAQ](https://github.com/ollama/ollama/blob/main/docs/faq.md) explains how to set it for your installation and what exposing it means for your network.
+A native Ollama on Linux listens on `127.0.0.1` by default. The web server and the worker reach the host as `host.docker.internal`: `compose.yaml` maps that name to the host with `extra_hosts: host.docker.internal:host-gateway`, which Docker Engine on Linux needs and Docker Desktop provides by itself. The container connects through the Docker bridge, not through `127.0.0.1`, so it reaches Ollama only if Ollama listens on an address the bridge can reach. The `OLLAMA_HOST` environment variable sets that address; the [Ollama FAQ](https://docs.ollama.com/faq#how-can-i-expose-ollama-on-my-network) explains how to set it for your installation and what exposing it means for your network.
 
 ### Ollama at another address
 

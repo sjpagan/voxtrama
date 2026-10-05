@@ -1,10 +1,10 @@
 # Use cases
 
-Voxtrama fits three kinds of recording out of the box: meetings, research interviews and lessons. Each has a workflow, a few settings worth changing and a check to make before you rely on the result. Everything on this page holds for Voxtrama 0.1 as it is shipped.
+Voxtrama ships a workflow for each of three kinds of recording: meetings, research interviews and lessons. Each has a workflow, a few settings worth changing and a check to make before you rely on the result. Everything on this page holds for Voxtrama 0.1 as it is shipped.
 
 ## Meeting minutes
 
-Use the **Meeting decisions** workflow. It produces key points, and the decisions with their owner and deadline, each with a quote from the recording.
+Use the **Meeting decisions** workflow. Its recap has key points plus the decisions, each with owner, deadline and a quote from the recording.
 
 ### Settings
 
@@ -26,7 +26,7 @@ Use the **Meeting decisions** workflow. It produces key points, and the decision
 
 ## Research interviews
 
-Use the **Research interview** workflow. It produces key points, and the themes with the insight behind each, each with a quote.
+Use the **Research interview** workflow. You get key points and the themes, each with its insight and a quote.
 
 ### Settings
 
@@ -43,14 +43,14 @@ Voxtrama does not keep a voice print: speakers are told apart inside one recordi
 
 ### What to check
 
-1. For each theme, press the time of its quote and listen: a theme is only as good as the passage it points to.
+1. For each theme, press the time of its quote and listen: check that the passage says what the theme claims.
 2. Correct the wording of a point, or tie it to the right turn, with **Edit or link to another turn**; the model's own text stays in the job's record.
 3. Name the speakers, and give a sentence to the right person in **Explore** when the voices were merged.
 4. Export the transcript as **JSON** or **JSONL** to code it in another tool, and keep `manifest.json` with the study: it records the models and the settings of each job.
 
 ## Lessons
 
-Use the **Lesson companion** workflow. It produces key points, and the key concepts with their definitions, each with a quote.
+Use the **Lesson companion** workflow. The result lists key points and the key concepts, each with its definition and a quote.
 
 ### Settings
 
@@ -62,7 +62,7 @@ Use the **Lesson companion** workflow. It produces key points, and the key conce
 | **One after another** | when the lesson was recorded in several files | the files are joined in the order shown into one transcript |
 | **Context** | the subject, the names of the authors and the technical terms | spelling of terms in the transcript |
 
-A long lecture is read by the summary model in windows of about 12,000 characters. The model's context must be large enough for one window; [Summary models and servers](model-servers.md) explains the limit.
+A long lecture is read by the summary model in windows of about 12 000 characters. The model's context must be large enough for one window; [Summary models and servers](model-servers.md) explains the limit.
 
 ### What to check
 

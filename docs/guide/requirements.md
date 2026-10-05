@@ -59,7 +59,7 @@ Transcription takes a fraction of the audio length on the processor, and the sum
 
 Regenerating the first job with only the themes workflow reused the transcript and the speakers, and took 2 min 52 s. The profile was High (large-v3, 4 cores per chunk, 2 chunks in parallel), the summary model was `qwen3:4b` on Ollama on the host.
 
-Measured in September 2026 with Voxtrama 0.1.0 on one machine, an Intel Xeon W-2150B with 64 GB of RAM; yours may be faster or slower.
+Measured in September 2026 with Voxtrama 0.1.0 on one machine, an Intel Xeon W-2150B with 64 GB of RAM.
 
 ## Related pages
 

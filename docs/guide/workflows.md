@@ -12,7 +12,7 @@ Open **Workflow** in the side bar to see them.
 |---|---|---|
 | **Meeting decisions** | Transcribe, Identify speakers, Recap, Extract decisions | key points, and the decisions with owner and deadline |
 | **Lesson companion** | Transcribe, Identify speakers, Recap, Extract concepts | key points, and the concepts with their definitions |
-| **Research interview** | Transcribe, Identify speakers, Recap, Find themes | key points, and the themes with the insight behind each |
+| **Research interview** | Transcribe, Identify speakers, Recap, Find themes | key points, and the themes, each with its insight |
 | **Transcribe only** | Transcribe, Identify speakers | the transcript with its speakers |
 
 **Transcribe only** is the **Transcription only, no summary** box of the new-job form, under **Advanced**, rather than a card of its own in the form.

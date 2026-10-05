@@ -20,7 +20,7 @@ The `voxtrama doctor` command checks that an installation works: it reports what
 
     You should see `0` when the data folder can be written, and `1` when the write test failed.
 
-The `-u voxtrama` option makes the command run as the user the application runs as. Without it, `docker compose exec` runs as root, a root process can write almost anywhere, and the write test passes even when the application itself could not write. [Probable: read from the Dockerfile, which sets no user, and the entrypoint, which drops to `voxtrama` only for the main process]
+The `-u voxtrama` option makes the command run as the user the application runs as. Without it, `docker compose exec` runs as root, a root process can write almost anywhere, and the write test passes even when the application itself could not write. The image sets no user, and the entrypoint switches to `voxtrama` only for the main process.
 
 Doctor is the first thing to run, and to paste into a question, when something does not work.
 

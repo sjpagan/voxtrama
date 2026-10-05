@@ -2,11 +2,11 @@
 
 Each answer is short, and links to the page that has the details.
 
-## Can I transcribe and summarize meetings locally with Whisper and Ollama?
+## Can Voxtrama transcribe and summarize meetings locally?
 
 Yes. Voxtrama transcribes a recording with Whisper on your processor, tells the speakers apart, and asks a summary model served by Ollama for a recap, decisions, themes or concepts. Everything can run on one machine. [Your first job](first-job.md) walks through it, and [Set up the summary model](summary-model-setup.md) installs Ollama.
 
-## Is there a self-hosted web interface for Whisper with speaker diarization in Docker?
+## Does Voxtrama have a web interface and speaker diarization?
 
 Yes. Voxtrama runs in Docker on your machine and serves its web interface at `127.0.0.1`. It tells speakers apart inside each recording (speaker diarization) and lets you name them in the **Speakers** tab. See [Requirements](requirements.md) and [Speakers](speakers.md).
 
@@ -40,7 +40,7 @@ Yes to the first. A job's time budget is computed from the length of the audio, 
 
 ## How fast is it on a CPU?
 
-Speed depends on your machine. As one example, on an Intel Xeon W-2150B with 64 GB of RAM, using the `high` profile (Whisper large-v3, 4 cores per chunk, 2 chunks in parallel), 21 minutes of audio took 7 minutes 30 seconds to transcribe and 2 minutes 38 seconds to separate the speakers. Yours may be faster or slower. Use `voxtrama doctor` and [Troubleshooting](troubleshooting.md) to tune the profile and the cores.
+Speed depends on your machine. As one example, with the `high` profile (Whisper large-v3, 4 cores per chunk, 2 chunks in parallel), 21 minutes of audio took 7 minutes 30 seconds to transcribe and 2 minutes 38 seconds to separate the speakers. Measured in September 2026 with Voxtrama 0.1.0 on one machine, an Intel Xeon W-2150B with 64 GB of RAM. Use `voxtrama doctor` and [Troubleshooting](troubleshooting.md) to tune the profile and the cores.
 
 ## Does Voxtrama use a GPU?
 
@@ -56,7 +56,7 @@ Voxtrama 0.1 has been tested end to end on macOS with an Intel processor. Linux 
 
 ## Which audio formats and sizes does it accept?
 
-It accepts audio and video files in these containers: WAV, W64, RF64, MP3, FLAC, Ogg, MOV, MP4, M4A, Matroska, WebM, AAC, AIFF, CAF, ASF, AMR, AVI, MPEG, MPEG-TS and WavPack. The limit is 8192 MB per upload by default, set by `VOXTRAMA_MAX_UPLOAD_MB`, and it applies to the whole request. It is Voxtrama's own limit and has nothing to do with the 25 MB limit of an online transcription API. See [Troubleshooting](troubleshooting.md) and [Configuration](configuration.md).
+It accepts audio and video files in these containers: WAV, W64, RF64, MP3, FLAC, Ogg, MOV, MP4, M4A, Matroska, WebM, AAC, AIFF, CAF, ASF, AMR, AVI, MPEG, MPEG-TS and WavPack. The limit is 8192 MB per upload by default, set by `VOXTRAMA_MAX_UPLOAD_MB`, and it applies to the whole request. It is Voxtrama's own limit, set by `VOXTRAMA_MAX_UPLOAD_MB`, and unrelated to the upload limits of hosted transcription services. See [Troubleshooting](troubleshooting.md) and [Configuration](configuration.md).
 
 ## Can the recap invent quotes?
 

@@ -27,7 +27,7 @@ The title is the job name. The line under it says what the job ran with. Each pa
 | **8 cores** | the cores the job used |
 | **Context** with a check mark | someone wrote a context for the job |
 | **Context deduced** | nobody did, and Voxtrama deduced one from the transcript: who speaks, about what, which names and acronyms recur. Open it to read it. The transcript wins where the two differ. |
-| **N windows of ~12k characters** | the transcript was long enough to be read in parts of about 12,000 characters, and the results were joined |
+| **N windows of ~12k characters** | the transcript was long enough to be read in parts of about 12 000 characters, and the results were joined |
 | **Deleted on** a date, or **Kept N days** | shown only when a retention limit applies to the job |
 
 The chain of steps under the head shows how long each step took. A step reused from an earlier job says **Reused**; see [Correct and regenerate](correct-regenerate.md).

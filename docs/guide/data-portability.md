@@ -61,7 +61,7 @@ The download size of each model is shown in **Settings** under **Local processin
 
 You should see: the jobs and recordings of the old machine in the Jobs page. The first job that needs a model downloads it again.
 
-If the data folder lives somewhere other than `~/Voxtrama`, set `VOXTRAMA_DATA_DIR` in `.env` before you start. The data folder must not be owned by root and non-empty. When it is, the container stops and the log says `<folder> belongs to root and is not empty. Choose another data folder, or set VOXTRAMA_RUN_AS_UID and VOXTRAMA_RUN_AS_GID.` Choose another folder, or set the two variables.
+If the data folder lives somewhere other than `~/Voxtrama`, set `VOXTRAMA_DATA_DIR` in `.env` before you start. The data folder must not be both owned by root and non-empty. When it is, the container stops and the log says `<folder> belongs to root and is not empty. Choose another data folder, or set VOXTRAMA_RUN_AS_UID and VOXTRAMA_RUN_AS_GID.` Choose another folder, or set the two variables.
 
 A folder that arrives owned by another user id needs no `sudo`. At start-up, the container aligns the `voxtrama` user with the owner of the data folder.
 

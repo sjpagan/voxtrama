@@ -13,7 +13,7 @@ The number of speakers is estimated, up to a ceiling. The default ceiling is 4 s
 Speakers are told apart inside one recording. Voxtrama does not recognise a person in the next recording.
 
 !!! note "Why Voxtrama keeps no voice print"
-    Voxtrama computes embeddings only while the **Identify speakers** step runs and does not store them. It keeps labels and the names you type, so no biometric profile of a person is kept in the installation. This matters under the GDPR. The price is that you name the speakers of each recording by hand.
+    Voxtrama computes embeddings only while the **Identify speakers** step runs and does not store them. It keeps labels and the names you type, so no biometric profile of a person is kept in the installation. Biometric data used to identify a person is a special category of personal data under GDPR Article 9. The price is that you name the speakers of each recording by hand.
 
 ## The Speakers tab
 

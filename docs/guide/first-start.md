@@ -1,6 +1,6 @@
 # First start
 
-The first time you open Voxtrama, it takes you to a guided setup of three steps that you can follow or skip. Voxtrama has already measured your machine and proposes the settings to use; one download stands between you and the first job.
+The first time you open Voxtrama, it takes you to a guided setup of three steps that you can follow or skip. Voxtrama has already measured your machine and proposes the settings to use; the first job needs one download, the transcription model.
 
 ![The first-start card on the home page, with the machine's proposal](images/first-start.png)
 

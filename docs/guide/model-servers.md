@@ -92,7 +92,7 @@ The context window is the amount of text a model reads at once. Ollama calls the
 
 1. During the setup, Voxtrama reads the model's maximum from Ollama and stores it in `voxtrama.toml`. When no measurement exists, for example for a model chosen outside the setup, Voxtrama uses 8192 tokens.
 2. Voxtrama splits a long transcript into parts of about 12 000 characters. It cuts at the longest pause near the boundary, and reads each part together with the end of the part before and the start of the part after, so that a point made across a cut keeps its conclusion. The size of a part is fixed. It does not follow the limit.
-3. For each part, Voxtrama asks Ollama for a context of the estimated prompt, plus 4096 tokens reserved for the answer, plus 512 tokens, between 4096 tokens and the limit.
+3. For each part, Voxtrama asks Ollama for a context equal to the estimated prompt plus 4096 tokens for the answer plus 512 tokens, kept between 4096 tokens and the limit.
 4. The results of the parts are joined into one recap.
 
 **Use at most**, in **Settings** under **Change generative model** and on the **Model ready** page, lowers the limit Voxtrama uses. It can only lower the limit and never raise it past the model's maximum.
