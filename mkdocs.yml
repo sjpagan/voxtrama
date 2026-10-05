@@ -51,21 +51,32 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting started:
-      - Install: install.md
+  - Install:
+      - Requirements: requirements.md
+      - Install on macOS: install-macos.md
+      - Install on Linux: install-linux.md
+      - Set up the summary model: summary-model-setup.md
       - First start: first-start.md
-  - Using Voxtrama:
+      - Check the installation: check-installation.md
+      - Update, back up, remove: update-remove.md
+  - Use:
+      - Your first job: first-job.md
       - Start a job: new-job.md
       - Follow a job: follow-a-job.md
-      - The job page: job-page.md
+      - Read and check the results: results.md
+      - Speakers: speakers.md
+      - Correct and regenerate: correct-regenerate.md
+      - Export: export.md
       - Jobs, search and clean-up: jobs.md
       - Workflows and skills: workflows.md
-  - Settings:
-      - Settings pages: settings.md
-      - Summary models and servers: model-servers.md
+      - Use cases: use-cases.md
   - Reference:
       - Command line: cli.md
       - Configuration: configuration.md
       - Workflow files: workflow-files.md
+      - Settings pages: settings.md
+      - Summary models and servers: model-servers.md
+      - Privacy and data: privacy.md
       - Taking your data with you: data-portability.md
   - Troubleshooting: troubleshooting.md
+  - FAQ: faq.md

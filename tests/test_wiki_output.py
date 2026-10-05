@@ -57,7 +57,7 @@ def test_the_real_guide_converts_to_one_page_per_nav_entry(tmp_path: Path) -> No
     assert len(names) >= 10
     for name in names.values():
         assert (out / f"{name}.md").is_file(), name
-    guide_link = re.compile(r"\]\([^)]*\.md(#[^)]*)?\)")
+    guide_link = re.compile(r"\]\((?!https?:)[^)]*\.md(#[^)]*)?\)")
     for page in out.glob("*.md"):
         text = page.read_text()
         assert not guide_link.search(text), page.name

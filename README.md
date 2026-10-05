@@ -69,8 +69,9 @@ a lesson.
 
 | | |
 |---|---|
-| **Docker** | Docker Desktop on macOS or Windows, or Docker Engine with the Compose plugin on Linux |
-| **Memory** | 8 GB for transcription with the smallest model. About 16 GB with a summary model next to it |
+| **Platform** | macOS (tested end to end on an Intel processor) or Linux (not tested end to end yet). Apple Silicon has not been tested end to end yet. Windows is not supported yet |
+| **Docker** | Docker Desktop on macOS, or Docker Engine with the Compose plugin on Linux |
+| **Memory** | 8 GB or less suits the smallest model, between 8 and 32 GB the medium one, 32 GB or more the most accurate. A summary model needs roughly its own download size on top |
 | **Disk** | about 0.6 GB for the smallest transcription model and the speaker model, up to 3 GB more for the most accurate one, plus your recordings |
 | **Port** | one free local port. `make up` starts from 8000 and takes the first free one |
 | **Summary model** (optional) | Ollama with at least one model pulled. Transcription works without it |

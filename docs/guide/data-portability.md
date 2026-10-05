@@ -1,84 +1,93 @@
 # Taking your data with you
 
-Voxtrama keeps everything on your own disk, in one folder you can open.
-This page says what to copy when you
-move to another machine, what you can safely leave behind, and what the
-project does *not* promise about restoring it.
+Voxtrama keeps everything in one folder on your own disk, and copying that folder moves an installation to another machine. This page says what to copy, what to leave behind, and what the project does not promise about restoring a copy.
 
-## What lives in the data directory
+## What lives in the data folder
 
 ```
 $VOXTRAMA_DATA_DIR/            # default: ~/Voxtrama
-├── recordings/                # the audio you imported
-├── runs/<run_id>/             # one folder per job: manifest, output, log
+├── recordings/<id>/           # the audio you imported, and the copies made from it
+├── runs/<job id>/             # one folder per job: manifest.json, output.json, run.log
 ├── models/                    # downloaded model weights
-├── workflows/                 # your custom workflows
+├── logs/                      # created at start-up
+├── workflows/                 # your custom workflows, created with the first one
 ├── voxtrama.toml              # the installation's settings
-└── voxtrama.db                # the state
+├── proposal.toml              # the proposal for this machine, until voxtrama.toml exists
+└── voxtrama.db                # the database
 ```
 
-## What to copy, and what not to
+## What to copy
 
-| | Copy it? | Why |
+| Item | Copy it? | Why |
 |---|---|---|
-| `recordings/` | **yes** | your audio. Nothing can recreate it |
-| `runs/` | **yes** | the results, and the evidence behind every field |
-| `voxtrama.db` | **yes** | without it, the files above are orphans: the database is what ties a run to its recording |
-| `workflows/` | **yes** | your custom workflows, if you made any |
-| `voxtrama.toml` | **yes** | the installation's settings; leave it behind to go through the first start again |
-| `models/` | no | weights re-download on first use. This is the bulk of the size |
+| `recordings/` | yes | your audio, which nothing can recreate |
+| `runs/` | yes | the results, and the evidence behind every field |
+| `voxtrama.db` | yes | the database ties each job to its recording; without it, `recordings/` and `runs/` are orphans |
+| `workflows/` | yes, if it exists | your custom workflows |
+| `voxtrama.toml` | yes | the installation's settings; leave it behind to go through the first start again |
+| `proposal.toml` | no | the new machine makes its own proposal |
+| `logs/` | no | created again at start-up |
+| `models/` | no | the weights are downloaded again on first use, and they make up most of the size |
 
-Leaving `models/` behind is what turns a multi-gigabyte copy into a few
-hundred megabytes.
+The download size of each model is shown in **Settings** under **Local processing**.
 
-## Moving to another machine
+## Move to another machine
 
-Stop Voxtrama first. A database copied while a run is writing to it can be
-restored in a state no run ever produced.
+1. Stop Voxtrama, so that no job writes to the database during the copy:
 
-```bash
-docker compose down
-tar -czf voxtrama-backup.tar.gz \
-    -C ~/Voxtrama recordings runs workflows voxtrama.db voxtrama.toml
-```
+    ```bash
+    docker compose down
+    ```
 
-Leave `workflows` out of the list if you never made a custom workflow:
-`tar` stops on a folder that does not exist.
+2. Create the archive. Add `workflows` to the list only if the `workflows/` folder exists:
 
-On the new machine, with Voxtrama installed but not running:
+    ```bash
+    tar -czf voxtrama-backup.tar.gz \
+        -C ~/Voxtrama recordings runs voxtrama.db voxtrama.toml
+    ```
 
-```bash
-mkdir -p ~/Voxtrama
-tar -xzf voxtrama-backup.tar.gz -C ~/Voxtrama
-docker compose up
-```
+3. On the new machine, with Voxtrama installed and not running, unpack the archive into the data folder:
 
-The first run will re-download the models it needs. Set `VOXTRAMA_DATA_DIR` in
-`.env` if the folder lives somewhere other than `~/Voxtrama`.
+    ```bash
+    mkdir -p ~/Voxtrama
+    tar -xzf voxtrama-backup.tar.gz -C ~/Voxtrama
+    ```
 
-File ownership is realigned at startup,
-so a folder that arrives owned by a different user id does not need `sudo` to
-be usable.
+4. Start Voxtrama:
 
-## What is not promised
+    ```bash
+    make up
+    ```
 
-**Restoring into an older version of Voxtrama.** A newer version may have
-migrated the database, and those migrations do not run backwards. Restore into
-the same version you backed up from, or a newer one.
+You should see: the jobs and recordings of the old machine in the Jobs page. The first job that needs a model downloads it again.
 
-**That a workflow file from an old backup still runs.** Workflows carry a
-`schema_version`, and which ones a given release accepts is a decision that
-has not been made yet. Your runs stay readable; re-running an old workflow
-definition is a different promise.
+If the data folder lives somewhere other than `~/Voxtrama`, set `VOXTRAMA_DATA_DIR` in `.env` before you start. The data folder must not be owned by root and non-empty. When it is, the container stops and the log says `<folder> belongs to root and is not empty. Choose another data folder, or set VOXTRAMA_RUN_AS_UID and VOXTRAMA_RUN_AS_GID.` Choose another folder, or set the two variables.
 
-**Anything about the backup file itself.** It is a plain archive of your own
-recordings and transcripts, unencrypted, wherever you choose to keep it. The
-audio is usually sensitive: that is the reason Voxtrama exists at all, and the
-archive deserves the same care as the recordings it holds.
+A folder that arrives owned by another user id needs no `sudo`. At start-up, the container aligns the `voxtrama` user with the owner of the data folder.
 
-## Why there is no `voxtrama backup` command
+## Update and restore
 
-`tar` already does this, on every platform Voxtrama runs on, and a command
-that wraps it is one more thing to keep working across three operating
-systems. If the procedure above turns out to be awkward in practice, that is
-the moment to add one.
+On every start, the `migrate` service brings the database to the version of the installed Voxtrama. It only upgrades. The migration files contain a downgrade step, and nothing in Voxtrama runs it.
+
+- A backup restores into the same version it was taken from, or into a newer one.
+- A backup does not restore into an older version of Voxtrama, because a newer version may have migrated the database.
+- When the database is older than the code, the upload form refuses a recording with `This installation cannot take a recording yet`, and the detail says to run `docker compose build` and then `docker compose up migrate`.
+
+## Workflow files in a backup
+
+Workflow files carry a `schema_version`. This version of Voxtrama reads `v1` and refuses any other value. Before version 1.0 there is no compatibility promise: a release may change the shape, and its release notes say how to adapt your files. Your jobs stay readable. Running an old workflow definition again is a separate matter, and it can fail with `Input should be 'v1'`.
+
+## The backup file
+
+The archive is a plain, unencrypted copy of your recordings and transcripts, wherever you keep it. The audio is often sensitive, so the archive deserves the same care as the recordings it holds. [Privacy and data](privacy.md) lists what the folder contains.
+
+## No backup command
+
+There is no `voxtrama backup` command, because `tar` already does the work on every platform Voxtrama runs on. [Update, back up, remove](update-remove.md) covers the whole life of an installation.
+
+## Related pages
+
+- [Update, back up, remove](update-remove.md)
+- [Configuration](configuration.md)
+- [Privacy and data](privacy.md)
+- [Workflow files](workflow-files.md)
