@@ -1,0 +1,51 @@
+# The user guide as a website on GitHub Pages: the same MkDocs build as
+# `make docs`, from docs/guide/ on the 0.1.x series branch. Unlike the wiki,
+# a Pages site is indexed by search engines, so this is the address the
+# guide is found at. The repository's Pages source must be set to
+# "GitHub Actions" once, in Settings > Pages.
+name: Pages
+
+on:
+  push:
+    branches: ["0.1.x"]
+    paths:
+      - "docs/guide/**"
+      - "mkdocs.yml"
+      - "requirements-docs.lock"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install MkDocs
+        run: pip install -r requirements-docs.lock
+      - name: Build the site
+        run: mkdocs build --strict --site-dir site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -242,6 +242,9 @@ also go to `<data folder>/runs/<id>/run.log`.
 
 ## Documentation
 
+The user guide is online at <https://sjpagan.github.io/voxtrama/>, built from
+`docs/guide/` on every change to the `0.1.x` branch.
+
 | Document | What it covers |
 |---|---|
 | [User guide](docs/guide/index.md) | installing and using Voxtrama, page by page. `make docs` builds it |

@@ -3,7 +3,10 @@
 # docs/guide/. `make docs` builds it into site/ with
 # --strict, the same way CI does.
 site_name: Voxtrama
-site_description: Local-first audio intelligence workflows. From audio to verifiable knowledge.
+site_description: Self-hosted transcription with speaker diarization and recaps whose every point carries a quote you can play back.
+site_url: https://sjpagan.github.io/voxtrama/
+repo_url: https://github.com/sjpagan/voxtrama
+edit_uri: ""
 docs_dir: docs/guide
 site_dir: site
 strict: true
