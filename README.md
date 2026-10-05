@@ -224,6 +224,8 @@ make css
 to update `THIRD_PARTY_LICENSES.md`, and commit the three files together
 with the tests green. `make docs` builds the user guide
 with MkDocs, and `make docs-serve` serves it locally.
+The same guide is mirrored, read-only, in the GitHub wiki, generated from
+`docs/guide` by `.github/workflows/wiki.yml`.
 
 For live reload, the development overlay runs `uvicorn --reload` with
 `src/` mounted. The worker does not reload, so restart it after changing

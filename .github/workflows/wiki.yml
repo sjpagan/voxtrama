@@ -1,0 +1,54 @@
+# The GitHub wiki is a generated mirror of the user guide in docs/guide/.
+# Nobody edits it: this workflow rebuilds every page with
+# scripts/build_wiki.py and pushes the result to the wiki repository
+# whenever the guide changes on the 0.1.x series branch. Images are linked
+# at the commit that was built, so a page never shows a newer screenshot
+# than its text.
+name: Wiki
+
+on:
+  push:
+    branches: ["0.1.x"]
+    paths:
+      - "docs/guide/**"
+      - "mkdocs.yml"
+      - "scripts/build_wiki.py"
+      - ".github/workflows/wiki.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wiki
+  cancel-in-progress: false
+
+jobs:
+  wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PyYAML
+        run: pip install "$(grep -i '^pyyaml==' requirements-docs.lock)"
+      - name: Clone the wiki repository
+        run: |
+          if ! git clone "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.wiki.git" wiki; then
+            echo "::error::Cannot clone the wiki repository. It exists only after the first page has been created once from the web UI (Wiki tab, Create the first page). Create it there, then run this workflow again."
+            exit 1
+          fi
+      - name: Build the pages
+        run: python scripts/build_wiki.py --out wiki --image-base "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}"
+      - name: Commit and push
+        working-directory: wiki
+        run: |
+          git add -A
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "The wiki is already up to date"
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" -c user.email="41898283+github-actions[bot]@users.noreply.github.com" \
+            commit -m "Sync from ${{ github.sha }}"
+          git push
