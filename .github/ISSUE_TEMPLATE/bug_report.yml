@@ -1,0 +1,111 @@
+name: Bug report
+description: Something does not work as described
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search the existing issues first, to avoid a duplicate.
+        For questions about installing or using Voxtrama, use [Discussions](https://github.com/sjpagan/voxtrama/discussions/categories/q-a).
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences. The title sets the context, add here what does not fit in it.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Voxtrama version
+      description: Output of `docker compose exec web voxtrama version`.
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: Ubuntu 24.04, macOS 15
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How it is installed
+      options:
+        - Docker Compose
+        - Development install
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      description: Only for problems in the web interface.
+    validations:
+      required: false
+  - type: input
+    id: last-working
+    attributes:
+      label: Last version that worked
+      description: If you know it.
+    validations:
+      required: false
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `voxtrama doctor`
+      description: Run `docker compose exec web voxtrama doctor` and paste the output.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: run-log
+    attributes:
+      label: Job log
+      description: |
+        If a job failed, paste the end of its `run.log` (`<data folder>/runs/<job id>/run.log`).
+        Check it first: it can contain file names and model server addresses you may not want to publish.
+        Never attach a recording or a transcript you do not have the right to share.
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag images into this field.
+    validations:
+      required: false
+  - type: dropdown
+    id: ai-use
+    attributes:
+      label: Use of AI
+      description: Did an AI tool write a significant part of this report?
+      options:
+        - "No"
+        - Assisted
+        - Mostly generated
+    validations:
+      required: false

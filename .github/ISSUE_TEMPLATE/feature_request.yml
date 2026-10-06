@@ -1,0 +1,48 @@
+name: Feature request
+description: Propose a new capability or an improvement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search the open issues first, to avoid repeating a proposal.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences on the feature you propose.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: |
+        What is difficult, missing or frustrating today?
+        Who runs into it, and how? A concrete case helps more than a general one.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: If you have an idea of how it could work, describe it. A workflow or interface sketch is enough.
+    validations:
+      required: false
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: What you do today instead, or say that there is none.
+    validations:
+      required: false
+  - type: dropdown
+    id: ai-use
+    attributes:
+      label: Use of AI
+      description: Did an AI tool write a significant part of this request?
+      options:
+        - "No"
+        - Assisted
+        - Mostly generated
+    validations:
+      required: false

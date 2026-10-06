@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Ask a question
+    url: https://github.com/sjpagan/voxtrama/discussions/categories/q-a
+    about: Help with installing or using Voxtrama.
+  - name: Share a run or a benchmark
+    url: https://github.com/sjpagan/voxtrama/discussions/categories/show-and-tell
+    about: Show what you did with Voxtrama, or how it performed.
   - name: Report a security vulnerability
     url: https://github.com/sjpagan/voxtrama/security/advisories/new
     about: Do not open a public issue for a vulnerability. Report it privately here.
