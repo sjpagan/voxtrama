@@ -2,9 +2,9 @@
 
 # Voxtrama
 
-[![CI](https://img.shields.io/github/actions/workflow/status/sjpagan/voxtrama/ci.yml?branch=0.1.x&label=CI)](https://github.com/sjpagan/voxtrama/actions/workflows/ci.yml)
+[![CI](https://github.com/sjpagan/voxtrama/actions/workflows/ci.yml/badge.svg?branch=0.1.x)](https://github.com/sjpagan/voxtrama/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/sjpagan/voxtrama?include_prereleases&label=release)](https://github.com/sjpagan/voxtrama/releases)
-[![License](https://img.shields.io/github/license/sjpagan/voxtrama)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
 **From audio to verifiable knowledge.**
 
