@@ -5,6 +5,8 @@
 site_name: Voxtrama
 site_description: Self-hosted transcription with speaker diarization and recaps whose every point carries a quote you can play back.
 site_url: https://sjpagan.github.io/voxtrama/
+site_author: Giorgio Alfredo Pagano
+copyright: 'Made by <a href="https://giorgiopagano.org/en/projects/voxtrama">Giorgio Alfredo Pagano</a>. Unrelated to the Voxtral speech models by Mistral AI.'
 repo_url: https://github.com/sjpagan/voxtrama
 edit_uri: ""
 docs_dir: docs/guide
